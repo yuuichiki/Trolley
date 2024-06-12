@@ -1,0 +1,282 @@
+﻿<UserControl
+    x:Class="RCabinet.Views.ScanItems"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:RCabinet.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:enums="clr-namespace:RCabinet.Enums"
+    xmlns:local="clr-namespace:RCabinet.Views"
+    xmlns:mahapps="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:RCabinet.Models"
+    xmlns:viewModels="clr-namespace:RCabinet.ViewModels"
+    d:DataContext="{d:DesignInstance Type={x:Type viewModels:ScanItemsViewModel},
+    IsDesignTimeCreatable=True}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Background="Orange"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:ComparisonConverter x:Key="ComparisonConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Button
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Height="40"
+            Margin="15,5,5,5"
+            Padding="10"
+            HorizontalAlignment="Left"
+            Command="{Binding GoToMainMenu}"
+            Content="Return to Main Menu" />
+        <Label
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Content="Scan Items"
+            FontSize="16"
+            FontWeight="Bold" />
+        <Grid Grid.Row="1" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Label
+                Grid.Row="0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Content="Use the barcode scanner or enter in the barcode number manually and click 'Purchase Item'"
+                FontSize="16"
+                FontWeight="Bold" />
+            <StackPanel
+                Grid.Row="1"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Orientation="Horizontal">
+                <TextBox
+                    Name="BarcodeTextBox"
+                    Width="300"
+                    VerticalAlignment="Center"
+                    mahapps:TextBoxHelper.Watermark="Item barcode number (e.g. 11100)"
+                    mahapps:TextBoxHelper.WatermarkAlignment="Center"
+                    FontSize="14"
+                    KeyDown="BarcodeScanTextBox_KeyDown"
+                    Text="{Binding BarcodeNumber, UpdateSourceTrigger=PropertyChanged}" />
+                <Button
+                    Grid.ColumnSpan="2"
+                    Width="150"
+                    Margin="15,5,5,5"
+                    Padding="10"
+                    HorizontalAlignment="Center"
+                    Command="{Binding MarkItemPurchased}"
+                    Content="Purchase Item (1)" />
+            </StackPanel>
+            <Label
+                Grid.Row="2"
+                Margin="0,0,0,7"
+                HorizontalAlignment="Center"
+                Content="{Binding ItemPurchaseStatusMessage}"
+                FontSize="16"
+                FontStyle="Italic"
+                Foreground="{Binding ItemPurchaseStatusBrush}" />
+        </Grid>
+        <Rectangle
+            Grid.Row="2"
+            Height="10"
+            Fill="Gainsboro" />
+        <Grid Grid.Row="3" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Label
+                Grid.Row="0"
+                Margin="0,5,0,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Content="Purchase Details"
+                FontSize="16"
+                FontWeight="Bold" />
+            <StackPanel
+                Grid.Row="1"
+                Margin="5,0,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Orientation="Vertical"
+                Visibility="{Binding PurchaseInfoIsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Label
+                    Content="{Binding PurchasedItem.Name}"
+                    FontSize="16"
+                    FontWeight="Bold" />
+                <TextBlock
+                    Grid.Row="0"
+                    Margin="5,5,0,5"
+                    FontSize="14">
+                    <Span FontSize="15">
+                        Purchased on:<Run FontSize="15" Text="{Binding DateTimePurchased}" />
+                        |<Span FontSize="15">
+                            Store cost per item:<Run FontSize="15" Text="{Binding PurchasedItem.CostWithCurrency, Mode=OneWay}" /></Span></Span>
+                </TextBlock>
+                <StackPanel Orientation="Horizontal">
+                    <Label
+                        Margin="0,0,10,0"
+                        VerticalAlignment="Center"
+                        Content="Quantity Purchased"
+                        FontSize="16"
+                        FontWeight="Bold" />
+                    <mahapps:NumericUpDown
+                        Width="150"
+                        VerticalContentAlignment="Center"
+                        FontSize="14"
+                        TextAlignment="Left"
+                        Value="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" />
+                    <Label
+                        Margin="0,0,0,7"
+                        HorizontalAlignment="Center"
+                        Content="{Binding QuantityErrorMessage}"
+                        FontSize="16"
+                        FontStyle="Italic"
+                        Foreground="Red" />
+                </StackPanel>
+                <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                    <Label
+                        Margin="0,0,4,0"
+                        VerticalAlignment="Center"
+                        Content="Paid Currency"
+                        FontSize="16"
+                        FontWeight="Bold" />
+                    <ComboBox
+                        d:DataContext="{d:DesignInstance Type={x:Type models:Currency}}"
+                        IsEditable="False"
+                        ItemsSource="{Binding Currencies}"
+                        SelectedIndex="{Binding SelectedPaidCurrencyIndex}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <Label Content="{Binding NameWithSymbol}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Label
+                        Margin="10,0,4,0"
+                        VerticalAlignment="Center"
+                        Content="Paid"
+                        FontSize="16"
+                        FontWeight="Bold" />
+                    <TextBox
+                        Width="200"
+                        VerticalAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        FontSize="14"
+                        Text="{Binding PaidAmount, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock
+                        Grid.Row="2"
+                        Padding="6,4,4,4"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
+                        FontSize="14"
+                        TextWrapping="Wrap">
+                        Total to Pay:<Run Text="{Binding OtherPaidAmount, Mode=OneWay}" />
+                    </TextBlock>
+                </StackPanel>
+                <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                    <Label
+                        Margin="0,0,4,0"
+                        VerticalAlignment="Center"
+                        Content="Change Currency"
+                        FontSize="16"
+                        FontWeight="Bold" />
+                    <ComboBox
+                        d:DataContext="{d:DesignInstance Type={x:Type models:Currency}}"
+                        IsEditable="False"
+                        ItemsSource="{Binding Currencies}"
+                        SelectedIndex="{Binding SelectedChangeCurrencyIndex}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <Label Content="{Binding NameWithSymbol}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Label
+                        Margin="10,0,4,0"
+                        VerticalAlignment="Center"
+                        Content="Change Needed"
+                        FontSize="16"
+                        FontWeight="Bold" />
+                    <Label
+                        VerticalAlignment="Center"
+                        Content="{Binding ChangeNeeded}"
+                        FontSize="14" />
+                </StackPanel>
+                <StackPanel Grid.Row="2" Orientation="Horizontal">
+                    <Label
+                        Margin="0,0,4,0"
+                        VerticalAlignment="Center"
+                        Content="Purchase Method"
+                        FontSize="16"
+                        FontWeight="Bold" />
+                    <RadioButton
+                        Content="Cash"
+                        GroupName="PurchaseMethod"
+                        IsChecked="{Binding Path=PurchaseMethod, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static enums:PurchaseMethod.Cash}}" />
+                    <RadioButton
+                        Margin="10,0,0,0"
+                        Content="QR Code"
+                        GroupName="PurchaseMethod"
+                        IsChecked="{Binding Path=PurchaseMethod, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static enums:PurchaseMethod.QRCode}}" />
+                </StackPanel>
+            </StackPanel>
+            <Label
+                Grid.Row="2"
+                Margin="0,5,0,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Content="Item data saved successfully!"
+                FontSize="14"
+                FontWeight="Bold"
+                Foreground="Green"
+                Visibility="{Binding IsSavedMessageShown, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <StackPanel
+                Grid.Row="3"
+                Grid.Column="0"
+                HorizontalAlignment="Center"
+                Orientation="Horizontal">
+                <Button
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Width="150"
+                    Height="40"
+                    Margin="15,5,5,5"
+                    Padding="10"
+                    HorizontalAlignment="Center"
+                    Command="{Binding SavePurchaseUpdates}"
+                    Content="Save"
+                    IsEnabled="{Binding CanFinalize}"
+                    Visibility="{Binding PurchaseInfoIsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <Button
+                    Grid.ColumnSpan="2"
+                    Width="150"
+                    Height="40"
+                    Margin="15,5,5,5"
+                    Padding="10"
+                    HorizontalAlignment="Center"
+                    Click="CancelPurchase_Click"
+                    Content="Cancel Purchase"
+                    Visibility="{Binding PurchaseInfoIsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>
