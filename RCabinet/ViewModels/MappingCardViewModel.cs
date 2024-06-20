@@ -1,135 +1,101 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
 using GDotnet.Reader.Api.DAL;
 using GDotnet.Reader.Api.Protocol.Gx;
+using Newtonsoft.Json;
 using RCabinet.Helpers;
 using RCabinet.Interfaces;
 using RCabinet.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO.Ports;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using RCabinet.Models;
+using System.Windows;
 
 namespace RCabinet.ViewModels
 {
-    public class CardModel
+    internal class MappingCardViewModel : BaseViewModel
     {
-        public string CustomerColor { get; set; }
-        public int ValidQuantity { get; set; }
-        public object EpCs { get; set; }
-        public int Id { get; set; }
-        public string StyleNo { get; set; }
-        public string Mo { get; set; }
-        public string ColorNo { get; set; }
-        public string ColorName { get; set; }
-        public string Size { get; set; }
-        public int Quantity { get; set; }
-        public string CardNo { get; set; }
-        public bool IsActive { get; set; }
-        public string WorklayerNo { get; set; }
-        public string WorklayerName { get; set; }
-        public string Group { get; set; }
-        public string GangHao { get; set; }
-    }
-
-    class MappingCardViewModel : BaseViewModel
-    {
-
         private List<string> comport = new List<string>();
 
+        private readonly HttpClient _httpClient;
 
         public delegate void callBackTips(string value);
+
+        private ObservableCollection<CardGridModel> _cardGridModels;
         private callBackTips myWatch;
         private GClient clientConn = null;
         private MsgBaseStop msgBaseStop;
         private MsgBaseInventoryEpc msgBaseInventoryEpc;
         public delegateEncapedTagEpcLog OnReading { get; set; }
-        private string _customerColor { get; set; }
-        private int _validQuantity { get; set; }
-        private object _epCs { get; set; }
-        private int _id { get; set; }
-        private string _styleNo { get; set; }
-        private string _mo { get; set; }
-        private string _colorNo { get; set; }
-        private string _colorName { get; set; }
-        private string _size { get; set; }
-        private int _quantity { get; set; }
-        private string _cardNo { get; set; }
-        private bool _isActive { get; set; }
-        private string _worklayerNo { get; set; }
-        private string _worklayerName { get; set; }
-        private string _group { get; set; }
-        private string _gangHao { get; set; }
+        private string _cardId { get; set; }
 
+        private CardModel _card { get; set; }
+        private ObservableCollection<PosModel> _pos { get; set; }
+        private int totalQuantity;
+        private List<string> _comPort { get; set; }
 
-        public string CustomerColor
+        public string CardId
         {
-            get { return _customerColor; }
-            set { _customerColor = value; NotifyPropertyChanged(); }
-        }
-
-        public int ValidQuantity
-        {
-            get { return _validQuantity; }
-            set { _validQuantity = value; NotifyPropertyChanged(); }
-        }
-        public string ColorNo
-        {
-            get { return _colorNo; }
-            set { _colorNo = value; NotifyPropertyChanged(); }
-        }
-        public string ColorName
-        {
-            get { return _colorName; }
-            set { _colorName = value; NotifyPropertyChanged(); }
-        }
-        public string Size
-        {
-            get { return _size; }
-            set { _size = value; NotifyPropertyChanged(); }
-        }
-        public int Quantity
-        {
-            get { return _quantity; }
-            set { _quantity = value; NotifyPropertyChanged(); }
-        }
-        public string CardNo
-        {
-            get { return _cardNo; }
-            set { _cardNo = value; 
+            get { return _cardId; }
+            set
+            {
+                _cardId = value;
                 NotifyPropertyChanged();
-                LoadCardDataDetail();
             }
         }
-        public bool IsActive
+
+        public List<string> ComPort
         {
-            get { return _isActive; }
-            set { _isActive = value; NotifyPropertyChanged(); }
+            get { return _comPort; }
+            set { _comPort = value; NotifyPropertyChanged(); }
         }
-        public string WorklayerNo
+
+        public CardModel Card
         {
-            get { return _worklayerNo; }
-            set { _worklayerNo = value; NotifyPropertyChanged(); }
+            get => _card;
+            set
+            {
+                _card = value;
+                NotifyPropertyChanged();
+            }
         }
-        public string WorklayerName
+
+        public ObservableCollection<PosModel> Pos
         {
-            get { return _worklayerName; }
-            set { _worklayerName = value; NotifyPropertyChanged(); }
-        }
-        public string Group
-        {
-            get { return _group; }
-            set { _group = value; NotifyPropertyChanged(); }
-        }
-        public string GangHao
-        {
-            get { return _gangHao; }
-            set { _gangHao = value; NotifyPropertyChanged(); }
+            get => _pos;
+            set
+            {
+                _pos = value;
+                NotifyPropertyChanged();
+            }
         }
 
 
+        public ObservableCollection<CardGridModel> CardGridModels
+        {
+            get => _cardGridModels;
+            set
+            {
+                _cardGridModels = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public int TotalQuantity
+        {
+            get => totalQuantity;
+            set
+            {
+                totalQuantity = value;
+                NotifyPropertyChanged();
+            }
+        }
 
         private void initReader(callBackTips watch)
         {
@@ -149,39 +115,88 @@ namespace RCabinet.ViewModels
             msgBaseInventoryEpc.ReadTid.Len = 6;
         }
 
-
-
         public MappingCardViewModel(IChangeViewModel viewModelChanger) : base(viewModelChanger)
         {
+            _httpClient = new HttpClient();
+            totalQuantity = 0;
+            CardGridModels = new ObservableCollection<CardGridModel>();
+            ComPort = new List<string>();
 
+            string[] ports = SerialPort.GetPortNames();
+            foreach (string port in ports)
+            {
+                ComPort.Add(port);
+            }
+            ComPort.Add("Select Comport");
         }
-
-
 
         public ICommand LoadCardDataCommand
         {
-            get { return new RelayCommand(LoadCardDataDetail); }
+            get { return new RelayCommand(async () => await LoadCardDataDetail()); }
         }
 
-
-
-        private void LoadCardDataDetail()
+        private string killZero(string value)
         {
+            int num = 0;
+            foreach (char c in value)
+            {
+                if (c == '0')
+                {
+                    num++;
+                    continue;
+                }
+                break;
+            }
+            return value.Substring(num, value.Trim().Length - num).Trim();
+        }
 
-            if (CardNo == null || CardNo == "")
+        private async Task LoadCardDataDetail()
+        {
+            if (CardId == null || CardId == "")
             {
                 return;
             }
-            // call http get request http://http://172.19.18.35:8103/ETSToEPC/etsCard/nike/{cardNo} to get CardData
-            string url = "http://http://172.19.18.35:8103/ETSToEPC/etsCard/nike/"+ CardNo;
-            //string response = HttpHelper.Get(url);
-            //if (response == null)
-            //{
-            //    return;
-            //}
-            //CardData cardData = Newtonsoft.Json.JsonConvert.DeserializeObject<CardData>(response);
+            string url = "http://172.19.18.35:8103/ETSToEPC/etsCard/nike/" + killZero(CardId.Trim());
+            var response = await _httpClient.GetAsync(url);
+            if (response != null && response.IsSuccessStatusCode==true)
+            {
+                response.EnsureSuccessStatusCode();
+                var responseData = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<ResponseModel>(responseData);
+                Card = result.Card;
+                Pos = new ObservableCollection<PosModel>(result.Pos); ;
+                var cardGridModel = new CardGridModel
+                {
+                    CardNo = Card.CardNo,
+                    ColorNo = Card.ColorNo,
+                    Size = Card.Size,
+                    IsActive = Card.IsActive,
+                    ValidQuantity = Card.ValidQuantity
+                };
+                //check if cardGridModel is already in the list
+                var existingItem = CardGridModels.FirstOrDefault(x => x.CardNo == cardGridModel.CardNo);
+                if (existingItem != null)
+                {
+                    existingItem.ValidQuantity = cardGridModel.ValidQuantity;
+                }
+                else
+                {
+                    CardGridModels.Add(cardGridModel);
+                    TotalQuantity += cardGridModel.ValidQuantity;
+                    CardId = "";
+                }
+            }
+            else
+            {
+
+                MessageBox.Show("Card not found", "Error!", MessageBoxButton.OK);
+                CardId = "";
+            }
 
         }
+
+
+
 
     }
 }

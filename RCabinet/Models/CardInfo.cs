@@ -10,62 +10,50 @@ using System.Threading.Tasks;
 namespace RCabinet.Models
 {
 
-    public class Card
+    public class CardModel
     {
-        [JsonProperty("styleNo")]
-        public string StyleNo { get; set; }
-
-        [JsonProperty("mo")]
-        public string Mo { get; set; }
-
-        [JsonProperty("colorNo")]
-        public string ColorNo { get; set; }
-
-        [JsonProperty("colorName")]
-        public string ColorName { get; set; }
-
-        [JsonProperty("size")]
-        public string Size { get; set; }
-
-        [JsonProperty("quantity")]
-        public int Quantity { get; set; }
-
-        [JsonProperty("cardNo")]
-        public string CardNo { get; set; }
-
-        [JsonProperty("isActive")]
-        public bool IsActive { get; set; }
-
-        [JsonProperty("worklayerNo")]
-        public string WorklayerNo { get; set; }
-
-        [JsonProperty("worklayerName")]
-        public string WorklayerName { get; set; }
-
-        [JsonProperty("group")]
-        public string Group { get; set; }
-
-        [JsonProperty("gangHao")]
-        public string GangHao { get; set; }
-
-
-        [JsonProperty("id")]
-        public string Id { get; set; }
-
-        [JsonProperty("customerColor")]
         public string CustomerColor { get; set; }
+        public int ValidQuantity { get; set; }
+        public object EpCs { get; set; }
+        public int Id { get; set; }
+        public string StyleNo { get; set; }
+        public string Mo { get; set; }
+        public string ColorNo { get; set; }
+        public string ColorName { get; set; }
+        public string Size { get; set; }
+        public int Quantity { get; set; }
+        public string CardNo { get; set; }
+        public bool IsActive { get; set; }
+        public string WorklayerNo { get; set; }
+        public string WorklayerName { get; set; }
+        public string Group { get; set; }
+        public string GangHao { get; set; }
+    }
+    public class PosModel
+    {
+        public string Po { get; set; }
+        public DateTime ExportDate { get; set; }
+    }
 
-        [JsonProperty("validQuantity")]
+    public class ResponseModel
+    {
+        public CardModel Card { get; set; }
+        public List<PosModel> Pos { get; set; }
+    }
+
+
+    public class CardGridModel
+    {
+        public int Id { get; set; }
+        public string CardNo { get; set; }
+        public bool IsActive { get; set; }
+        public string ColorNo { get; set; }
+        public string Size { get; set; }
         public int ValidQuantity { get; set; }
     }
-    public class Po
-    {
-        [JsonProperty("po")]
-        public string PoNumber { get; set; }
 
-        [JsonProperty("exportDate")]
-        public string EportDate { get; set; }
-    }
+
+
 }
 
 

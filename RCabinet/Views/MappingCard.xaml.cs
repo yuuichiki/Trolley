@@ -33,14 +33,14 @@ namespace RCabinet.Views
 
         private void MappingCard_Loaded(object sender, RoutedEventArgs e)
         {
-            Keyboard.Focus(txCardNo);
+            Keyboard.Focus(txCardId);
             Loaded -= MappingCard_Loaded;
 
         }
 
 
 
-        private void txtCardNo_KeyDown(object sender, KeyEventArgs e)
+        private void txtCardId_KeyDown(object sender, KeyEventArgs e)
         {
 
             if (e.Key == Key.Enter)

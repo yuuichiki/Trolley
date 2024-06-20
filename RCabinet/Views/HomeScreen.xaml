@@ -9,7 +9,7 @@
     xmlns:mahapps="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="1200"
-    d:DesignWidth="1400"
+    d:DesignWidth="1550"
     Background="{StaticResource color6}"
     mc:Ignorable="d">
     <UserControl.Resources>
@@ -227,8 +227,8 @@
                     Margin="0,0,0,5"
                     Background="{StaticResource whitesmoke}"
                     BorderBrush="{StaticResource whitesmoke}"
-                    Command="{Binding MoveToExchangeScreen}"
-                    Content="Data Exchange"
+                    Command="{Binding MoveToMappingCardScreen}"
+                    Content="Mapping Card"
                     FontSize="16"
                     PathData="{StaticResource Exchange_Icon}"
                     Style="{StaticResource HomeIconButtonStyle}"
