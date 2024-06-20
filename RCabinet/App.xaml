@@ -36,7 +36,7 @@
             <DataTemplate DataType="{x:Type viewModels:AdjustQuantityViewModel}">
                 <views:AdjustQuantity />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type viewModels:ExchangeViewModel}">
+            <DataTemplate DataType="{x:Type viewModels:MappingCardViewModel}">
                 <views:MappingCard />
             </DataTemplate>
             <DataTemplate DataType="{x:Type viewModels:ViewReportsViewModel}">

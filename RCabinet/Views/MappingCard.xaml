@@ -8,12 +8,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:RCabinet.Models"
     xmlns:viewModels="clr-namespace:RCabinet.ViewModels"
-    Name="MappingCardUserControl"
-    d:DataContext="{d:DesignInstance Type={x:Type viewModels:ExchangeViewModel}}"
+    d:DataContext="{d:DesignInstance Type={x:Type viewModels:MappingCardViewModel}}"
     d:DesignHeight="900"
     d:DesignWidth="1440"
     Background="{StaticResource color6}"
-    Loaded="MappingCardUserControl_Loaded"
+    Loaded="MappingCard_Loaded"
     mc:Ignorable="d">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -52,8 +51,7 @@
             FontSize="16"
             FontWeight="Bold" />
         <TextBox
-            x:Name="txCardNO"
-            Name="txtCardNo"
+            x:Name="txCardNo"
             Grid.Row="1"
             Grid.Column="0"
             Width="262"
@@ -63,7 +61,9 @@
             mahapps:TextBoxHelper.ClearTextButton="True"
             mahapps:TextBoxHelper.Watermark="Search items..."
             KeyDown="txtCardNo_KeyDown"
-            Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" />
+            Text="{Binding CardNo, UpdateSourceTrigger=PropertyChanged}" />
+
+
         <DataGrid
             Name="ItemsGrid"
             Grid.Row="2"
@@ -116,7 +116,6 @@
                 Height="40"
                 Margin="10,10,10,10"
                 Padding="10,10,10,10"
-                Click="btReadingEPC_Click"
                 Command="{Binding MoveToAddItemScreen}"
                 Content="Start Reading EPC Tags"
                 FontSize="13"
@@ -183,6 +182,7 @@
 
         <Label
             Grid.Row="2"
+            Width="180"
             Margin="422,12,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
@@ -198,6 +198,7 @@
             Style="{StaticResource LabelUI}" />
         <Label
             Grid.Row="2"
+            Width="180"
             Margin="121,12,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
@@ -207,6 +208,7 @@
 
         <Label
             Grid.Row="2"
+            Width="180"
             Margin="755,12,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
@@ -228,6 +230,7 @@
             Style="{StaticResource LabelUI}" />
         <Label
             Grid.Row="2"
+            Width="180"
             Margin="422,50,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
@@ -235,6 +238,7 @@
             Style="{StaticResource LabelUIWhite}" />
         <Label
             Grid.Row="2"
+            Width="180"
             Margin="121,50,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
@@ -256,6 +260,7 @@
             Style="{StaticResource LabelUI}" />
         <Label
             Grid.Row="2"
+            Width="180"
             Margin="422,90,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
@@ -263,6 +268,7 @@
             Style="{StaticResource LabelUIWhite}" />
         <Label
             Grid.Row="2"
+            Width="180"
             Margin="121,90,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
@@ -284,6 +290,7 @@
             Style="{StaticResource LabelUI}" />
         <Label
             Grid.Row="2"
+            Width="180"
             Margin="422,130,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
@@ -291,6 +298,7 @@
             Style="{StaticResource LabelUIWhite}" />
         <Label
             Grid.Row="2"
+            Width="180"
             Margin="121,130,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
@@ -298,13 +306,14 @@
             Style="{StaticResource LabelUIWhite}" />
         <Label
             Grid.Row="2"
-            Margin="604,90,0,0"
+            Margin="601,90,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="Quantity:"
             Style="{StaticResource LabelUI}" />
         <Label
             Grid.Row="2"
+            Width="180"
             Margin="754,90,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
@@ -319,6 +328,7 @@
             Style="{StaticResource LabelUI}" />
         <Label
             Grid.Row="2"
+            Width="180"
             Margin="753,132,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
@@ -328,7 +338,7 @@
             Name="cbComPort"
             Grid.Row="1"
             Width="168"
-            Margin="436,0,0,0"
+            Margin="536,0,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Center" />
 

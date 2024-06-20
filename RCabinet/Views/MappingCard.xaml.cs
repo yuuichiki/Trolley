@@ -26,74 +26,30 @@ namespace RCabinet.Views
         public MappingCard()
         {
             InitializeComponent();
+           
 
         }
         private bool comIsOpened = false;
-        private void DeleteItem_Click(object sender, RoutedEventArgs e)
+
+        private void MappingCard_Loaded(object sender, RoutedEventArgs e)
         {
-            var result = MessageBox.Show("Are you sure you want to delete this item?", "Delete Inventory Item", MessageBoxButton.YesNoCancel);
-            if (result == MessageBoxResult.Yes)
-            {
-                (DataContext as ManageItemsViewModel)?.DeleteItem(ItemsGrid.SelectedValue as InventoryItem);
-            }
+            Keyboard.Focus(txCardNo);
+            Loaded -= MappingCard_Loaded;
+
         }
+
 
 
         private void txtCardNo_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key != Key.Enter || txCardNO.Text.Trim() == string.Empty)
-            {
-                    return;
-            }
 
-            if (cbComPort.Text == string.Empty)
+            if (e.Key == Key.Enter)
             {
-                MessageBox.Show("Chưa cài đặt cổng COM, vui lòng vào [cài đặt cổng com] để cài đặt");
-                cbComPort.Focus();
-                return;
+                (DataContext as MappingCardViewModel)?.LoadCardDataCommand.Execute(null);
             }
-            // call http post request http://172.19.18.35:8103/ETSToEPC/etsCard/nike/{cardNo} to getdata from txtCardNo
-
 
         }
-
-
-
-
-        private void MappingCardUserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            init();       
-        }
-
-
-        private void init()
-        {
-            txCardNO.Focus();
-
-            string[] ports = SerialPort.GetPortNames();
-            foreach (string port in ports)
-            {
-                cbComPort.Items.Add(port);
-            }
-            if (cbComPort.Items.Count > 0)
-            {
-                cbComPort.SelectedIndex = 0;
-            }
-            else
-            {
-                MessageBox.Show("Không tìm thấy cổng COM, vui lòng kiểm tra lại");
-            }
-
-
-        }
-
-
-        private void btReadingEPC_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-      
+         
 
 
     }
