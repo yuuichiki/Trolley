@@ -14,8 +14,11 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+
 using RCabinet.Models;
+
 using System.Windows;
+using ControlzEx.Standard;
 
 namespace RCabinet.ViewModels
 {
@@ -76,7 +79,6 @@ namespace RCabinet.ViewModels
             }
         }
 
-
         public ObservableCollection<CardGridModel> CardGridModels
         {
             get => _cardGridModels;
@@ -114,12 +116,20 @@ namespace RCabinet.ViewModels
             msgBaseInventoryEpc.ReadTid.Mode = 0;
             msgBaseInventoryEpc.ReadTid.Len = 6;
         }
-
+        public ICommand GoToMainMenu
+        {
+            get { return new RelayCommand(PopToMainMenu); }
+        }
+        private void PopToMainMenu()
+        {
+            PopViewModel();
+        }
         public MappingCardViewModel(IChangeViewModel viewModelChanger) : base(viewModelChanger)
         {
             _httpClient = new HttpClient();
             totalQuantity = 0;
             CardGridModels = new ObservableCollection<CardGridModel>();
+            Pos = new ObservableCollection<PosModel>();
             ComPort = new List<string>();
 
             string[] ports = SerialPort.GetPortNames();
@@ -158,13 +168,14 @@ namespace RCabinet.ViewModels
             }
             string url = "http://172.19.18.35:8103/ETSToEPC/etsCard/nike/" + killZero(CardId.Trim());
             var response = await _httpClient.GetAsync(url);
-            if (response != null && response.IsSuccessStatusCode==true)
+            if (response != null && response.IsSuccessStatusCode == true)
             {
                 response.EnsureSuccessStatusCode();
                 var responseData = await response.Content.ReadAsStringAsync();
                 var result = JsonConvert.DeserializeObject<ResponseModel>(responseData);
                 Card = result.Card;
-                Pos = new ObservableCollection<PosModel>(result.Pos); ;
+                
+
                 var cardGridModel = new CardGridModel
                 {
                     CardNo = Card.CardNo,
@@ -182,21 +193,22 @@ namespace RCabinet.ViewModels
                 else
                 {
                     CardGridModels.Add(cardGridModel);
+                    var mPos = new ObservableCollection<PosModel>(result.Pos);
+                    foreach (var pos in mPos)
+                    {
+                        Pos.Add(pos);
+                    }
+
                     TotalQuantity += cardGridModel.ValidQuantity;
-                    CardId = "";
+                  
                 }
+                CardId = "";
             }
             else
             {
-
                 MessageBox.Show("Card not found", "Error!", MessageBoxButton.OK);
                 CardId = "";
             }
-
         }
-
-
-
-
     }
 }

@@ -9,7 +9,7 @@
     xmlns:models="clr-namespace:RCabinet.Models"
     xmlns:viewModels="clr-namespace:RCabinet.ViewModels"
     x:Name="MappingCardControl"
-    Width="1550"
+    Width="1410"
     d:DataContext="{d:DesignInstance Type={x:Type viewModels:MappingCardViewModel}}"
     d:DesignHeight="900"
     Background="{StaticResource color6}"
@@ -20,14 +20,17 @@
         <!--  Solution for hiding datagrid column with binding from https://stackoverflow.com/a/7711611  -->
         <FrameworkElement x:Key="ProxyElement" DataContext="{Binding}" />
     </UserControl.Resources>
-    <Grid Margin="-1,0,1,9">
+    <Grid Margin="-1,0,-5,9">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="60" />
+            <RowDefinition Height="60" />
+            <RowDefinition Height="250" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="350" />
+            <ColumnDefinition Width="300" />
+            <ColumnDefinition Width="300" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
@@ -55,21 +58,26 @@
             x:Name="txCardId"
             Grid.Row="1"
             Grid.Column="0"
-            Width="262"
+            Grid.ColumnSpan="2"
+            Width="400"
+            Height="40"
             Margin="84,6,0,6"
             HorizontalAlignment="Left"
             VerticalContentAlignment="Top"
             mahapps:TextBoxHelper.ClearTextButton="True"
             mahapps:TextBoxHelper.Watermark="Search items..."
+            FontSize="20"
+            FontWeight="Bold"
             KeyDown="txtCardId_KeyDown"
             Text="{Binding CardId, UpdateSourceTrigger=PropertyChanged}" />
 
 
         <DataGrid
             Name="ItemsGrid"
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.Column="0"
-            Margin="0,239,644,15"
+            Grid.ColumnSpan="3"
+            Margin="0,0,0,0"
             d:DataContext="{d:DesignInstance Type={x:Type models:InventoryItem}}"
             AutoGenerateColumns="False"
             Background="#33DB80F0"
@@ -108,8 +116,10 @@
             </DataGrid.Columns>
         </DataGrid>
         <StackPanel
+            Grid.Row="0"
             Grid.RowSpan="3"
-            Margin="936,49,20,549"
+            Grid.Column="3"
+            Margin="0,0,0,0"
             Orientation="Vertical">
             <Button
                 Name="btReadingEPC"
@@ -119,12 +129,12 @@
                 Padding="10,10,10,10"
                 Command="{Binding MoveToAddItemScreen}"
                 Content="Start Reading EPC Tags"
-                FontSize="13"
-                Visibility="{Binding CurrentUser.Permissions.CanAddEditItems, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                FontSize="13" />
             <DataGrid
                 x:Name="CardGrid"
-                Width="568"
-                Height="222"
+                Width="456"
+                Height="282"
+                Padding="0,0,0,0"
                 d:DataContext="{d:DesignInstance Type={x:Type models:InventoryItem}}"
                 AutoGenerateColumns="False"
                 Background="#33DB80F0"
@@ -147,11 +157,6 @@
                 </DataGrid.Style>
                 <DataGrid.Columns>
                     <DataGridTextColumn
-                        Width="80"
-                        Binding="{Binding Id}"
-                        Header="Id"
-                        SortDirection="{x:Null}" />
-                    <DataGridTextColumn
                         Width="120"
                         Binding="{Binding CardNo}"
                         Header="Card No" />
@@ -164,13 +169,13 @@
                         Binding="{Binding ColorNo}"
                         Header="Color No" />
                     <DataGridTextColumn
-                        Width="80"
+                        Width="50"
                         Binding="{Binding Size}"
                         Header="Size" />
                     <DataGridTextColumn
-                        Width="120"
+                        Width="100"
                         Binding="{Binding ValidQuantity}"
-                        Header="Valid Quantity" />
+                        Header="Valid Qty" />
 
                 </DataGrid.Columns>
             </DataGrid>
@@ -185,17 +190,17 @@
             Style="{StaticResource LabelUI}" />
         <Label
             Grid.Row="2"
-            
-            Margin="19,12,0,0"
+            Grid.Column="0"
+            Margin="0,12,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="Style No:"
             Style="{StaticResource LabelUI}" />
         <Label
             Grid.Row="2"
-            
+            Grid.Column="1"
             Width="43"
-            Margin="303,12,0,0"
+            Margin="0,12,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="MO:"
@@ -203,9 +208,10 @@
 
         <Label
             Grid.Row="2"
+            Grid.Column="1"
             Width="197"
             Height="30"
-            Margin="434,12,0,0"
+            Margin="100,12,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="{Binding Card.Mo}"
@@ -213,7 +219,8 @@
 
         <Label
             Grid.Row="2"
-            Margin="651,12,0,0"
+            Grid.Column="2"
+            Margin="0,12,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="Customer Color:"
@@ -222,7 +229,7 @@
             Grid.Row="2"
             Width="180"
             Height="30"
-            Margin="120,9,0,0"
+            Margin="100,9,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="{Binding Card.StyleNo}"
@@ -231,66 +238,71 @@
 
         <Label
             Grid.Row="2"
+            Grid.Column="2"
             Width="168"
             Height="30"
-            Margin="780,12,0,0"
+            Margin="130,12,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="{Binding Card.CustomerColor}"
             Style="{StaticResource LabelUIWhite}" />
         <Label
             Grid.Row="2"
-            Margin="19,50,0,0"
+            Margin="0,50,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="Color No :"
             Style="{StaticResource LabelUI}" />
         <Label
             Grid.Row="2"
+            Grid.Column="1"
             Width="104"
-            Margin="303,50,0,0"
+            Margin="0,50,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="Color Name:"
             Style="{StaticResource LabelUI}" />
         <Label
             Grid.Row="2"
+            Grid.Column="1"
             Width="501"
             Height="30"
-            Margin="434,50,0,0"
+            Margin="100,50,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Content="{Binding Card.WorklayerName}"
+            Content="{Binding Card.ColorName}"
             Style="{StaticResource LabelUIWhite}" />
         <Label
             Grid.Row="2"
             Width="177"
             Height="30"
-            Margin="124,50,0,0"
+            Margin="100,50,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="{Binding Card.ColorNo}"
             Style="{StaticResource LabelUIWhite}" />
         <Label
             Grid.Row="2"
-            Margin="19,90,0,0"
+            Margin="0,90,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="Size:"
             Style="{StaticResource LabelUI}" />
         <Label
             Grid.Row="2"
+            Grid.Column="1"
             Width="58"
-            Margin="303,90,0,0"
+            Margin="0,90,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="Group"
             Style="{StaticResource LabelUI}" />
         <Label
             Grid.Row="2"
+            Grid.Column="1"
             Width="197"
             Height="30"
-            Margin="434,90,0,0"
+            Margin="100,90,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="{Binding Card.Group}"
@@ -299,31 +311,33 @@
             Grid.Row="2"
             Width="180"
             Height="30"
-            Margin="121,90,0,0"
+            Margin="100,90,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="{Binding Card.Size}"
             Style="{StaticResource LabelUIWhite}" />
         <Label
             Grid.Row="2"
-            Margin="19,130,0,0"
+            Margin="0,130,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="WorkLayer No"
             Style="{StaticResource LabelUI}" />
         <Label
             Grid.Row="2"
+            Grid.Column="1"
             Width="140"
-            Margin="303,130,0,0"
+            Margin="0,130,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="WorkLayer Name"
             Style="{StaticResource LabelUI}" />
         <Label
             Grid.Row="2"
+            Grid.Column="1"
             Width="183"
             Height="30"
-            Margin="448,130,0,0"
+            Margin="130,130,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="{Binding Card.WorklayerName}"
@@ -332,39 +346,43 @@
             Grid.Row="2"
             Width="169"
             Height="30"
-            Margin="132,130,0,0"
+            Margin="110,130,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="{Binding Card.WorklayerNo}"
             Style="{StaticResource LabelUIWhite}" />
         <Label
             Grid.Row="2"
-            Margin="651,90,0,0"
+            Grid.Column="2"
+            Margin="0,90,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="Quantity:"
             Style="{StaticResource LabelUI}" />
         <Label
             Grid.Row="2"
+            Grid.Column="2"
             Width="163"
             Height="30"
-            Margin="779,90,0,0"
+            Margin="100,90,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="{Binding Card.Quantity}"
             Style="{StaticResource LabelUIWhite}" />
         <Label
             Grid.Row="2"
-            Margin="652,132,0,0"
+            Grid.Column="2"
+            Margin="0,132,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="Valid Quantity:"
             Style="{StaticResource LabelUI}" />
         <Label
             Grid.Row="2"
+            Grid.Column="2"
             Width="162"
             Height="30"
-            Margin="778,132,0,0"
+            Margin="110,132,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="{Binding Card.ValidQuantity}"
@@ -372,31 +390,35 @@
         <ComboBox
             Name="cbComPort"
             Grid.Row="1"
+            Grid.Column="2"
             Width="168"
-            Margin="536,0,0,0"
+            Height="30"
+            Margin="99,0,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Center"
             ItemsSource="{Binding ComPort}" />
         <Label
             Grid.Row="2"
-            Margin="19,175,0,0"
+            Margin="0,175,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="Is Active"
             Style="{StaticResource LabelUI}" />
         <Label
             Grid.Row="2"
+            Grid.Column="1"
             Width="68"
-            Margin="303,175,0,0"
+            Margin="0,175,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="CardNo"
             Style="{StaticResource LabelUI}" />
         <Label
             Grid.Row="2"
+            Grid.Column="1"
             Width="183"
             Height="30"
-            Margin="448,175,0,0"
+            Margin="100,175,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="{Binding Card.CardNo}"
@@ -405,45 +427,58 @@
             Grid.Row="2"
             Width="169"
             Height="30"
-            Margin="132,175,0,0"
+            Margin="100,175,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="{Binding Card.IsActive}"
             Style="{StaticResource LabelUIWhite}" />
         <Label
             Grid.Row="2"
-            Width="72"
-            Margin="652,177,0,0"
+            Grid.Column="2"
+            Width="88"
+            Margin="0,177,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="Gang Hao:"
             Style="{StaticResource LabelUI}" />
         <Label
             Grid.Row="2"
+            Grid.Column="2"
             Width="175"
             Height="30"
-            Margin="763,177,0,0"
+            Margin="100,177,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Content="{Binding Card.GangHao}"
             Style="{StaticResource LabelUIWhite}" />
         <Label
             Grid.Row="2"
+            Grid.Column="3"
             Width="110"
-            Margin="1312,253,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
+            Margin="0,0,82,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
             Content="Total Quantity:"
             Style="{StaticResource LabelUI}" />
         <Label
             Grid.Row="2"
+            Grid.Column="3"
             Width="65"
             Height="30"
-            Margin="1437,253,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
+            Margin="0,0,18,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
             Content="{Binding TotalQuantity}"
             Style="{StaticResource LabelUIWhite}" />
+        <Label
+            Grid.Row="1"
+            Grid.Column="2"
+            Width="84"
+            Margin="10,0,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Content="Comport:"
+            Style="{StaticResource LabelUI}" />
 
 
     </Grid>
