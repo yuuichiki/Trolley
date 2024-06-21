@@ -8,8 +8,8 @@
     xmlns:local="clr-namespace:RCabinet.Views"
     xmlns:mahapps="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    d:DesignHeight="1200"
-    d:DesignWidth="1550"
+    Width="1404"
+    Height="809"
     Background="{StaticResource color6}"
     mc:Ignorable="d">
     <UserControl.Resources>

@@ -42,17 +42,42 @@ namespace RCabinet.Models
     }
 
 
+    public class POEpcModel
+    {
+        public string Po { get; set; }
+        public string ColorNo { get; set; }
+        public string Size { get; set; }
+        public List<string> EpCs { get; set; }
+    }
+
+    public class EPCMappingModel
+    {
+        string EPC { get; set; }
+        bool IsMapping  { get; set; }
+
+
+    }
+
+
     public class CardGridModel
     {
         public int Id { get; set; }
         public string CardNo { get; set; }
         public bool IsActive { get; set; }
         public string ColorNo { get; set; }
+        public string ColorName { get; set; }
+        public string MO { get; set; }
         public string Size { get; set; }
         public int ValidQuantity { get; set; }
     }
 
-
+    public class CardMappingModel
+    {
+       
+        public string EPC { get; set; }
+        public DateTime TimeCreate { get; set; }
+        public string User { get; set; }
+    }
 
 }
 

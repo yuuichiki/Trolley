@@ -35,6 +35,15 @@ namespace RCabinet.Views
         {
             Keyboard.Focus(txCardId);
             Loaded -= MappingCard_Loaded;
+            var viewModel = DataContext as MappingCardViewModel;
+            if (viewModel != null)
+            {
+                viewModel.RequestFocusOnCardId += () =>
+                {
+                    Keyboard.Focus(txCardId);
+                };
+            }
+
 
         }
 
