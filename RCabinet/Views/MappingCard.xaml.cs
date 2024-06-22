@@ -58,8 +58,10 @@ namespace RCabinet.Views
             }
 
         }
-         
 
+        private void btReadingEPC_Click(object sender, RoutedEventArgs e)
+        {
 
+        }
     }
 }

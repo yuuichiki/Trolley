@@ -106,7 +106,7 @@ namespace RCabinet.Helpers
         {
             if (null != msg)
             {
-                myWatch("RFID Reader has stopped reading tags");
+               // myWatch("RFID Reader has stopped reading tags");
             }
         }
 

@@ -52,8 +52,8 @@ namespace RCabinet.Models
 
     public class EPCMappingModel
     {
-        string EPC { get; set; }
-        bool IsMapping  { get; set; }
+        public string EPC { get; set; }
+        public bool IsMapping  { get; set; }
 
 
     }
@@ -75,7 +75,7 @@ namespace RCabinet.Models
     {
        
         public string EPC { get; set; }
-        public DateTime TimeCreate { get; set; }
+        public string TimeCreate { get; set; }
         public string User { get; set; }
     }
 

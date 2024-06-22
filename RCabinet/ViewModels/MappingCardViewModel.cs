@@ -27,7 +27,10 @@ namespace RCabinet.ViewModels
         private readonly HttpClient _httpClient;
         private RFID_Reader reader = null;
         private bool isReading = false;
-        private List<EPCMappingModel> _epcMapingModels;
+        private ObservableCollection<EPCMappingModel> _epcMapingModels;
+        private ObservableCollection<CardMappingModel> _epcCardMapping;
+        
+
         public delegate void callBackTips(string value);
         public event Action RequestFocusOnCardId;
         private ObservableCollection<CardGridModel> _cardGridModels;
@@ -46,6 +49,8 @@ namespace RCabinet.ViewModels
         private string _comportSelectedItem;
 
         private PosModel _poSelectedItem;
+
+        private string readingStatus;
         public string CardId
         {
             get { return _cardId; }
@@ -55,7 +60,15 @@ namespace RCabinet.ViewModels
                 NotifyPropertyChanged();
             }
         }
-
+        public string ReadingStatus
+        {
+            get { return readingStatus; }
+            set
+            {
+                readingStatus = value;
+                NotifyPropertyChanged();
+            }
+        }
 
 
         public POEpcModel POEPCModels
@@ -120,7 +133,7 @@ namespace RCabinet.ViewModels
                 NotifyPropertyChanged();
             }
         }
-        public List<EPCMappingModel> EpcMapingModels
+        public ObservableCollection<EPCMappingModel> EpcMapingModels
         {
             get => _epcMapingModels;
             set
@@ -129,6 +142,19 @@ namespace RCabinet.ViewModels
                 NotifyPropertyChanged();
             }
         }
+        public ObservableCollection<CardMappingModel> CardMappingModels
+        {
+            get => _epcCardMapping;
+            set
+            {
+                _epcCardMapping = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+
+        
+
 
         public ObservableCollection<PosModel> Pos
         {
@@ -182,10 +208,11 @@ namespace RCabinet.ViewModels
 
         public MappingCardViewModel(IChangeViewModel viewModelChanger) : base(viewModelChanger)
         {
+            ReadingStatus = "Start Reading EPC";
             _httpClient = new HttpClient();
             totalQuantity = 0;
             CardGridModels = new ObservableCollection<CardGridModel>();
-            EpcMapingModels = new List<EPCMappingModel>();
+            EpcMapingModels = new ObservableCollection<EPCMappingModel>();
             Pos = new ObservableCollection<PosModel>();
             Pos.Add(new PosModel { Po = "Select PO", ExportDate = DateTime.Now });
 
@@ -206,7 +233,7 @@ namespace RCabinet.ViewModels
             RFID_Reader rFID_Reader = reader;
             rFID_Reader.OnReading = (delegateEncapedTagEpcLog)Delegate.Combine(rFID_Reader.OnReading, new delegateEncapedTagEpcLog(OnEncapedTagEpcLog));
 
-
+            CardMappingModels= new ObservableCollection<CardMappingModel>();
 
         }
 
@@ -223,15 +250,30 @@ namespace RCabinet.ViewModels
         private async Task ReadingEPC()
         {
             isReading = true;
-            if (ComPortSelectedItem != null && ComPortSelectedItem != "Select Comport")
+            if(readingStatus=="Start Reading EPC")
             {
-                reader.openComPort(ComPortSelectedItem);
-                reader.startReading();
+                if (ComPortSelectedItem != null && ComPortSelectedItem != "Select Comport")
+                {
+                    reader.openComPort(ComPortSelectedItem);
+                    reader.startReading();
+                    ReadingStatus = "Stop Reading EPC";
+                }
+                else
+                {
+                    MessageBox.Show("Please select comport", "Error!", MessageBoxButton.OK);
+                }
             }
-            else
+            else if(readingStatus == "Stop Reading EPC")
             {
-                MessageBox.Show("Please select comport", "Error!", MessageBoxButton.OK);
+                if (isReading)
+                {
+                    reader.stopReading();
+                    isReading = false;
+                }
+                ReadingStatus = "Start Reading EPC";
             }
+
+            
         }
 
 
@@ -248,14 +290,13 @@ namespace RCabinet.ViewModels
                     POEPCModels = result;
                     //EpcMapingModel.EpCs Add EPCs to EpcMapingModel with false value
 
-                    if (EpcMapingModels == null)
-                    {
-                        EpcMapingModels= new List<EPCMappingModel>();
-                    }
+                   
+                        EpcMapingModels= new ObservableCollection<EPCMappingModel>();
+                    
 
                     foreach (var epc in POEPCModels.EpCs)
                     {
-                        EpcMapingModels.Add(new EPCMappingModel { EPC = epc, IsMapping = false });
+                        EpcMapingModels.Add(new EPCMappingModel { EPC = epc, IsMapping= false });
                     }
                 }
             }
@@ -323,67 +364,56 @@ namespace RCabinet.ViewModels
 
         public void OnEncapedTagEpcLog(EncapedLogBaseEpcInfo msg)
         {
-            //if (!isReading)
-            //{
-            //    listView1.Items.Clear();
-            //}
-            //else
-            //{
-            //    if (msg == null || 0 != msg.logBaseEpcInfo.Result)
-            //    {
-            //        return;
-            //    }
-            //    if (!epcList.Any((EPC_Data e) => e.EPC.Contains(msg.logBaseEpcInfo.Epc)))
-            //    {
-            //        epcList.Add(new EPC_Data
-            //        {
-            //            EPC = msg.logBaseEpcInfo.Epc,
-            //            Time = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"),
-            //            user = funcs.userID
-            //        });
-            //    }
-            //    Invoke((Action)delegate
-            //    {
-            //        listView1.Items.Clear();
-            //        listView1.BeginUpdate();
-            //        foreach (EPC_Data epc in epcList)
-            //        {
-            //            ListViewItem value2 = new ListViewItem
-            //            {
-            //                Text = epc.EPC.ToString(),
-            //                SubItems =
-            //            {
-            //                     DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"),
-            //                     funcs.userID
-            //            }
-            //            };
-            //            listView1.Items.Add(value2);
-            //        }
-            //        listView1.EndUpdate();
-            //    });
-            //    info("Đã đọc số lượng thẻ:" + epcList.Count + "Chiếc");
-            //    if (epcList.Count > cardPCS)
-            //    {
-            //        SoundHelper.PlaySoundUnmatch();
-            //        info("Đã đọc số lượng thẻ:" + epcList.Count + "Chiếc,Đã vượt quá số lượng" + Convert.ToString(epcList.Count - Convert.ToInt32(txAdjstQty_2.Text)) + "Chiếc, Thao tác này không hợp lệ,vui lòng liên kết lại, xin cảm ơn", 1);
-            //        resetAll();
-            //    }
-            //    if (!lastChecked && checkCount == 2)
-            //    {
-            //        epcList.Clear();
-            //        lastChecked = true;
-            //    }
-            //    if (epcList.Count == cardPCS)
-            //    {
-            //        checkCount++;
-            //    }
-            //    if (epcList.Count == cardPCS && checkCount > 2 && lastChecked)
-            //    {
-            //        string value = saveDataToDB();
-            //        resetAll();
-            //        info(value);
-            //    }
-            //}
+
+
+            if (!isReading)
+            {
+                CardMappingModels.Clear();
+
+            }
+            else
+            {
+                if (msg == null || 0 != msg.logBaseEpcInfo.Result)
+                {
+                    return;
+                }
+                if (!CardMappingModels.Any((CardMappingModel e) => e.EPC.Contains(msg.logBaseEpcInfo.Epc)))
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        CardMappingModels.Add(new CardMappingModel
+                        {
+                            EPC = msg.logBaseEpcInfo.Epc,
+                            TimeCreate = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"),
+                            User = CurrentUser.Username
+                        });
+                    });
+                }
+           
+
+                //info("Đã đọc số lượng thẻ:" + epcList.Count + "Chiếc");
+                //if (epcList.Count > cardPCS)
+                //{
+                //    SoundHelper.PlaySoundUnmatch();
+                //    info("Đã đọc số lượng thẻ:" + epcList.Count + "Chiếc,Đã vượt quá số lượng" + Convert.ToString(epcList.Count - Convert.ToInt32(txAdjstQty_2.Text)) + "Chiếc, Thao tác này không hợp lệ,vui lòng liên kết lại, xin cảm ơn", 1);
+                //    resetAll();
+                //}
+                //if (!lastChecked && checkCount == 2)
+                //{
+                //    epcList.Clear();
+                //    lastChecked = true;
+                //}
+                //if (epcList.Count == cardPCS)
+                //{
+                //    checkCount++;
+                //}
+                //if (epcList.Count == cardPCS && checkCount > 2 && lastChecked)
+                //{
+                //    string value = saveDataToDB();
+                //    resetAll();
+                //    info(value);
+                //}
+            }
         }
 
         private void initReader(callBackTips watch)
