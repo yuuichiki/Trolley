@@ -15,6 +15,7 @@
     Background="Black"
     Icon="Graphics/icons8_pos_terminal_96_ahu_icon.ico"
     MouseDown="Window_MouseDown"
+    ResizeMode="NoResize"
     WindowStyle="None"
     mc:Ignorable="d">
     <!--  WindowState="Maximized"  -->

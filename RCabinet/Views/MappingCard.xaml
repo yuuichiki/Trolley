@@ -15,6 +15,7 @@
     Background="{StaticResource color6}"
     Loaded="MappingCard_Loaded"
     mc:Ignorable="d">
+
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <!--  Solution for hiding datagrid column with binding from https://stackoverflow.com/a/7711611  -->
@@ -114,25 +115,22 @@
         </DataGrid>
 
 
-
         <DataGrid
             Name="PO_EPCGrid"
             Grid.Row="3"
             Grid.Column="3"
-            Grid.ColumnSpan="3"
             Width="580"
-            Margin="10,10,10,10"
-            HorizontalAlignment="Left"
+            Margin="0,10,0,65"
+            HorizontalAlignment="Center"
             AutoGenerateColumns="False"
             Background="#33DB80F0"
             BorderBrush="Gray"
             BorderThickness="1"
             CanUserAddRows="False"
             CanUserDeleteRows="False"
-            DisplayMemberPath=""
             GridLinesVisibility="All"
             IsReadOnly="True"
-            ItemsSource="{Binding EpcMapingModels}"
+            ItemsSource="{Binding EpcMapingModels, Mode=TwoWay}"
             RowHeaderWidth="0"
             SelectionMode="Single"
             SelectionUnit="FullRow">
@@ -150,11 +148,20 @@
                     Width="100"
                     Binding="{Binding IsMapping, Mode=TwoWay}"
                     Header="Is Mapping" />
-
-
             </DataGrid.Columns>
         </DataGrid>
 
+        <Button
+            Name="btClearEPC"
+            Grid.Row="3"
+            Grid.Column="3"
+            Width="166"
+            Height="40"
+            Padding="10,10,10,10"
+            VerticalAlignment="Bottom"
+            Command="{Binding ClearEPC}"
+            Content="Clear EPC"
+            FontSize="13" />
 
         <StackPanel
             Grid.Row="0"
@@ -169,14 +176,14 @@
                 Height="40"
                 Margin="10,10,10,10"
                 Padding="10,10,10,10"
-                Click="btReadingEPC_Click"
                 Command="{Binding StartReadingEPC}"
                 Content="{Binding ReadingStatus}"
                 FontSize="13" />
+
             <DataGrid
                 x:Name="CardGrid"
                 Width="580"
-                Height="195"
+                Height="262"
                 Margin="10,0,10,10"
                 HorizontalAlignment="Left"
                 AutoGenerateColumns="False"
@@ -187,7 +194,7 @@
                 CanUserDeleteRows="False"
                 FontSize="14"
                 GridLinesVisibility="All"
-                IsReadOnly="True"
+                IsReadOnly="False"
                 ItemsSource="{Binding CardGridModels}"
                 RowHeaderWidth="0"
                 SelectionMode="Single"
@@ -206,6 +213,32 @@
                         Width="120"
                         Binding="{Binding CardNo}"
                         Header="Card No" />
+
+                    <DataGridComboBoxColumn
+                        DisplayMemberPath="Po"
+                        Header="PO"
+                        SelectedItemBinding="{Binding POSelectedItem}">
+                        <DataGridComboBoxColumn.ElementStyle>
+                            <Style TargetType="ComboBox">
+                                <Setter Property="ItemsSource" Value="{Binding MyPO}" />
+                                <EventSetter Event="SelectionChanged" Handler="ComboBox_SelectionChanged" />
+                            </Style>
+                        </DataGridComboBoxColumn.ElementStyle>
+                        <DataGridComboBoxColumn.EditingElementStyle>
+                            <Style TargetType="ComboBox">
+                                <Setter Property="ItemsSource" Value="{Binding MyPO}" />
+                                <EventSetter Event="SelectionChanged" Handler="ComboBox_SelectionChanged" />
+                            </Style>
+                        </DataGridComboBoxColumn.EditingElementStyle>
+                    </DataGridComboBoxColumn>
+                    <DataGridTextColumn
+                        Width="100"
+                        Binding="{Binding ValidQuantity}"
+                        Header="Valid Qty" />
+                    <DataGridTextColumn
+                        Width="100"
+                        Binding="{Binding GangHao}"
+                        Header="Gang Hao" />
                     <DataGridTextColumn
                         Width="80"
                         Binding="{Binding IsActive}"
@@ -215,40 +248,16 @@
                         Binding="{Binding ColorNo}"
                         Header="Color No" />
                     <DataGridTextColumn
+                        Width="80"
+                        Binding="{Binding CustomerColor}"
+                        Header="CusStyle" />
+                    <DataGridTextColumn
                         Width="50"
                         Binding="{Binding Size}"
                         Header="Size" />
-                    <DataGridTextColumn
-                        Width="100"
-                        Binding="{Binding ValidQuantity}"
-                        Header="Valid Qty" />
 
                 </DataGrid.Columns>
             </DataGrid>
-
-            <Label
-                Grid.Row="2"
-                Grid.Column="3"
-                Width="110"
-                Margin="0,0,0,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Bottom"
-                Content="Select PO:"
-                Style="{StaticResource LabelUI}" />
-
-
-            <ComboBox
-                x:Name="cbPOSelect"
-                Grid.Row="2"
-                Grid.Column="3"
-                Width="200"
-                Height="30"
-                Margin="10,0,0,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Bottom"
-                DisplayMemberPath="Po"
-                ItemsSource="{Binding Pos}"
-                SelectedItem="{Binding POSelectedItem, Mode=TwoWay}" />
 
 
         </StackPanel>
@@ -533,7 +542,7 @@
             Grid.Row="2"
             Grid.Column="3"
             Width="110"
-            Margin="0,0,91,69"
+            Margin="0,0,91,11"
             HorizontalAlignment="Right"
             VerticalAlignment="Bottom"
             Content="Total Quantity:"
@@ -543,7 +552,7 @@
             Grid.Column="3"
             Width="65"
             Height="30"
-            Margin="0,0,23,69"
+            Margin="0,0,23,11"
             HorizontalAlignment="Right"
             VerticalAlignment="Bottom"
             Content="{Binding TotalQuantity}"

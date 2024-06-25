@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using GDotnet.Reader.Api.DAL;
 using GDotnet.Reader.Api.Protocol.Gx;
@@ -41,7 +42,7 @@ namespace RCabinet.Helpers
             myWatch = watch;
         }
 
-        public void openComPort(string comPort)
+        public bool openComPort(string comPort)
         {
             if (!comIsOpened)
             {
@@ -52,16 +53,29 @@ namespace RCabinet.Helpers
                     gClient.OnEncapedTagEpcLog = (delegateEncapedTagEpcLog)Delegate.Combine(gClient.OnEncapedTagEpcLog, OnReading);
                     GClient gClient2 = clientConn;
                     gClient2.OnEncapedTagEpcOver = (delegateEncapedTagEpcOver)Delegate.Combine(gClient2.OnEncapedTagEpcOver, new delegateEncapedTagEpcOver(OnEncapedTagEpcOver));
+                    return true;
                 }
                 else
                 {
                     MessageBox.Show("Cannot Open Connect to RFID Reader, Device is in use or wrong Port  or the wrong port [" + comPort + "] is set");
-                    myWatch("Unable to connect to the specified device, the device is in use, or the wrong port [" + comPort + "] is set, please check, thank you");
+                    // myWatch("Unable to connect to the specified device, the device is in use, or the wrong port [" + comPort + "] is set, please check, thank you");
                 }
+              
             }
+            return false;
         }
 
-        public void startReading()
+
+        public void closeComport()
+        {
+
+            if (comIsOpened)
+            {
+                clientConn.Close();
+                comIsOpened = false;
+            }
+        }
+    public void startReading()
         {
             stopReading();
             InventoryEpc();
@@ -75,7 +89,6 @@ namespace RCabinet.Helpers
                 if (0 != msgBaseStop.RtCode)
                 {
                     MessageBox.Show("An exception occurred when stopping tag reading. Please try again later or restart the program");
-                    myWatch("An exception occurred when stopping tag reading. Please try again later or restart the program");
                 }
             }
             catch
@@ -90,7 +103,7 @@ namespace RCabinet.Helpers
             if (0 != msgBaseInventoryEpc.RtCode)
             {
                 MessageBox.Show("An exception occurred while reading the tag. Please try again later or restart the program");
-                myWatch("An exception occurred while reading the tag. Please try again later or restart the program");
+                //myWatch("An exception occurred while reading the tag. Please try again later or restart the program");
 
             }
         }

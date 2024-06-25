@@ -17,22 +17,25 @@ using System.Windows.Input;
 
 using System.Windows;
 using ControlzEx.Standard;
+using System.ComponentModel;
+using System.Windows.Controls;
 
 namespace RCabinet.ViewModels
 {
-    internal class MappingCardViewModel : BaseViewModel
+    internal class MappingCardViewModel : BaseViewModel, INotifyPropertyChanged
     {
         private List<string> comport = new List<string>();
-
+        private List<string> _myPo = new List<string>();
         private readonly HttpClient _httpClient;
         private RFID_Reader reader = null;
         private bool isReading = false;
         private ObservableCollection<EPCMappingModel> _epcMapingModels;
         private ObservableCollection<CardMappingModel> _epcCardMapping;
-        
 
         public delegate void callBackTips(string value);
+
         public event Action RequestFocusOnCardId;
+
         private ObservableCollection<CardGridModel> _cardGridModels;
         private callBackTips myWatch;
         private GClient clientConn = null;
@@ -44,13 +47,32 @@ namespace RCabinet.ViewModels
         private POEpcModel _poEPCModels { get; set; }
         private CardModel _card { get; set; }
         private ObservableCollection<PosModel> _pos { get; set; }
+
         private int totalQuantity;
+
+        private int _mappedQuantity;
         private List<string> _comPort { get; set; }
         private string _comportSelectedItem;
 
         private PosModel _poSelectedItem;
 
         private string readingStatus;
+        private AsyncRelayCommand<Tuple<string, string, string, string, PosModel>> _loadComboBoxCommand;
+
+        public ICommand LoadComboBoxCommand
+        {
+            get
+            {
+                if (_loadComboBoxCommand == null)
+                {
+                    _loadComboBoxCommand = new AsyncRelayCommand<Tuple<string, string,string, string, PosModel>>(LoadComboBox);
+                }
+                return _loadComboBoxCommand;
+            }
+        }
+
+        #region Properties
+
         public string CardId
         {
             get { return _cardId; }
@@ -60,6 +82,7 @@ namespace RCabinet.ViewModels
                 NotifyPropertyChanged();
             }
         }
+
         public string ReadingStatus
         {
             get { return readingStatus; }
@@ -69,7 +92,6 @@ namespace RCabinet.ViewModels
                 NotifyPropertyChanged();
             }
         }
-
 
         public POEpcModel POEPCModels
         {
@@ -81,7 +103,6 @@ namespace RCabinet.ViewModels
             }
         }
 
-
         public PosModel POSelectedItem
         {
             get { return _poSelectedItem; }
@@ -89,24 +110,9 @@ namespace RCabinet.ViewModels
             {
                 _poSelectedItem = value;
                 NotifyPropertyChanged();
-                OnPOSelectedItemChanged();
-             
+                //OnPOSelectedItemChanged();
             }
         }
-
-
-        private void OnPOSelectedItemChanged()
-        {
-            RequestFocusOnCardId?.Invoke();
-            if (_poSelectedItem.Po != "Select PO")
-            {
-                string selectedPo = _poSelectedItem.Po;
-                _ = LoadEPCOfPO(_poSelectedItem.Po, Card.CustomerColor, Card.Size);
-            }
-        }
-
-
-        //PO_EPCGrid
 
         public string ComPortSelectedItem
         {
@@ -124,6 +130,12 @@ namespace RCabinet.ViewModels
             set { _comPort = value; NotifyPropertyChanged(); }
         }
 
+        public List<string> MyPO
+        {
+            get { return _myPo; }
+            set { _myPo = value; NotifyPropertyChanged(); }
+        }
+
         public CardModel Card
         {
             get => _card;
@@ -133,6 +145,7 @@ namespace RCabinet.ViewModels
                 NotifyPropertyChanged();
             }
         }
+
         public ObservableCollection<EPCMappingModel> EpcMapingModels
         {
             get => _epcMapingModels;
@@ -142,6 +155,7 @@ namespace RCabinet.ViewModels
                 NotifyPropertyChanged();
             }
         }
+
         public ObservableCollection<CardMappingModel> CardMappingModels
         {
             get => _epcCardMapping;
@@ -151,10 +165,6 @@ namespace RCabinet.ViewModels
                 NotifyPropertyChanged();
             }
         }
-
-
-        
-
 
         public ObservableCollection<PosModel> Pos
         {
@@ -186,10 +196,22 @@ namespace RCabinet.ViewModels
             }
         }
 
+        public int MappedQuantity
+        {
+            get => _mappedQuantity;
+            set
+            {
+                _mappedQuantity = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        #endregion Properties
+
         private void initBaseInventoryEpc()
         {
             msgBaseInventoryEpc = new MsgBaseInventoryEpc();
-            msgBaseInventoryEpc.AntennaEnable = 15u;
+           msgBaseInventoryEpc.AntennaEnable = 15u;
             msgBaseInventoryEpc.InventoryMode = 1;
             msgBaseInventoryEpc.ReadTid = new ParamEpcReadTid();
             msgBaseInventoryEpc.ReadTid.Mode = 0;
@@ -203,6 +225,15 @@ namespace RCabinet.ViewModels
 
         private void PopToMainMenu()
         {
+            if (isReading)
+            {
+                if (reader != null)
+                {
+                    reader.stopReading();
+                    reader.closeComport();
+                    isReading = false;
+                }
+            }
             PopViewModel();
         }
 
@@ -221,7 +252,7 @@ namespace RCabinet.ViewModels
 
             string[] ports = SerialPort.GetPortNames();
             ComPort.Add("Select Comport");
-            
+
             foreach (string port in ports)
             {
                 ComPort.Add(port);
@@ -233,8 +264,10 @@ namespace RCabinet.ViewModels
             RFID_Reader rFID_Reader = reader;
             rFID_Reader.OnReading = (delegateEncapedTagEpcLog)Delegate.Combine(rFID_Reader.OnReading, new delegateEncapedTagEpcLog(OnEncapedTagEpcLog));
 
-            CardMappingModels= new ObservableCollection<CardMappingModel>();
-
+            CardMappingModels = new ObservableCollection<CardMappingModel>();
+            EpcMapingModels = new ObservableCollection<EPCMappingModel>();
+            MappedQuantity = 0;
+            initReader();
         }
 
         public ICommand LoadCardDataCommand
@@ -247,37 +280,54 @@ namespace RCabinet.ViewModels
             get { return new RelayCommand(async () => await ReadingEPC()); }
         }
 
+
+        public ICommand ClearEPC
+        {
+            get { return new RelayCommand(async () => await ClearEPCGrid()); }
+        }
+
+        private async Task ClearEPCGrid()
+        {
+            EpcMapingModels.Clear();
+            CardGridModels.Clear();
+            TotalQuantity = 0;
+        }
+
         private async Task ReadingEPC()
         {
             isReading = true;
-            if(readingStatus=="Start Reading EPC")
+           
+            if (readingStatus == "Start Reading EPC")
             {
                 if (ComPortSelectedItem != null && ComPortSelectedItem != "Select Comport")
                 {
-                    reader.openComPort(ComPortSelectedItem);
+
+                    if (reader.openComPort(ComPortSelectedItem) == true)
+                    {     
                     reader.startReading();
                     ReadingStatus = "Stop Reading EPC";
+                     }
+                        
                 }
                 else
                 {
                     MessageBox.Show("Please select comport", "Error!", MessageBoxButton.OK);
                 }
             }
-            else if(readingStatus == "Stop Reading EPC")
+            else if (readingStatus == "Stop Reading EPC")
             {
-                if (isReading)
+                if (isReading != null && isReading==true)
                 {
                     reader.stopReading();
+                    reader.closeComport();
                     isReading = false;
+
                 }
                 ReadingStatus = "Start Reading EPC";
             }
-
-            
         }
 
-
-        private async Task LoadEPCOfPO(string po, string colorNo, string size )
+        private async Task LoadEPCOfPO(string po, string colorNo, string size)
         {
             string url = $"http://172.19.18.35:8103/nike/epcs/dummy?po={po}&colorNo={colorNo}&size={size}";
             try
@@ -291,85 +341,98 @@ namespace RCabinet.ViewModels
                     //EpcMapingModel.EpCs Add EPCs to EpcMapingModel with false value
 
                    
-                        EpcMapingModels= new ObservableCollection<EPCMappingModel>();
-                    
 
                     foreach (var epc in POEPCModels.EpCs)
                     {
-                        EpcMapingModels.Add(new EPCMappingModel { EPC = epc, IsMapping= false });
+                        //checking EpcMapingModels if epc not in EpcMapingModels then add it
+                        if (!EpcMapingModels.Any((EPCMappingModel e) => e.EPC.Contains(epc)))
+                            EpcMapingModels.Add(new EPCMappingModel { EPC = epc, IsMapping = false });
                     }
                 }
+                await RemapEpc();
             }
             catch (Exception ex)
             {
-
             }
         }
 
-
-
         private async Task LoadCardDataDetail()
         {
-            if (CardId == null || CardId == "")
+            if (string.IsNullOrWhiteSpace(CardId))
             {
                 return;
             }
+
             string url = "http://172.19.18.35:8103/ETSToEPC/etsCard/nike/" + killZero(CardId.Trim());
             var response = await _httpClient.GetAsync(url);
-            if (response != null && response.IsSuccessStatusCode == true)
+
+            if (response != null && response.IsSuccessStatusCode)
             {
-                response.EnsureSuccessStatusCode();
                 var responseData = await response.Content.ReadAsStringAsync();
                 var result = JsonConvert.DeserializeObject<ResponseModel>(responseData);
                 Card = result.Card;
-
                 var cardGridModel = new CardGridModel
                 {
                     MO = Card.Mo,
                     Id = Card.Id,
                     CardNo = Card.CardNo,
+                    MyPO = result.Pos.ToList(),
+                    CustomerColor = Card.CustomerColor,
+                    GangHao = Card.GangHao,
                     ColorNo = Card.ColorNo,
                     ColorName = Card.ColorName,
                     Size = Card.Size,
                     IsActive = Card.IsActive,
-                    ValidQuantity = Card.ValidQuantity
+                    ValidQuantity = Card.ValidQuantity,
+                    POSelectedItem = result.Pos.FirstOrDefault()
                 };
-                //check if cardGridModel is already in the list
-                var existingItem = CardGridModels.FirstOrDefault(x => x.CardNo == cardGridModel.CardNo);
-                if (existingItem != null)
+
+                if (Card.IsActive == false)
                 {
-                    existingItem.ValidQuantity = cardGridModel.ValidQuantity;
+                    MessageBox.Show("Card is not active", "Error!", MessageBoxButton.OK);
+                    return;
                 }
-                else
+                var existingItem = CardGridModels.FirstOrDefault(x => x.CardNo == cardGridModel.CardNo && x.GangHao==cardGridModel.GangHao);
+                if (existingItem == null)
                 {
+                   
                     CardGridModels.Add(cardGridModel);
-                    var mPos = new ObservableCollection<PosModel>(result.Pos);
-                    foreach (var pos in mPos)
-                    {
-                        Pos.Add(pos);
-                    }
-
-                    POSelectedItem= Pos.FirstOrDefault();
-
                     TotalQuantity += cardGridModel.ValidQuantity;
+                   
                 }
-                CardId = "";
+                CardId = string.Empty;
+
             }
             else
             {
                 MessageBox.Show("Card not found", "Error!", MessageBoxButton.OK);
-                CardId = "";
+                CardId = string.Empty;
             }
+        }
+
+        private async Task LoadComboBox(Tuple<string, string,string, string, PosModel> parameter)
+        {
+            if (parameter == null) return;
+            string cardid = parameter.Item1;
+            string ganghao = parameter.Item2;
+            string colorNo = parameter.Item3;
+            var size = parameter.Item4;
+            PosModel pos = parameter.Item5;
+            if (ganghao == null||colorNo == null || size == null || pos == null)
+            {
+                MessageBox.Show("Please select color, size and PO", "Error!", MessageBoxButton.OK);
+            }
+            _ = LoadEPCOfPO(pos.Po, colorNo, size);
         }
 
         public void OnEncapedTagEpcLog(EncapedLogBaseEpcInfo msg)
         {
-
-
             if (!isReading)
             {
-                CardMappingModels.Clear();
-
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    CardMappingModels.Clear();
+                });
             }
             else
             {
@@ -387,41 +450,49 @@ namespace RCabinet.ViewModels
                             TimeCreate = DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"),
                             User = CurrentUser.Username
                         });
+
+                        if (EpcMapingModels.Any((EPCMappingModel e) => e.EPC.Contains(msg.logBaseEpcInfo.Epc)) && MappedQuantity < TotalQuantity)
+                        {
+                            var epc = EpcMapingModels.FirstOrDefault((EPCMappingModel e) => e.EPC.Contains(msg.logBaseEpcInfo.Epc));
+                            if (epc != null)
+                            {
+                                epc.IsMapping = true;
+                                MappedQuantity++;
+                            }
+                        }
                     });
                 }
-           
-
-                //info("Đã đọc số lượng thẻ:" + epcList.Count + "Chiếc");
-                //if (epcList.Count > cardPCS)
-                //{
-                //    SoundHelper.PlaySoundUnmatch();
-                //    info("Đã đọc số lượng thẻ:" + epcList.Count + "Chiếc,Đã vượt quá số lượng" + Convert.ToString(epcList.Count - Convert.ToInt32(txAdjstQty_2.Text)) + "Chiếc, Thao tác này không hợp lệ,vui lòng liên kết lại, xin cảm ơn", 1);
-                //    resetAll();
-                //}
-                //if (!lastChecked && checkCount == 2)
-                //{
-                //    epcList.Clear();
-                //    lastChecked = true;
-                //}
-                //if (epcList.Count == cardPCS)
-                //{
-                //    checkCount++;
-                //}
-                //if (epcList.Count == cardPCS && checkCount > 2 && lastChecked)
-                //{
-                //    string value = saveDataToDB();
-                //    resetAll();
-                //    info(value);
-                //}
             }
         }
 
-        private void initReader(callBackTips watch)
+
+        private async Task RemapEpc()
+        {
+            if(MappedQuantity< TotalQuantity)
+            {
+                // foreach (var epc in EpcMapingModels) if is mapping ==false and epc exit in CardMappingModels  then mark ismapping =true
+                foreach (var epc in EpcMapingModels)
+                {
+                    if (epc.IsMapping == false && CardMappingModels.Any((CardMappingModel e) => e.EPC.Contains(epc.EPC)) && MappedQuantity < TotalQuantity)
+                    {
+                        epc.IsMapping = true;
+                        MappedQuantity++;
+                    }
+                }
+
+
+
+
+
+            }
+        }
+
+        private void initReader()
         {
             clientConn = new GClient();
             initBaseInventoryEpc();
             msgBaseStop = new MsgBaseStop();
-            myWatch = watch;
+           // myWatch = watch;
         }
 
         private string killZero(string value)

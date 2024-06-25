@@ -47,7 +47,38 @@ namespace RCabinet.Views
 
         }
 
+        public class ComboBoxSelectionChangedEventArgs : EventArgs
+        {
+            public string CardNo { get; set; }
+            public PosModel SelectedPos { get; set; }
+        }
+        public event EventHandler<ComboBoxSelectionChangedEventArgs> ComboBoxSelectionChanged;
 
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ComboBox comboBox && comboBox.DataContext is CardGridModel cardGridModel)
+            {
+                var selectedItem = comboBox.SelectedItem as PosModel;
+
+                if (selectedItem != null)
+                {
+                    // Raise event with CardNo and SelectedPos
+                    //ComboBoxSelectionChanged?.Invoke(this, new ComboBoxSelectionChangedEventArgs
+                    //{
+                    //    CardNo = cardGridModel.CardNo,
+                    //    SelectedPos = selectedItem
+                    //});
+
+
+                    var parameter = Tuple.Create(cardGridModel.CardNo,cardGridModel.GangHao,cardGridModel.CustomerColor,cardGridModel.Size, selectedItem);
+                 
+                    (DataContext as MappingCardViewModel)?.LoadComboBoxCommand.Execute(parameter);
+
+
+                }
+            }
+
+        }
 
         private void txtCardId_KeyDown(object sender, KeyEventArgs e)
         {
@@ -56,11 +87,6 @@ namespace RCabinet.Views
             {
                 (DataContext as MappingCardViewModel)?.LoadCardDataCommand.Execute(null);
             }
-
-        }
-
-        private void btReadingEPC_Click(object sender, RoutedEventArgs e)
-        {
 
         }
     }
