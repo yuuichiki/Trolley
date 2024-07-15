@@ -37,14 +37,14 @@
     <StartupObject />
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Graphics\icons8_pos_terminal_96_ahu_icon.ico</ApplicationIcon>
+    <ApplicationIcon>Graphics\RFIDsignal_5463.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Helpers\BooleanToVisibilityConverter.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Graphics\RFIDsignal_5463.ico" />
     <None Remove="Images\17545.jpg" />
-    <None Remove="Images\dashboard-template.png" />
     <None Remove="Images\key-icon.png" />
     <None Remove="Images\logo.png" />
     <None Remove="Images\logo2.png" />
@@ -55,6 +55,9 @@
     <None Remove="Images\user-icon.png" />
     <None Remove="Images\user.png" />
     <None Remove="Images\user1.png" />
+    <None Remove="Sounds\done.wav" />
+    <None Remove="Sounds\fail.wav" />
+    <None Remove="Sounds\unmatch.wav" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="GReaderApi">
@@ -70,9 +73,8 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Graphics\icons8_pos_terminal_96_ahu_icon.ico" />
+    <Resource Include="Graphics\RFIDsignal_5463.ico" />
     <Resource Include="Images\17545.jpg" />
-    <Resource Include="Images\dashboard-template.png" />
     <Resource Include="Images\key-icon.png" />
     <Resource Include="Images\logo.png" />
     <Resource Include="Images\logo2.png" />
@@ -85,13 +87,25 @@
     <Resource Include="Images\user1.png" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Graphics\RFIDsignal_5463.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Licenses.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\done.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\fail.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Sounds\failure-tbone.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Sounds\success.wav">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Sounds\unmatch.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -103,14 +117,17 @@
     <PackageReference Include="ClosedXML" Version="0.95.4" />
     <PackageReference Include="ControlzEx" Version="5.0.1" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.16.0" />
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="ExcelNumberFormat" Version="1.1.0" />
     <PackageReference Include="FastMember" Version="1.5.0" />
     <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
     <PackageReference Include="MahApps.Metro" Version="2.4.9" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.32" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="PDFsharp-wpf" Version="1.50.5147" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
     <PackageReference Include="System.Data.SQLite" Version="1.0.115.5" />
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
     <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
@@ -136,6 +153,9 @@
     </Page>
     <Page Update="Views\FinalizePurchase.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\MappingCardUQ.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\ScanAndPurchase.xaml">

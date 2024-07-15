@@ -83,15 +83,15 @@
 
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="30" />
+                    <RowDefinition Height="50" />
                 </Grid.RowDefinitions>
                 <Grid>
 
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition Width="500" />
-                        <ColumnDefinition Width="30" />
-                        <ColumnDefinition Width="30" />
+                        <ColumnDefinition Width="40" />
+                        <ColumnDefinition Width="40" />
                         <ColumnDefinition Width="30" />
                     </Grid.ColumnDefinitions>
 
@@ -99,6 +99,7 @@
                         x:Name="btMinimize"
                         Grid.Column="2"
                         BorderThickness="0"
+                        Click="btMinimize_Click"
                         Content="-"
                         Cursor="Hand"
                         FontFamily="Montserrat"
@@ -117,10 +118,10 @@
                         <Button.Template>
                             <ControlTemplate TargetType="{x:Type Button}">
                                 <Border
-                                    Width="24"
-                                    Height="24"
+                                    Width="32"
+                                    Height="32"
                                     Background="{TemplateBinding Background}"
-                                    CornerRadius="12">
+                                    CornerRadius="15">
 
                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
@@ -128,24 +129,22 @@
 
                         </Button.Template>
                     </Button>
-
                     <Button
                         x:Name="btClose"
                         Grid.Column="3"
                         BorderThickness="0"
-                        Command="Close"
+                        Click="btClose_Click"
                         Content="X"
                         Cursor="Hand"
                         FontFamily="Montserrat"
                         FontSize="12"
                         Foreground="White">
-
                         <Button.Style>
                             <Style TargetType="{x:Type Button}">
-                                <Setter Property="Background" Value="#F72281" />
+                                <Setter Property="Background" Value="{StaticResource color2}" />
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background" Value="#E41699" />
+                                        <Setter Property="Background" Value="#278BEF" />
                                     </Trigger>
                                 </Style.Triggers>
                             </Style>
@@ -153,10 +152,10 @@
                         <Button.Template>
                             <ControlTemplate TargetType="{x:Type Button}">
                                 <Border
-                                    Width="24"
-                                    Height="24"
+                                    Width="32"
+                                    Height="32"
                                     Background="{TemplateBinding Background}"
-                                    CornerRadius="12">
+                                    CornerRadius="15">
 
                                     <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
@@ -164,6 +163,7 @@
 
                         </Button.Template>
                     </Button>
+
 
                 </Grid>
                 <StackPanel
@@ -186,14 +186,14 @@
                         FontSize="30"
                         FontWeight="Medium"
                         Foreground="White"
-                        Text="Cabinet RFID" />
+                        Text="TRolley RFID" />
                     <TextBlock
                         HorizontalAlignment="Center"
                         FontFamily="Montserrat"
                         FontSize="12"
                         Foreground="White"
                         Opacity="0.8"
-                        Text="Login to Cabinet RFid Advance system" />
+                        Text="Login to Trolley RFid Advance system" />
 
                     <TextBlock
                         Margin="0,45,0,0"
@@ -212,7 +212,7 @@
                         VerticalContentAlignment="Center"
                         BorderBrush="DarkGray"
                         BorderThickness="0,0,0,2"
-                        CaretBrush="LightGray"
+                        CaretBrush="White"
                         FontFamily="Montserrat"
                         FontSize="20"
                         FontWeight="Medium"
@@ -244,7 +244,7 @@
                         VerticalContentAlignment="Center"
                         BorderBrush="DarkGray"
                         BorderThickness="0,0,0,2"
-                        CaretBrush="LightGray"
+                        CaretBrush="White"
                         FontFamily="Montserrat"
                         FontSize="20"
                         FontWeight="Medium"

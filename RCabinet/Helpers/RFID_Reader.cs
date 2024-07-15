@@ -85,13 +85,16 @@ namespace RCabinet.Helpers
         {
             try
             {
-                clientConn.SendSynMsg(msgBaseStop);
-                if (0 != msgBaseStop.RtCode)
+                if (clientConn!=null && clientConn.SerialNo!=null)
                 {
-                    MessageBox.Show("An exception occurred when stopping tag reading. Please try again later or restart the program");
+                    clientConn.SendSynMsg(msgBaseStop);
+                    if (0 != msgBaseStop.RtCode)
+                    {
+                        //MessageBox.Show("An exception occurred when stopping tag reading. Please try again later or restart the program");
+                    }
                 }
             }
-            catch
+            catch(Exception ex)
             {
 
             }
@@ -102,7 +105,7 @@ namespace RCabinet.Helpers
             clientConn.SendSynMsg(msgBaseInventoryEpc);
             if (0 != msgBaseInventoryEpc.RtCode)
             {
-                MessageBox.Show("An exception occurred while reading the tag. Please try again later or restart the program");
+               //MessageBox.Show("An exception occurred while reading the tag. Please try again later or restart the program");
                 //myWatch("An exception occurred while reading the tag. Please try again later or restart the program");
 
             }
@@ -123,6 +126,9 @@ namespace RCabinet.Helpers
             }
         }
 
-      
+
+
+
+
     }
 }

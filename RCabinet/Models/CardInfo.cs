@@ -1,16 +1,11 @@
-﻿using Newtonsoft.Json;
-using RCabinet.Helpers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data.SQLite;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RCabinet.Models
 {
-
     public class CardModel
     {
         public string CustomerColor { get; set; }
@@ -30,6 +25,32 @@ namespace RCabinet.Models
         public string Group { get; set; }
         public string GangHao { get; set; }
     }
+
+    [Table("Trolley_UQCard")]
+    public class CardUQModel
+    {
+        [Key]
+        public Guid Id { get; set; }
+        public string StyleNo { get; set; }
+        public string Mo { get; set; }
+        public Guid MappingId { get; set; }
+        public string ColorName { get; set; }
+        public string ColorNo { get; set; }
+        public string FeatureName { get; set; }
+        public string Size { get; set; }
+        public int CutQuantity { get; set; }
+        public string Country { get; set; }
+        public int BundleQuantity { get; set; }
+        public int AdjustQuantity { get; set; }
+        public int BundleNo { get; set; }
+        public string SO { get; set; }
+
+        public string SaleNo { get; set; }
+        public string SoItem { get; set; }
+        public string CardNo { get; set; }
+        public string GangHao { get; set; }
+    }
+
     public class PosModel
     {
         public string Po { get; set; }
@@ -41,7 +62,6 @@ namespace RCabinet.Models
         public CardModel Card { get; set; }
         public List<PosModel> Pos { get; set; }
     }
-
 
     public class POEpcModel
     {
@@ -90,6 +110,60 @@ namespace RCabinet.Models
         }
     }
 
+
+
+    public class CardUQGridModel : INotifyPropertyChanged
+    {
+        private string _mo;
+        private string _cardid;
+        private int _adjustQuantity;
+
+        public string MO
+        {
+            get => _mo;
+            set
+            {
+                if (_mo != value)
+                {
+                    _mo = value;
+                    OnPropertyChanged(nameof(MO));
+                }
+            }
+        }
+        public string CardId
+        {
+            get => _cardid;
+            set
+            {
+                if (_cardid != value)
+                {
+                    _cardid = value;
+                    OnPropertyChanged(nameof(CardId));
+                }
+            }
+        }
+        public int AdjustQuantity
+        {
+            get => _adjustQuantity;
+            set
+            {
+                if (_adjustQuantity != value)
+                {
+                    _adjustQuantity = value;
+                    OnPropertyChanged(nameof(AdjustQuantity));
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+
     public class CardGridModel : INotifyPropertyChanged
     {
         private int _id;
@@ -117,6 +191,7 @@ namespace RCabinet.Models
                 }
             }
         }
+
         public string CustomerColor
         {
             get => _customerColor;
@@ -129,6 +204,7 @@ namespace RCabinet.Models
                 }
             }
         }
+
         public string GangHao
         {
             get => _ganghao;
@@ -267,16 +343,58 @@ namespace RCabinet.Models
         }
     }
 
-
-
     public class CardMappingModel
     {
-       
+        public int Count { get; set; }
         public string EPC { get; set; }
         public string TimeCreate { get; set; }
         public string User { get; set; }
     }
 
+
+
+    public class CardUQMappingModel
+    {
+        public int Count { get; set; }
+        public string EPC { get; set; }
+        public string Size { get; set; }
+        public string Color { get; set; }
+        public string TimeCreate { get; set; }
+        public string User { get; set; }
+    }
+
+
+    public class CardKey
+    {
+        public string zdcode { get; set; }
+
+        public string colorno { get; set; }
+
+        public string size { get; set; }
+
+        public string ganghao { get; set; }
+    }
+
+
+
+    
+    [Table("Trolley_EPCMapping")]
+    public class TrolleyEPCMapping
+    {
+        [Key]
+        public Guid Id { get; set; }
+        public int Count { get; set; }
+        public Guid MappingId { get; set; }
+        public Guid UQCardId { get; set; }
+        public string EmpCode { get; set; }
+        public string EncodeEPC { get; set; }
+        public string EPC { get; set; }
+        public string PO { get; set; }
+        public string Size { get; set; }
+        public string Color { get; set; }
+        public string SKU { get; set; }
+        public DateTime TimeCreated { get; set; }
+        
+
+    }
 }
-
-

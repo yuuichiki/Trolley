@@ -46,7 +46,7 @@ namespace RCabinet.Models
                         "SELECT u.ID AS UserID, u.Name, u.Username, up.ID AS PermissionID, CanAddEditItems, CanAdjustItemQuantity, " +
                                 "CanViewDetailedItemQuantityAdjustments, CanScanItems, CanGenerateBarcodes, CanViewReports," +
                                 "CanViewDetailedItemSoldInfo, CanSaveReportsToPDF, CanDeleteItemsFromInventory, CanManageItemCategories, CanManageUsers," +
-                                "CanDeleteItemsSold, CanViewManageInventoryQuantity, CanEditAppSettings, CanManageCurrencies " +
+                                "CanDeleteItemsSold, CanViewManageInventoryQuantity, CanEditAppSettings, CanManageCurrencies,CanViewMappingCard,CanViewMappingUQ " +
                         "FROM Users u JOIN UserPermissions up ON u.ID = up.UserID " +
                             (string.IsNullOrEmpty(whereClause) ? " WHERE WasDeleted = 0 " : whereClause) + " " +
                         "ORDER BY lower(u.Username), lower(u.Name)";
@@ -86,6 +86,8 @@ namespace RCabinet.Models
                             user.Permissions.CanViewManageInventoryQuantity = dbHelper.ReadBool(reader, "CanViewManageInventoryQuantity");
                             user.Permissions.CanEditAppSettings = dbHelper.ReadBool(reader, "CanEditAppSettings");
                             user.Permissions.CanManageCurrencies = dbHelper.ReadBool(reader, "CanManageCurrencies");
+                            user.Permissions.CanViewMappingCard = dbHelper.ReadBool(reader, "CanViewMappingCard");
+                            user.Permissions.CanViewMappingUQ = dbHelper.ReadBool(reader, "CanViewMappingUQ");
                             users.Add(user);
                         }
                         reader.Close();
@@ -126,11 +128,11 @@ namespace RCabinet.Models
                                 "CanViewDetailedItemQuantityAdjustments, CanScanItems, CanGenerateBarcodes, CanViewReports," +
                                 "CanViewDetailedItemSoldInfo, CanSaveReportsToPDF, CanDeleteItemsFromInventory, CanManageItemCategories, " +
                                 "CanManageUsers, CanDeleteItemsSold, CanViewManageInventoryQuantity, UserID, CanEditAppSettings," +
-                                "CanManageCurrencies) " +
+                                "CanManageCurrencies,CanViewMappingCard,CanViewMappingUQ) " +
                         "VALUES (@canEditItems, @canAdjustQuantity, @canViewDetailedItemQuantityAdjustments, @canScan, @canGenerate, @canViewReports," +
                                 "@canViewDetailedItemSoldInfo, @canSaveReports, @canDeleteItems, @canManageCategories, @canManageUsers, " +
                                 "@canDeleteItemsSold, @canViewManageInventoryQuantity, @userID, @canEditAppSettings," +
-                                "@canManageCurrencies)";
+                                "@canManageCurrencies,@canViewMappingCard,@canViewMappingUQ)";
                     command.CommandText = insert;
                     command.Parameters.Clear();
                     command.Parameters.AddWithValue("@canEditItems", Permissions.CanAddEditItems);
@@ -149,6 +151,8 @@ namespace RCabinet.Models
                     command.Parameters.AddWithValue("@canManageCurrencies", Permissions.CanManageCurrencies);
                     command.Parameters.AddWithValue("@userID", ID);
                     command.Parameters.AddWithValue("@canEditAppSettings", Permissions.CanEditAppSettings);
+                    command.Parameters.AddWithValue("@canViewMappingCard", Permissions.CanViewMappingCard);
+                    command.Parameters.AddWithValue("@canViewMappingUQ", Permissions.CanViewMappingUQ);
                     command.ExecuteNonQuery();
                     Permissions.ID = (int)conn.LastInsertRowId;
                 }
@@ -183,7 +187,7 @@ namespace RCabinet.Models
                                 "CanSaveReportsToPDF = @canSaveReports, CanDeleteItemsFromInventory = @canDeleteItems, " +
                                 "CanManageItemCategories = @canManageCategories, CanManageUsers = @canManageUsers," +
                                 "CanDeleteItemsSold = @canDeleteItemsSold, CanViewManageInventoryQuantity = @canViewManageInventoryQuantity, " +
-                                "CanEditAppSettings = @canEditAppSettings, CanManageCurrencies = @canManageCurrencies " +
+                                "CanEditAppSettings = @canEditAppSettings, CanManageCurrencies = @canManageCurrencies ,CanViewMappingCard=@canViewMappingCard, CanViewMappingUQ=@canViewMappingUQ " +
                                 "WHERE ID = @permissionID";
                     command.CommandText = update;
                     command.Parameters.Clear();
@@ -202,7 +206,11 @@ namespace RCabinet.Models
                     command.Parameters.AddWithValue("@canViewManageInventoryQuantity", Permissions.CanViewManageInventoryQuantity);
                     command.Parameters.AddWithValue("@canEditAppSettings", Permissions.CanEditAppSettings);
                     command.Parameters.AddWithValue("@canManageCurrencies", Permissions.CanManageCurrencies);
+                    command.Parameters.AddWithValue("@canViewMappingCard", Permissions.CanViewMappingCard);
+                    command.Parameters.AddWithValue("@canViewMappingUQ", Permissions.CanViewMappingUQ);
                     command.Parameters.AddWithValue("@permissionID", Permissions.ID);
+                   
+
                     command.ExecuteNonQuery();
                 }
                 conn.Close();

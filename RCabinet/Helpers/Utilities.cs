@@ -93,5 +93,18 @@ namespace RCabinet.Helpers
             }
             return "";
         }
+
+        public static string EncodeData(string data)
+        {
+            var plainTextBytes = Encoding.UTF8.GetBytes(data);
+            return Convert.ToBase64String(plainTextBytes);
+        }
+
+        public static string DecodeData(string base64EncodedData)
+        {
+            var base64EncodedBytes = Convert.FromBase64String(base64EncodedData);
+            return Encoding.UTF8.GetString(base64EncodedBytes);
+        }
+
     }
 }

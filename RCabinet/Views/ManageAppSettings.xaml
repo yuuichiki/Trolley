@@ -8,94 +8,153 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="600"
     d:DesignWidth="800"
-    Background="Orange"
     mc:Ignorable="d">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-        <Button
-            Grid.Row="0"
-            Grid.Column="0"
-            Grid.ColumnSpan="2"
-            Height="40"
-            Margin="15,5,5,5"
-            Padding="10"
-            HorizontalAlignment="Left"
-            Command="{Binding ReturnToMainMenu}"
-            Content="Return to Main Menu" />
-        <Label
-            Grid.Row="0"
-            Grid.Column="0"
-            Grid.ColumnSpan="2"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Content="Manage App Settings"
-            FontSize="16"
-            FontWeight="Bold" />
 
-        <StackPanel
-            Grid.Row="1"
-            Margin="15,0,0,0"
-            Orientation="Vertical">
-            <Grid Margin="8,0,0,0">
+
+
+    <Border BorderThickness="2" CornerRadius="15">
+        <Border.Background>
+            <ImageBrush ImageSource="/Images/17545.jpg" />
+        </Border.Background>
+
+        <Border
+            Margin="0,-1,0,1"
+            BorderThickness="2"
+            CornerRadius="15"
+            Opacity="0.90">
+            <Border.BorderBrush>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Offset="0" Color="{StaticResource winBorderColor1}" />
+                    <GradientStop Offset="0.75" Color="{StaticResource winBorderColor2}" />
+                    <GradientStop Offset="1" Color="{StaticResource winBorderColor3}" />
+                </LinearGradientBrush>
+            </Border.BorderBrush>
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
+                    <GradientStop Offset="0" Color="{StaticResource primaryBackColor1}" />
+                    <GradientStop Offset="1" Color="{StaticResource primaryBackColor2}" />
+                </LinearGradientBrush>
+            </Border.Background>
+
+
+            <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Height="40"
+                    Margin="15,5,5,5"
+                    Padding="10"
+                    HorizontalAlignment="Left"
+                    Command="{Binding ReturnToMainMenu}"
+                    Content="Return to Main Menu" />
                 <Label
                     Grid.Row="0"
                     Grid.Column="0"
-                    Margin="0,0,10,0"
+                    Grid.ColumnSpan="2"
+                    HorizontalAlignment="Center"
                     VerticalAlignment="Center"
-                    Content="Auto logout time in minutes (&gt;1)"
-                    FontSize="16"
-                    FontWeight="Bold" />
-                <mah:NumericUpDown
-                    Grid.Row="0"
-                    Grid.Column="1"
-                    Width="150"
-                    Interval="10"
-                    Maximum="999999"
-                    Minimum="0"
-                    Value="{Binding AutoLogoutLengthMinutes}" />
-                <Label
+                    Content="Manage App Settings"
+                    FontSize="40"
+                    FontWeight="Bold"
+                    Style="{StaticResource LabelUIWhite}" />
+
+                <StackPanel
                     Grid.Row="1"
-                    Margin="10,0,0,0"
-                    Content="(Requires restart of software to take effect)"
-                    FontSize="12"
-                    FontStyle="Italic" />
+                    Margin="15,0,0,0"
+                    Orientation="Vertical">
+                    <Grid Margin="8,0,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="100" />
+                            <RowDefinition Height="100" />
+                            <RowDefinition Height="Auto" />
+
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Label
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Height="34"
+                            Margin="0,0,10,0"
+                            VerticalAlignment="Center"
+                            Content="Auto logout time in minutes (&gt;1)"
+                            FontSize="16"
+                            FontWeight="Bold"
+                            Style="{StaticResource LabelUIWhite}" />
+                        <mah:NumericUpDown
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Width="100"
+                            Height="32"
+                            Margin="17,42,68,28"
+                            FontSize="18"
+                            Interval="10"
+                            Maximum="999999"
+                            Minimum="0"
+                            Value="{Binding AutoLogoutLengthMinutes}" />
+                        <Label
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Margin="10,62,40,0"
+                            Content="(Requires restart of software to take effect)"
+                            FontSize="14"
+                            FontStyle="Italic"
+                            Style="{StaticResource LabelUIWhite}" />
+                        <Label
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Margin="18,11,133,40"
+                            Content="(RFID Reader Comport)"
+                            FontSize="14"
+                            FontStyle="Italic"
+                            Style="{StaticResource LabelUIWhite}" />
+                        <ComboBox
+                            x:Name="cbComPort"
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Width="168"
+                            Height="30"
+                            Margin="17,20,0,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            FontSize="16"
+                            ItemsSource="{Binding ComPort}"
+                            SelectedItem="{Binding ComPortSelectedItem, Mode=TwoWay}" />
+
+                    </Grid>
+                    <Label
+                        HorizontalAlignment="Center"
+                        Content="{Binding ErrorMessage}"
+                        FontSize="12"
+                        FontWeight="Bold"
+                        Foreground="IndianRed" />
+                    <Button
+                        Width="150"
+                        Height="35"
+                        Padding="5"
+                        Command="{Binding SaveAppSettings}"
+                        Content="Save"
+                        IsTabStop="False"
+                        RenderTransformOrigin="0.55,2.389" />
+                </StackPanel>
+
+
             </Grid>
-            <Label
-                HorizontalAlignment="Center"
-                Content="{Binding ErrorMessage}"
-                FontSize="12"
-                FontWeight="Bold"
-                Foreground="IndianRed" />
-            <Button
-                Grid.Row="0"
-                Grid.Column="0"
-                Grid.ColumnSpan="2"
-                Width="150"
-                Height="35"
-                Margin="5"
-                Padding="5"
-                HorizontalAlignment="Center"
-                Command="{Binding SaveAppSettings}"
-                Content="Save"
-                IsTabStop="False" />
-        </StackPanel>
-    </Grid>
+        </Border>
+    </Border>
 </UserControl>

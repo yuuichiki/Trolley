@@ -9,9 +9,7 @@
         <Setter Property="FontWeight" Value="Medium" />
         <Setter Property="FontSize" Value="13.5" />
         <Setter Property="VerticalAlignment" Value="Center" />
-
     </Style>
-
     <Style x:Key="pagingButton" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="Snow" />
@@ -87,7 +85,7 @@
     <Setter Property="Foregound"  Value="#000000"/>
     <Setter Property="BorderThickness" Value="0"/>
     </Style>-->
-    
+
     <Style x:Key="MaterialDesignThumb" TargetType="{x:Type Thumb}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="OverridesDefaultStyle" Value="True" />

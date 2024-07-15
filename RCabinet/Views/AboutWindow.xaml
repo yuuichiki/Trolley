@@ -15,7 +15,7 @@
     MaxHeight="250"
     Background="Orange"
     GlowBrush="SkyBlue"
-    Icon="pack://application:,,,/Graphics/icons8_pos_terminal_96_ahu_icon.ico"
+    Icon="pack://application:,,,/Graphics/RFIDsignal_5463.ico"
     IsMaxRestoreButtonEnabled="False"
     IsMinButtonEnabled="False"
     ShowMaxRestoreButton="False"

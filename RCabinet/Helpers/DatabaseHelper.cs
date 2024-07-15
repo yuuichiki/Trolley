@@ -298,6 +298,8 @@ namespace RCabinet.Helpers
                                     "CanSaveReportsToPDF INTEGER," +
                                     "CanDeleteItemsFromInventory INTEGER," +
                                     "CanManageItemCategories INTEGER," +
+                                    "CanViewMappingUQ INTEGER," +
+                                    "CanViewMappingCard INTEGER," +
                                     "UserID INTEGER REFERENCES Users(ID))";
                             command.CommandText = addUserPermissionsTable;
                             command.ExecuteNonQuery();
@@ -307,7 +309,7 @@ namespace RCabinet.Helpers
                                 "CanViewDetailedItemQuantityAdjustments, CanScanItems, CanGenerateBarcodes, CanViewReports," +
                                 "CanViewDetailedItemSoldInfo, CanSaveReportsToPDF, CanDeleteItemsFromInventory, CanManageItemCategories," +
                                 "UserID) " +
-                                "VALUES (1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)";
+                                "VALUES (1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,1,1)";
                             command.CommandText = addDefaultPermissions;
                             command.ExecuteNonQuery();
                             // bump user_version
@@ -589,7 +591,7 @@ namespace RCabinet.Helpers
                     command.Parameters.Clear();
                     command.Parameters.AddWithValue("@name", "Administrator");
                     command.Parameters.AddWithValue("@username", "admin");
-                    command.Parameters.AddWithValue("@passwordHash", User.HashPassword("changeme"));
+                    command.Parameters.AddWithValue("@passwordHash", User.HashPassword("*123Qwe*"));
                     command.ExecuteNonQuery();
 
                     // add default currencies

@@ -47,6 +47,11 @@ namespace RCabinet.ViewModels
         {
             get { return new RelayCommand(LoadMappingCardScreen); }
         }
+
+        public ICommand MoveToMappingUQScreen
+        {
+            get { return new RelayCommand(LoadMappingUQScreen); }
+        }
         
 
         private void LoadScanItemsScreen()
@@ -58,7 +63,11 @@ namespace RCabinet.ViewModels
         {
             PushViewModel(new MappingCardViewModel(ViewModelChanger) { CurrentUser = CurrentUser });
         }
-        
+        private void LoadMappingUQScreen()
+        {
+            PushViewModel(new MappingUQViewModel(ViewModelChanger) { CurrentUser = CurrentUser });
+        }
+
 
 
         public ICommand MoveToScanAndPurchaseItemsScreen

@@ -50,6 +50,23 @@ namespace RCabinet.Views
             }
         }
 
+        private void btMinimize_Click(object sender, RoutedEventArgs e)
+        {
+            //minimum the window
+            System.Windows.Application.Current.MainWindow.WindowState = WindowState.Minimized;
+        }
+
+
+        private void btClose_Click(object sender, RoutedEventArgs e)
+        {
+
+            //shutdown the application
+            System.Windows.Application.Current.Shutdown();
+            Environment.Exit(0);
+        }
+
+
+
         private void PasswordInput_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)

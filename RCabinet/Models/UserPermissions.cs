@@ -26,6 +26,8 @@ namespace RCabinet.Models
         public bool CanViewManageInventoryQuantity { get; set; }
         public bool CanEditAppSettings { get; set; }
         public bool CanManageCurrencies { get; set; }
+        public bool CanViewMappingCard { get; set; }
+        public bool CanViewMappingUQ { get; set; }
 
         public UserPermissions()
         {
@@ -47,6 +49,8 @@ namespace RCabinet.Models
             CanViewManageInventoryQuantity = false;
             CanEditAppSettings = false;
             CanManageCurrencies = false;
+            CanViewMappingUQ = false;
+            CanViewMappingCard = false;
         }
     }
 }
