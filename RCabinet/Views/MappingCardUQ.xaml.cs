@@ -26,7 +26,7 @@ namespace RCabinet.Views
         public MappingCardUQ()
         {
             InitializeComponent();
-           
+
 
         }
         private bool comIsOpened = false;
@@ -38,14 +38,36 @@ namespace RCabinet.Views
            var viewModel = DataContext as MappingUQViewModel;
             if (viewModel != null)
             {
-        
-
-
+                Keyboard.Focus(txtCardId);
             }
-            Keyboard.Focus(txCardId);
 
         }
 
+       
+        private void toppingTab_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var viewModel = DataContext as MappingUQViewModel;
+                if (viewModel != null)
+                {
+                    if (e.Source is TabControl)
+                    {
+                        if (tabMappingCard.IsSelected)
+                        {
+                            viewModel.SelectedTab = "TabMappingCard";
+                            viewModel.EnableReadingEPC = false;
+
+                        }
+                        else if (tabCheckingTag.IsSelected)
+                        {
+                            viewModel.SelectedTab = "TabCheckingTag";
+                            viewModel.EnableReadingEPC = true;
+                        }
+                    }
+                }
+            });
+        }
 
         public class ComboBoxSelectionChangedEventArgs : EventArgs
         {
@@ -64,6 +86,14 @@ namespace RCabinet.Views
 
         }
 
+        private void txtTagEPC_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                (DataContext as MappingUQViewModel)?.CheckingTagDataCommand.Execute(null);
+
+            }
+        }
 
     }
 }

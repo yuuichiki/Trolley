@@ -397,4 +397,12 @@ namespace RCabinet.Models
         
 
     }
+
+    public class TabItemViewModel
+    {
+        public string Header { get; set; }
+        public string Content { get; set; }
+    }
+
+
 }

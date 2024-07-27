@@ -57,6 +57,8 @@ namespace RCabinet.ViewModels
         private PosModel _poSelectedItem;
 
         private string readingStatus;
+
+        private Dictionary<string, string> epcOfPO;
         private AsyncRelayCommand<Tuple<string, string, string, string, PosModel>> _loadComboBoxCommand;
 
         public ICommand LoadComboBoxCommand
@@ -263,10 +265,11 @@ namespace RCabinet.ViewModels
             reader = new RFID_Reader(null);
             RFID_Reader rFID_Reader = reader;
             rFID_Reader.OnReading = (delegateEncapedTagEpcLog)Delegate.Combine(rFID_Reader.OnReading, new delegateEncapedTagEpcLog(OnEncapedTagEpcLog));
-
+            ComPortSelectedItem = System.Configuration.ConfigurationManager.AppSettings["COMPORT"];
             CardMappingModels = new ObservableCollection<CardMappingModel>();
             EpcMapingModels = new ObservableCollection<EPCMappingModel>();
             MappedQuantity = 0;
+            epcOfPO = new Dictionary<string, string>();
             initReader();
         }
 
@@ -291,6 +294,7 @@ namespace RCabinet.ViewModels
             EpcMapingModels.Clear();
             CardGridModels.Clear();
             TotalQuantity = 0;
+            epcOfPO= new Dictionary<string, string>();
         }
 
         private async Task ReadingEPC()
@@ -340,13 +344,14 @@ namespace RCabinet.ViewModels
                     POEPCModels = result;
                     //EpcMapingModel.EpCs Add EPCs to EpcMapingModel with false value
 
-                   
-
                     foreach (var epc in POEPCModels.EpCs)
                     {
                         //checking EpcMapingModels if epc not in EpcMapingModels then add it
                         if (!EpcMapingModels.Any((EPCMappingModel e) => e.EPC.Contains(epc)))
+                        {
                             EpcMapingModels.Add(new EPCMappingModel { EPC = epc, IsMapping = false });
+                            epcOfPO.Add(po, epc);
+                        }
                     }
                 }
                 await RemapEpc();

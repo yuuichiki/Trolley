@@ -3,15 +3,16 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:RCabinet.Views"
     xmlns:mahapps="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:RCabinet.Models"
     xmlns:viewModels="clr-namespace:RCabinet.ViewModels"
     x:Name="MappingCardControl"
-    Width="1470"
+    Width="1500"
     d:DataContext="{d:DesignInstance Type={x:Type viewModels:MappingUQViewModel}}"
-    d:DesignHeight="600"
+    d:DesignHeight="800"
     Loaded="MappingCardUQ_Loaded"
     mc:Ignorable="d">
 
@@ -22,12 +23,16 @@
     </UserControl.Resources>
 
 
-    <Border BorderThickness="2" CornerRadius="15">
+    <Border
+        Margin="0,0,-5,0"
+        BorderThickness="2"
+        CornerRadius="15">
         <Border.Background>
             <ImageBrush ImageSource="/Images/17545.jpg" />
         </Border.Background>
 
         <Border
+            Margin="0,0,-3,0"
             BorderThickness="2"
             CornerRadius="5"
             Opacity="0.90">
@@ -45,627 +50,851 @@
                 </LinearGradientBrush>
             </Border.Background>
 
-            <Grid Margin="-1,0,1,9">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="60" />
-                    <RowDefinition Height="60" />
-                    <RowDefinition Height="218" />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="250" />
-                    <ColumnDefinition Width="400" />
-                    <ColumnDefinition Width="350" />
-                    <ColumnDefinition Width="Auto" />
 
-
-                </Grid.ColumnDefinitions>
-
-                <ContentControl Content="{StaticResource ProxyElement}" Visibility="Collapsed" />
-                <Button
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    Width="153"
-                    Margin="15,5,0,5"
-                    Padding="10"
-                    HorizontalAlignment="Left"
-                    Command="{Binding GoToMainMenu}"
-                    Content="Return to Main Menu"
-                    FontSize="13" />
-                <Label
-                    Grid.Column="1"
-                    Width="600"
-                    Height="60"
-                    Margin="122,7,0,0"
-                    Padding="10,10,10,10"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Content="UQ Mapping Card"
-                    FontSize="30"
-                    FontWeight="Bold"
-                    Foreground="WhiteSmoke" />
-                <TextBox
-                    x:Name="txCardId"
-                    Grid.Row="1"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Width="530"
-                    Margin="84,10,0,10"
-                    HorizontalAlignment="Left"
-                    VerticalContentAlignment="Top"
-                    mahapps:TextBoxHelper.ClearTextButton="True"
-                    mahapps:TextBoxHelper.Watermark="Search items..."
-                    Background="#bdebeb69"
-                    FontSize="20"
-                    FontWeight="Bold"
-                    IsEnabled="{Binding EnableSwipeCard}"
-                    KeyDown="txtCardId_KeyDown"
-                    Text="{Binding CardId, UpdateSourceTrigger=PropertyChanged}" />
-
-
-                <DataGrid
-                    Name="ItemsGrid"
-                    Grid.Row="3"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="3"
-                    Margin="10,2,10,10"
-                    AutoGenerateColumns="False"
-                    Background="#33DB80F0"
-                    BorderBrush="Gray"
-                    BorderThickness="1"
-                    CanUserAddRows="False"
-                    CanUserDeleteRows="False"
-                    GridLinesVisibility="All"
-                    IsReadOnly="True"
-                    ItemsSource="{Binding TrolleyEPCMappings}"
-                    RowHeaderWidth="0"
-                    SelectionMode="Single"
-                    SelectionUnit="FullRow">
-                    <DataGrid.Style>
-                        <Style BasedOn="{StaticResource MahApps.Styles.DataGrid}" TargetType="{x:Type DataGrid}">
-                            <Setter Property="AlternatingRowBackground" Value="{DynamicResource GrayBrush10}" />
-                        </Style>
-                    </DataGrid.Style>
-                    <DataGrid.Columns>
-                        <DataGridTextColumn
-                            Width="80"
-                            Binding="{Binding Count}"
-                            Header="Count" />
-                        <DataGridTextColumn
-                            Width="200"
-                            Binding="{Binding EncodeEPC}"
-                            Header="EPC" />
-                        <DataGridTextColumn
-                            Width="100"
-                            Binding="{Binding Size}"
-                            Header="Size" />
-                        <DataGridTextColumn
-                            Width="100"
-                            Binding="{Binding Color}"
-                            Header="Color" />
-                        <DataGridTextColumn
-                            Width="100"
-                            Binding="{Binding PO}"
-                            Header="PO" />
-                        <DataGridTextColumn
-                            Width="200"
-                            Binding="{Binding TimeCreated}"
-                            Header="DateTime" />
-                        <DataGridTextColumn
-                            Width="200"
-                            Binding="{Binding EmpCode}"
-                            Header="User" />
-
-                    </DataGrid.Columns>
-                </DataGrid>
-
-                <Button
-                    Name="btClearEPC"
-                    Grid.Row="0"
-                    Grid.Column="3"
-                    Height="40"
-                    Margin="321,20,23,0"
-                    Padding="10,10,10,10"
-                    VerticalAlignment="Top"
-                    Command="{Binding ClearEPC}"
-                    Content="Reset"
-                    FontSize="13"
-                    RenderTransformOrigin="0.738,-2.35"
-                    Visibility="Visible" />
-
-                <StackPanel
-                    Grid.Row="0"
-                    Grid.RowSpan="4"
-                    Grid.Column="3"
-                    Margin="0,10,6,265"
-                    Orientation="Vertical">
-                    <Button
-                        Name="btReadingEPC"
-                        Width="166"
-                        Height="40"
-                        Margin="10,10,10,10"
-                        Padding="10,10,10,10"
-                        Command="{Binding StartReadingEPC}"
-                        Content="{Binding ReadingStatus}"
-                        FontSize="13"
-                        IsEnabled="{Binding EnableReadingEPC}" />
-
-                    <DataGrid
-                        x:Name="CardGrid"
-                        Width="408"
-                        Height="232"
-                        Margin="10,0,10,10"
-                        HorizontalAlignment="Left"
-                        AutoGenerateColumns="False"
-                        Background="#33DB80F0"
-                        BorderBrush="Gray"
-                        BorderThickness="1"
-                        CanUserAddRows="False"
-                        CanUserDeleteRows="False"
-                        FontSize="14"
-                        GridLinesVisibility="All"
-                        IsReadOnly="True"
-                        ItemsSource="{Binding CardUQModels}"
-                        RenderTransformOrigin="0.5,0.5"
-                        RowHeaderWidth="0"
-                        SelectionMode="Single"
-                        SelectionUnit="FullRow">
-                        <DataGrid.RenderTransform>
-                            <TransformGroup>
-                                <ScaleTransform />
-                                <SkewTransform AngleY="-0.645" />
-                                <RotateTransform />
-                                <TranslateTransform Y="-2.488" />
-                            </TransformGroup>
-                        </DataGrid.RenderTransform>
-
-                        <DataGrid.Columns>
-                            <DataGridTextColumn
-                                Width="120"
-                                Binding="{Binding Mo}"
-                                Header="MO" />
-                            <DataGridTextColumn
-                                Width="120"
-                                Binding="{Binding CardNo}"
-                                Header="Card No" />
-                            <DataGridTextColumn
-                                Width="145"
-                                Binding="{Binding AdjustQuantity}"
-                                Header="Adjust Quantity" />
-
-                        </DataGrid.Columns>
-                    </DataGrid>
-
-
-                </StackPanel>
-                <Label
-                    Grid.Row="1"
-                    Width="61"
-                    Height="28"
-                    Margin="10,0,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
-                    Content="Card ID"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="1"
-                    Width="33"
-                    Height="28"
-                    Margin="0,12,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Content="SO:"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="0"
-                    Width="43"
-                    Height="28"
-                    Margin="10,12,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Content="Style No:"
-                    Style="{StaticResource LabelUIWhite}" />
-
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="0"
-                    Width="170"
-                    Height="30"
-                    Margin="64,12,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Background="#bdebeb69"
-                    Content="{Binding Card.StyleNo}"
-                    Style="{StaticResource LabelUIWhite}" />
-
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="2"
-                    Width="39"
-                    Height="28"
-                    Margin="0,12,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Content="MO:"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="1"
-                    Width="281"
-                    Height="30"
-                    Margin="49,10,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Background="#bdebeb69"
-                    Content="{Binding Card.SO}"
-                    Style="{StaticResource LabelUIWhite}" />
-
-
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="2"
-                    Width="238"
-                    Height="30"
-                    Margin="62,12,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Background="#bdebeb69"
-                    Content="{Binding Card.Mo}"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Width="113"
-                    Height="28"
-                    Margin="10,55,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Content="Feature Name :"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="1"
-                    Width="104"
-                    Height="28"
-                    Margin="151,56,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Content="Color Name:"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="1"
-                    Grid.ColumnSpan="2"
-                    Width="443"
-                    Height="30"
-                    Margin="256,55,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Background="#bdebeb69"
-                    Content="{Binding Card.ColorName}"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Grid.ColumnSpan="2"
-                    Width="273"
-                    Height="30"
-                    Margin="124,52,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Background="#bdebeb69"
-                    Content="{Binding Card.FeatureName}"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Width="41"
-                    Height="30"
-                    Margin="10,102,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Content="Size:"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="1"
-                    Width="86"
-                    Height="30"
-                    Margin="86,102,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Content="Bundle No"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="1"
-                    Grid.ColumnSpan="2"
-                    Width="240"
-                    Height="32"
-                    Margin="184,101,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Background="#bdebeb69"
-                    Content="{Binding Card.BundleNo}"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Grid.ColumnSpan="2"
-                    Width="230"
-                    Height="32"
-                    Margin="78,101,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Background="#bdebeb69"
-                    Content="{Binding Card.Size}"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Width="86"
-                    Height="28"
-                    Margin="10,149,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Content="Bundle Qty"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="1"
-                    Width="98"
-                    Height="28"
-                    Margin="0,149,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Content="Adjust Qty"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="1"
-                    Width="73"
-                    Height="30"
-                    Margin="101,149,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Background="#bdebeb69"
-                    Content="{Binding Card.AdjustQuantity}"
-                    FontSize="16"
-                    FontWeight="Bold"
-                    Foreground="White" />
-                <Label
-                    Grid.Row="2"
-                    Width="123"
-                    Height="30"
-                    Margin="106,148,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Background="#bdebeb69"
-                    Content="{Binding Card.BundleQuantity}"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="2"
-                    Width="100"
-                    Height="30"
-                    Margin="70,102,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Content="Cut Quantity:"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="2"
-                    Width="118"
-                    Height="30"
-                    Margin="176,102,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Background="#bdebeb69"
-                    Content="{Binding Card.CutQuantity}"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="2"
-                    Width="69"
-                    Height="28"
-                    Margin="0,150,0,0"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Top"
-                    Content="Country:"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="2"
-                    Width="76"
-                    Height="30"
-                    Margin="216,150,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Background="#bdebeb69"
-                    Content="{Binding Card.Country}"
-                    Style="{StaticResource LabelUIWhite}" />
-                <ComboBox
-                    Name="cbComPort"
-                    Grid.Row="1"
-                    Grid.Column="2"
-                    Width="168"
-                    Height="30"
-                    Margin="80,0,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
-                    Background="#bdebeb69"
-                    FontSize="16"
-                    Foreground="White"
-                    ItemsSource="{Binding ComPort}"
-                    SelectedItem="{Binding ComPortSelectedItem, Mode=TwoWay}" />
-                <Label
-                    Grid.Row="1"
-                    Grid.Column="2"
-                    Width="84"
-                    Height="28"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
-                    Content="Comport:"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="3"
-                    Width="112"
-                    Height="30"
-                    Margin="213,182,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Background="Blue"
-                    Content="Total Quantity"
-                    FontSize="16"
-                    FontWeight="DemiBold"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="3"
-                    Width="91"
-                    Height="30"
-                    Margin="325,182,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Background="OrangeRed"
-                    Content="{Binding TotalQuantity}"
-                    FontSize="20             "
-                    FontWeight="DemiBold"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="1"
-                    Width="85"
-                    Height="28"
-                    Margin="194,152,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Content="Gang Hao"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="1"
-                    Grid.ColumnSpan="2"
-                    Width="244"
-                    Height="30"
-                    Margin="287,149,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Background="#bdebeb69"
-                    Content="{Binding Card.GangHao}"
-                    FontSize="16"
-                    FontWeight="Bold"
-                    Foreground="White" />
-
-                <!--<Border
-                Grid.Row="3"
-                Grid.Column="3"
-                Margin="6,7,19,14"
-                Background="Bisque"
-                BorderThickness="2"
-                CornerRadius="5"
-                Opacity="0.90">
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-
-                <Label
-                Grid.Row="3"
-                Grid.Column="3"
-                Height="400"
-                Margin="2,3,9,0"
-                VerticalAlignment="Top"
-                FontFamily="Tahoma"
-                FontSize="18"
-                FontWeight="Medium"
-                Foreground="Red">
-                <Label.Content>
-                <AccessText
-                Width="382"
-                Height="400"
-                Text="{Binding MessageInfo}"
-                TextWrapping="Wrap" />
-                </Label.Content>
-                </Label>
-                </ScrollViewer>
-                </Border>-->
-
-
-                <Border
-                    Grid.Row="3"
-                    Grid.Column="3"
-                    Margin="6,7,19,14"
+            <Grid>
+                <TabControl
+                    x:Name="toppingTab"
+                    Margin="0,0,2,0"
                     Background="Transparent"
-                    BorderThickness="2"
-                    CornerRadius="5"
-                    Opacity="0.90">
+                    SelectionChanged="toppingTab_OnSelectionChanged">
+                    <TabItem
+                        Name="tabMappingCard"
+                        Background="Transparent"
+                        Header="Mapping Card">
 
-                    <ListBox
-                        Width="405"
-                        Height="403"
-                        Margin="2,0,0,0"
+                        <Grid Margin="-1,0,1,9">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="60" />
+                                <RowDefinition Height="60" />
+                                <RowDefinition Height="218" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="232.5" />
+                                <ColumnDefinition Width="21" />
+                                <ColumnDefinition Width="27" />
+                                <ColumnDefinition Width="369.5" />
+                                <ColumnDefinition Width="350" />
+                                <ColumnDefinition Width="Auto" />
+
+                            </Grid.ColumnDefinitions>
+
+                            <ContentControl
+                                Grid.ColumnSpan="2"
+                                Margin="0,0,6,0"
+                                Content="{StaticResource ProxyElement}"
+                                Visibility="Collapsed" />
+                            <Button
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Width="153"
+                                Margin="15,5,0,5"
+                                Padding="10"
+                                HorizontalAlignment="Left"
+                                Command="{Binding GoToMainMenu}"
+                                Content="Return to Main Menu"
+                                FontSize="13" />
+                            <Label
+                                Grid.RowSpan="2"
+                                Grid.Column="3"
+                                Grid.ColumnSpan="2"
+                                Width="600"
+                                Height="60"
+                                Margin="92,7,0,0"
+                                Padding="10,10,10,10"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Content="UQ Mapping Card"
+                                FontSize="30"
+                                FontWeight="Bold"
+                                Foreground="WhiteSmoke" />
+                            <TextBox
+                                x:Name="txtCardId"
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="4"
+                                Width="530"
+                                Margin="84,10,0,10"
+                                HorizontalAlignment="Left"
+                                VerticalContentAlignment="Top"
+                                mahapps:TextBoxHelper.ClearTextButton="True"
+                                mahapps:TextBoxHelper.Watermark="Search items..."
+                                Background="#bdebeb69"
+                                FontSize="20"
+                                FontWeight="Bold"
+                                IsEnabled="{Binding EnableSwipeCard}"
+                                KeyDown="txtCardId_KeyDown"
+                                Text="{Binding CardId, UpdateSourceTrigger=PropertyChanged}" />
+
+
+                            <DataGrid
+                                Name="ItemsGrid"
+                                Grid.Row="3"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="5"
+                                Margin="10,2,10,10"
+                                AutoGenerateColumns="False"
+                                Background="#33DB80F0"
+                                BorderBrush="Gray"
+                                BorderThickness="1"
+                                CanUserAddRows="False"
+                                CanUserDeleteRows="False"
+                                GridLinesVisibility="All"
+                                IsReadOnly="True"
+                                ItemsSource="{Binding TrolleyEPCMappings}"
+                                RowHeaderWidth="0"
+                                SelectionMode="Single"
+                                SelectionUnit="FullRow">
+                                <DataGrid.Style>
+                                    <Style BasedOn="{StaticResource MahApps.Styles.DataGrid}" TargetType="{x:Type DataGrid}">
+                                        <Setter Property="AlternatingRowBackground" Value="{DynamicResource GrayBrush10}" />
+                                    </Style>
+                                </DataGrid.Style>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn
+                                        Width="80"
+                                        Binding="{Binding Count}"
+                                        Header="Count" />
+                                    <DataGridTextColumn
+                                        Width="200"
+                                        Binding="{Binding EncodeEPC}"
+                                        Header="EPC" />
+                                    <DataGridTextColumn
+                                        Width="100"
+                                        Binding="{Binding Size}"
+                                        Header="Size" />
+                                    <DataGridTextColumn
+                                        Width="100"
+                                        Binding="{Binding Color}"
+                                        Header="Color" />
+                                    <DataGridTextColumn
+                                        Width="100"
+                                        Binding="{Binding PO}"
+                                        Header="PO" />
+                                    <DataGridTextColumn
+                                        Width="200"
+                                        Binding="{Binding TimeCreated}"
+                                        Header="DateTime" />
+                                    <DataGridTextColumn
+                                        Width="200"
+                                        Binding="{Binding EmpCode}"
+                                        Header="User" />
+
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <Button
+                                Name="btClearEPC"
+                                Grid.Row="0"
+                                Grid.Column="5"
+                                Height="40"
+                                Margin="321,20,23,0"
+                                Padding="10,10,10,10"
+                                VerticalAlignment="Top"
+                                Command="{Binding ClearEPC}"
+                                Content="Reset"
+                                FontSize="13"
+                                RenderTransformOrigin="0.738,-2.35"
+                                Visibility="Visible" />
+
+                            <StackPanel
+                                Grid.Row="0"
+                                Grid.RowSpan="3"
+                                Grid.Column="5"
+                                Margin="0,10,6,65"
+                                Orientation="Vertical">
+                                <Button
+                                    Name="btReadingEPC"
+                                    Width="166"
+                                    Height="40"
+                                    Margin="10,10,10,10"
+                                    Padding="10,10,10,10"
+                                    Command="{Binding StartReadingEPC}"
+                                    Content="{Binding ReadingStatus}"
+                                    FontSize="13"
+                                    IsEnabled="{Binding EnableReadingEPC}" />
+
+                                <DataGrid
+                                    x:Name="CardGrid"
+                                    Width="408"
+                                    Height="232"
+                                    Margin="10,0,10,10"
+                                    HorizontalAlignment="Left"
+                                    AutoGenerateColumns="False"
+                                    Background="#33DB80F0"
+                                    BorderBrush="Gray"
+                                    BorderThickness="1"
+                                    CanUserAddRows="False"
+                                    CanUserDeleteRows="False"
+                                    FontSize="14"
+                                    GridLinesVisibility="All"
+                                    IsReadOnly="True"
+                                    ItemsSource="{Binding CardUQModels}"
+                                    RenderTransformOrigin="0.5,0.5"
+                                    RowHeaderWidth="0"
+                                    SelectionMode="Single"
+                                    SelectionUnit="FullRow">
+                                    <DataGrid.RenderTransform>
+                                        <TransformGroup>
+                                            <ScaleTransform />
+                                            <SkewTransform AngleY="-0.645" />
+                                            <RotateTransform />
+                                            <TranslateTransform Y="-2.488" />
+                                        </TransformGroup>
+                                    </DataGrid.RenderTransform>
+
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn
+                                            Width="120"
+                                            Binding="{Binding Mo}"
+                                            Header="MO" />
+                                        <DataGridTextColumn
+                                            Width="120"
+                                            Binding="{Binding CardNo}"
+                                            Header="Card No" />
+                                        <DataGridTextColumn
+                                            Width="145"
+                                            Binding="{Binding AdjustQuantity}"
+                                            Header="Adjust Quantity" />
+
+                                    </DataGrid.Columns>
+                                </DataGrid>
+
+
+                            </StackPanel>
+                            <Label
+                                Grid.Row="1"
+                                Width="61"
+                                Height="28"
+                                Margin="10,0,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Content="Card ID"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="2"
+                                Grid.ColumnSpan="2"
+                                Width="32"
+                                Height="28"
+                                Margin="0,12,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Content="SO:"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="0"
+                                Width="43"
+                                Height="28"
+                                Margin="10,12,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Content="Style No:"
+                                Style="{StaticResource LabelUIWhite}" />
+
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"
+                                Width="170"
+                                Height="30"
+                                Margin="64,12,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="#bdebeb69"
+                                Content="{Binding Card.StyleNo}"
+                                Style="{StaticResource LabelUIWhite}" />
+
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="4"
+                                Width="39"
+                                Height="28"
+                                Margin="0,12,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Content="MO:"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="3"
+                                Width="282"
+                                Height="30"
+                                Margin="18,10,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="#bdebeb69"
+                                Content="{Binding Card.SO}"
+                                Style="{StaticResource LabelUIWhite}" />
+
+
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="4"
+                                Width="238"
+                                Height="30"
+                                Margin="62,12,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="#bdebeb69"
+                                Content="{Binding Card.Mo}"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Width="113"
+                                Height="28"
+                                Margin="10,55,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Content="Feature Name :"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="3"
+                                Width="104"
+                                Height="28"
+                                Margin="120,56,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Content="Color Name:"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="3"
+                                Grid.ColumnSpan="2"
+                                Width="444"
+                                Height="30"
+                                Margin="226,55,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="#bdebeb69"
+                                Content="{Binding Card.ColorName}"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.ColumnSpan="4"
+                                Width="273"
+                                Height="30"
+                                Margin="124,52,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="#bdebeb69"
+                                Content="{Binding Card.FeatureName}"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Width="41"
+                                Height="30"
+                                Margin="10,102,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Content="Size:"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="3"
+                                Width="86"
+                                Height="30"
+                                Margin="56,102,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Content="Bundle No"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="3"
+                                Grid.ColumnSpan="2"
+                                Width="240"
+                                Height="32"
+                                Margin="154,101,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="#bdebeb69"
+                                Content="{Binding Card.BundleNo}"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.ColumnSpan="4"
+                                Width="230"
+                                Height="32"
+                                Margin="78,101,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="#bdebeb69"
+                                Content="{Binding Card.Size}"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Width="86"
+                                Height="28"
+                                Margin="10,149,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Content="Bundle Qty"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="2"
+                                Grid.ColumnSpan="2"
+                                Width="98"
+                                Height="28"
+                                Margin="0,149,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Content="Adjust Qty"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="3"
+                                Width="74"
+                                Height="30"
+                                Margin="70,149,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="#bdebeb69"
+                                Content="{Binding Card.AdjustQuantity}"
+                                FontSize="16"
+                                FontWeight="Bold"
+                                Foreground="White" />
+                            <Label
+                                Grid.Row="2"
+                                Width="123"
+                                Height="30"
+                                Margin="106,148,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="#bdebeb69"
+                                Content="{Binding Card.BundleQuantity}"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="4"
+                                Width="100"
+                                Height="30"
+                                Margin="70,102,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Content="Cut Quantity:"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="4"
+                                Width="118"
+                                Height="30"
+                                Margin="176,102,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="#bdebeb69"
+                                Content="{Binding Card.CutQuantity}"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="4"
+                                Width="70"
+                                Height="28"
+                                Margin="0,150,0,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Top"
+                                Content="Country:"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="4"
+                                Width="76"
+                                Height="30"
+                                Margin="216,150,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="#bdebeb69"
+                                Content="{Binding Card.Country}"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <ComboBox
+                                Name="cbComPort"
+                                Grid.Row="1"
+                                Grid.Column="4"
+                                Width="168"
+                                Height="30"
+                                Margin="80,0,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Background="#bdebeb69"
+                                FontSize="16"
+                                Foreground="White"
+                                ItemsSource="{Binding ComPort}"
+                                SelectedItem="{Binding ComPortSelectedItem, Mode=TwoWay}" />
+                            <Label
+                                Grid.Row="1"
+                                Grid.Column="4"
+                                Width="84"
+                                Height="28"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Content="Comport:"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="5"
+                                Width="112"
+                                Height="30"
+                                Margin="213,182,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="Blue"
+                                Content="Total Quantity"
+                                FontSize="16"
+                                FontWeight="DemiBold"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="5"
+                                Width="91"
+                                Height="30"
+                                Margin="325,182,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="OrangeRed"
+                                Content="{Binding TotalQuantity}"
+                                FontSize="20             "
+                                FontWeight="DemiBold"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="3"
+                                Width="86"
+                                Height="28"
+                                Margin="164,152,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Content="Gang Hao"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="3"
+                                Grid.ColumnSpan="2"
+                                Width="244"
+                                Height="30"
+                                Margin="256,149,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="#bdebeb69"
+                                Content="{Binding Card.GangHao}"
+                                FontSize="16"
+                                FontWeight="Bold"
+                                Foreground="White" />
+
+                            <!--<Border
+                            Grid.Row="3"
+                            Grid.Column="3"
+                            Margin="6,7,19,14"
+                            Background="Bisque"
+                            BorderThickness="2"
+                            CornerRadius="5"
+                            Opacity="0.90">
+                            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+
+                            <Label
+                            Grid.Row="3"
+                            Grid.Column="3"
+                            Height="400"
+                            Margin="2,3,9,0"
+                            VerticalAlignment="Top"
+                            FontFamily="Tahoma"
+                            FontSize="18"
+                            FontWeight="Medium"
+                            Foreground="Red">
+                            <Label.Content>
+                            <AccessText
+                            Width="382"
+                            Height="400"
+                            Text="{Binding MessageInfo}"
+                            TextWrapping="Wrap" />
+                            </Label.Content>
+                            </Label>
+                            </ScrollViewer>
+                            </Border>-->
+
+
+                            <Border
+                                Grid.Row="3"
+                                Grid.Column="5"
+                                Margin="6,7,19,14"
+                                Background="Transparent"
+                                BorderThickness="2"
+                                CornerRadius="5"
+                                Opacity="0.90">
+
+                                <ListBox
+                                    Width="405"
+                                    Height="403"
+                                    Margin="2,0,0,0"
+                                    VerticalAlignment="Top"
+                                    HorizontalContentAlignment="Stretch"
+                                    FontFamily="Tahoma"
+                                    FontSize="16"
+                                    FontWeight="Medium"
+                                    Foreground="Red"
+                                    ItemsSource="{Binding MessageNotiy}"
+                                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                    SelectionMode="Multiple">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel>
+                                                <TextBlock
+                                                    Width="398"
+                                                    Text="{Binding}"
+                                                    TextWrapping="Wrap" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+
+                                    <ListBox.ItemContainerStyle>
+                                        <Style TargetType="ListBoxItem">
+                                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                        </Style>
+                                    </ListBox.ItemContainerStyle>
+
+                                </ListBox>
+
+                            </Border>
+
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="4"
+                                Width="95"
+                                Height="30"
+                                Margin="118,184,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="Blue"
+                                Content="Total EPCs"
+                                FontSize="16"
+                                FontWeight="DemiBold"
+                                Style="{StaticResource LabelUIWhite}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="4"
+                                Width="112"
+                                Height="30"
+                                Margin="213,184,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="OrangeRed"
+                                Content="{Binding TotalCount}"
+                                FontSize="20             "
+                                FontWeight="DemiBold"
+                                Style="{StaticResource LabelUIWhite}" />
+                        </Grid>
+
+                    </TabItem>
+
+
+
+                    <TabItem
+                        Name="tabCheckingTag"
+                        Height="39"
                         VerticalAlignment="Top"
-                        HorizontalContentAlignment="Stretch"
-                        FontFamily="Tahoma"
-                        FontSize="16"
-                        FontWeight="Medium"
-                        Foreground="Red"
-                        ItemsSource="{Binding MessageNotiy}"
-                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                        ScrollViewer.VerticalScrollBarVisibility="Auto"
-                        SelectionMode="Multiple">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel>
-                                    <TextBlock
-                                        Width="398"
-                                        Text="{Binding}"
-                                        TextWrapping="Wrap" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
+                        Header="Checking Tag">
+                        <Grid Margin="-1,0,1,9">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="60" />
+                                <RowDefinition Height="60" />
+                                <RowDefinition Height="*" />
 
-                        <ListBox.ItemContainerStyle>
-                            <Style TargetType="ListBoxItem">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-
-                    </ListBox>
-
-                </Border>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="14" />
+                                <ColumnDefinition Width="40" />
+                                <ColumnDefinition Width="196" />
+                                <ColumnDefinition Width="400" />
+                                <ColumnDefinition Width="350" />
+                                <ColumnDefinition Width="Auto" />
 
 
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="2"
-                    Width="95"
-                    Height="30"
-                    Margin="118,184,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Background="Blue"
-                    Content="Total EPCs"
-                    FontSize="16"
-                    FontWeight="DemiBold"
-                    Style="{StaticResource LabelUIWhite}" />
-                <Label
-                    Grid.Row="2"
-                    Grid.Column="2"
-                    Width="112"
-                    Height="30"
-                    Margin="213,184,0,0"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Background="OrangeRed"
-                    Content="{Binding TotalCount}"
-                    FontSize="20             "
-                    FontWeight="DemiBold"
-                    Style="{StaticResource LabelUIWhite}" />
+                            </Grid.ColumnDefinitions>
+
+                            <ContentControl
+                                Grid.ColumnSpan="3"
+                                Content="{StaticResource ProxyElement}"
+                                Visibility="Collapsed" />
+
+                            <Button
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Grid.ColumnSpan="2"
+                                Width="153"
+                                Margin="1,5,0,5"
+                                Padding="10"
+                                HorizontalAlignment="Left"
+                                Command="{Binding GoToMainMenu}"
+                                Content="Return to Main Menu"
+                                FontSize="13" />
+                            <Label
+                                Grid.Row="1"
+                                Grid.ColumnSpan="3"
+                                Width="100"
+                                Height="40"
+                                Margin="4,0,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Content="EPC Tag"
+                                FontSize="20"
+                                Style="{StaticResource LabelUIWhite}" />
+
+                            <TextBox
+                                x:Name="txtTagEPC"
+                                Grid.Row="1"
+                                Grid.Column="2"
+                                Grid.ColumnSpan="2"
+                                Width="530"
+                                Margin="45,10,0,10"
+                                HorizontalAlignment="Left"
+                                VerticalContentAlignment="Top"
+                                mahapps:TextBoxHelper.ClearTextButton="True"
+                                mahapps:TextBoxHelper.Watermark="Search items..."
+                                Background="#bdebeb69"
+                                FontSize="20"
+                                FontWeight="Bold"
+                                IsEnabled="{Binding EnableCheckingTag}"
+                                KeyDown="txtTagEPC_KeyDown"
+                                Text="{Binding CheckingEPCTag, UpdateSourceTrigger=PropertyChanged}" />
 
 
 
 
+                            <DataGrid
+                                Name="ChekingItemsGrid"
+                                Grid.Row="2"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="5"
+                                Margin="10,2,10,76"
+                                AutoGenerateColumns="False"
+                                Background="#33DB80F0"
+                                BorderBrush="Gray"
+                                BorderThickness="1"
+                                CanUserAddRows="False"
+                                CanUserDeleteRows="False"
+                                GridLinesVisibility="All"
+                                IsReadOnly="True"
+                                ItemsSource="{Binding TrolleyEPCCheckings}"
+                                RowHeaderWidth="0"
+                                SelectionMode="Single"
+                                SelectionUnit="FullRow">
+                                <DataGrid.Style>
+                                    <Style BasedOn="{StaticResource MahApps.Styles.DataGrid}" TargetType="{x:Type DataGrid}">
+                                        <Setter Property="AlternatingRowBackground" Value="{DynamicResource GrayBrush10}" />
+                                    </Style>
+                                </DataGrid.Style>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn
+                                        Width="80"
+                                        Binding="{Binding Count}"
+                                        Header="Count" />
+                                    <DataGridTextColumn
+                                        Width="180"
+                                        Binding="{Binding EncodeEPC}"
+                                        Header="EPC" />
+                                    <DataGridTextColumn
+                                        Width="100"
+                                        Binding="{Binding Size}"
+                                        Header="Size" />
+                                    <DataGridTextColumn
+                                        Width="100"
+                                        Binding="{Binding Color}"
+                                        Header="Color" />
+                                    <DataGridTextColumn
+                                        Width="100"
+                                        Binding="{Binding PO}"
+                                        Header="PO" />
+                                    <DataGridTextColumn
+                                        Width="200"
+                                        Binding="{Binding TimeCreated}"
+                                        Header="DateTime" />
+                                    <DataGridTextColumn
+                                        Width="200"
+                                        Binding="{Binding EmpCode}"
+                                        Header="User" />
+
+                                </DataGrid.Columns>
+                            </DataGrid>
 
 
+                            <DataGrid
+                                x:Name="CardEPCGrid"
+                                Grid.Row="1"
+                                Grid.RowSpan="2"
+                                Grid.Column="5"
+                                Width="399"
+                                Margin="21,19,0,79"
+                                HorizontalAlignment="Left"
+                                AutoGenerateColumns="False"
+                                Background="#33DB80F0"
+                                BorderBrush="Gray"
+                                BorderThickness="1"
+                                CanUserAddRows="False"
+                                CanUserDeleteRows="False"
+                                FontSize="14"
+                                GridLinesVisibility="All"
+                                IsReadOnly="True"
+                                ItemsSource="{Binding CardUQCheckingModels}"
+                                RenderTransformOrigin="0.5,0.5"
+                                RowHeaderWidth="0"
+                                SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                                SelectionMode="Single"
+                                SelectionUnit="FullRow">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="SelectedCellsChanged">
+                                        <i:InvokeCommandAction Command="{Binding ItemSelectedCommand}" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+
+                                <DataGrid.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform />
+                                        <SkewTransform AngleY="-0.645" />
+                                        <RotateTransform />
+                                        <TranslateTransform Y="-2.488" />
+                                    </TransformGroup>
+                                </DataGrid.RenderTransform>
+
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn
+                                        Width="120"
+                                        Binding="{Binding Mo}"
+                                        Header="MO" />
+                                    <DataGridTextColumn
+                                        Width="120"
+                                        Binding="{Binding CardNo}"
+                                        Header="Card No" />
+                                    <DataGridTextColumn
+                                        Width="145"
+                                        Binding="{Binding AdjustQuantity}"
+                                        Header="Adjust Quantity" />
+
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+
+                            <Button
+                                x:Name="btReadingEPC_Copy"
+                                Grid.Row="0"
+                                Grid.Column="5"
+                                Margin="143,10,143,10"
+                                Padding="10,10,10,10"
+                                Command="{Binding StartReadingEPC}"
+                                Content="{Binding ReadingStatus}"
+                                FontSize="13"
+                                IsEnabled="{Binding EnableReadingEPC}" />
+
+                        </Grid>
+
+                    </TabItem>
+
+
+                </TabControl>
             </Grid>
+
         </Border>
     </Border>
 
