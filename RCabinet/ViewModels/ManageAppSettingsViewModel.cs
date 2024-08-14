@@ -4,6 +4,7 @@ using RCabinet.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Configuration;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
@@ -74,10 +75,42 @@ namespace RCabinet.ViewModels
         private void SaveAndPop()
         {
             // save
+            var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            var settings = config.AppSettings.Settings;
             Properties.Settings.Default.AutoLogoutLength = AutoLogoutLengthMinutes;
-            System.Configuration.ConfigurationManager.AppSettings["COMPORT"] = ComPortSelectedItem;
+            Properties.Settings.Default.Save();
+            SaveSetting(key: "COMPORT", value: ComPortSelectedItem);
+            
+
             // pop
             PopToMainMenu();
         }
+
+        public void SaveSetting(string key, string value)
+        {
+            // Open the configuration file for the application.
+            var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+            // Modify the appSettings section.
+            var settings = config.AppSettings.Settings;
+
+            if (settings[key] == null)
+            {
+                // Add a new key-value pair.
+                settings.Add(key, value);
+            }
+            else
+            {
+                // Update the value of an existing key.
+                settings[key].Value = value;
+            }
+
+            // Save the configuration file.
+            config.Save(ConfigurationSaveMode.Modified);
+
+            // Refresh the appSettings section.
+            ConfigurationManager.RefreshSection("appSettings");
+        }
+
     }
 }

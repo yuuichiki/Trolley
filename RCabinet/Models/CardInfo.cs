@@ -44,7 +44,7 @@ namespace RCabinet.Models
         public int AdjustQuantity { get; set; }
         public int BundleNo { get; set; }
         public string SO { get; set; }
-
+        public DateTime DateCreated { get; set; }
         public string SaleNo { get; set; }
         public string SoItem { get; set; }
         public string CardNo { get; set; }

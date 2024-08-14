@@ -479,34 +479,114 @@ namespace RCabinet.ViewModels
 
         #endregion Properties
 
+
+
+        private async Task LoadEPCData1(string _epc)
+        {
+            using (var db = new ShaContext())
+            {
+                //Application.Current.Dispatcher.Invoke(() => {
+                //    TrolleyEPCCheckings.Clear();
+                //});
+                // CardUQCheckingModels.Clear();
+
+
+                var matchingEPC = TrolleyEPCCheckings.FirstOrDefault(t => t.EPC == _epc);
+                if (matchingEPC == null)
+                {
+                    var epc = db.TrolleyEPCMappings.FirstOrDefault((TrolleyEPCMapping e) => e.EPC.Contains(_epc));
+                    if (epc != null)
+                    {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
+
+                            TrolleyEPCCheckings.Add(epc);
+
+
+                            var card = db.TrolleyUQCards.Where((CardUQModel e) => e.Id == epc.UQCardId).ToList().FirstOrDefault();
+                            if(card != null)
+                                {
+                                // checking CardUQCheckingModels not contains card
+                                    if (!CardUQCheckingModels.Any((CardUQModel e) => e.CardNo.Contains(card.CardNo)))
+                                    {
+                                        CardUQCheckingModels.Add(card);
+                                    }
+                               
+                                }
+                       
+
+                        });
+
+                    }
+                }
+
+
+
+                
+
+
+
+                //var mappings = db.TrolleyEPCMappings.Where((TrolleyEPCMapping e) => e.MappingId == (epc.MappingId)).ToList();
+                //{
+                //    Application.Current.Dispatcher.Invoke(() => {
+                //        foreach (var item in mappings)
+                //        {
+                //            TrolleyEPCCheckings.Add(item);
+                //        }
+                //        TrolleyEPCCheckings.OrderBy(e => e.Count);
+                //    });
+                //}
+
+                //var cards = db.TrolleyUQCards.Where((CardUQModel e) => e.MappingId == epc.MappingId).ToList();
+                //Application.Current.Dispatcher.Invoke(() => {
+                //    foreach (var item in cards)
+                //    {
+                //        CardUQCheckingModels.Add(item);
+                //    }
+                //});
+
+                //  SoundHelper.PlaySoundOK();
+
+                //else
+                //{
+                //    Application.Current.Dispatcher.Invoke(() => {
+                //        MessageBox.Show(_epc + " is not found", "Error!", MessageBoxButton.OK);
+                //        SoundHelper.PlaySoundError();
+                //    });
+                //}
+            }
+        }
+
+
         public void OnEncapedTagEpcLog(EncapedLogBaseEpcInfo msg)
         {
             if (SelectedTab == "TabCheckingTag")
             {
-                if (!isReading)
-                {
-                    Application.Current.Dispatcher.Invoke(() => {
-                        TrolleyEPCCheckings.Clear();
-                    });
-                }
-                else
-                {
-                    if (msg == null || 0 != msg.logBaseEpcInfo.Result)
-                    {
-                        return;
-                    }
+                //if (!isReading)
+                //{
+                //    Application.Current.Dispatcher.Invoke(() => {
+                //        TrolleyEPCCheckings.Clear();
+                //    });
+                //}
+                //else
+                //{
+                //    if (msg == null || 0 != msg.logBaseEpcInfo.Result)
+                //    {
+                //        return;
+                //    }
 
-                    if (CheckingEPCTag == "")
-                    {
-                        if (msg.logBaseEpcInfo.Epc != null && msg.logBaseEpcInfo.Epc != "" && msg.logBaseEpcInfo.Epc != lastEPCCheck)
-                        {
-                            CheckingEPCTag = Utilities.EncodeData(msg.logBaseEpcInfo.Epc);
-                            LoadEPCData(Utilities.EncodeData(msg.logBaseEpcInfo.Epc));
-                            lastEPCCheck = msg.logBaseEpcInfo.Epc;
-                        }
-                        return;
-                    }
-                }
+                //    if (CheckingEPCTag == "")
+                //    {
+                //        if (msg.logBaseEpcInfo.Epc != null && msg.logBaseEpcInfo.Epc != "" && msg.logBaseEpcInfo.Epc != lastEPCCheck)
+                //        {
+                //            CheckingEPCTag = Utilities.EncodeData(msg.logBaseEpcInfo.Epc);
+                //            LoadEPCData(Utilities.EncodeData(msg.logBaseEpcInfo.Epc));
+                //            lastEPCCheck = msg.logBaseEpcInfo.Epc;
+                //        }
+                //        return;
+                //    }
+                //}
+                LoadEPCData1(msg.logBaseEpcInfo.Epc);
             }
             else
             {
@@ -601,9 +681,9 @@ namespace RCabinet.ViewModels
 
                     if (!lastChecked && checkCount == 30)
                     {
-                        Application.Current.Dispatcher.Invoke(() => {
-                            TrolleyEPCMappings.Clear();
-                        });
+                        //Application.Current.Dispatcher.Invoke(() => {
+                        //    TrolleyEPCMappings.Clear();
+                        //});
                         lastChecked = true;
                     }
 
@@ -675,17 +755,17 @@ namespace RCabinet.ViewModels
 
         private async Task CheckingTagData()
         {
-            if (CheckingEPCTag == null || CheckingEPCTag == "")
-            {
-                SoundHelper.PlaySoundError();
-                MessageBox.Show("Please input EPC Tag", "Error!", MessageBoxButton.OK);
-                return;
-            }
-            else
-            {
-                CheckingEPCTag = CheckingEPCTag.Trim();
-                LoadEPCData(CheckingEPCTag);
-            }
+            //if (CheckingEPCTag == null || CheckingEPCTag == "")
+            //{
+            //    SoundHelper.PlaySoundError();
+            //    MessageBox.Show("Please input EPC Tag", "Error!", MessageBoxButton.OK);
+            //    return;
+            //}
+            //else
+            //{
+            //    CheckingEPCTag = CheckingEPCTag.Trim();
+            //    LoadEPCData(CheckingEPCTag);
+            //}
         }
 
         private void initBaseInventoryEpc()
@@ -750,7 +830,7 @@ namespace RCabinet.ViewModels
 
             // lấy thông tin chi tiết của thẻ từ database
             string cardid = killZero(CardId.Trim());
-            DataSet dataSet = SqlHelper.getDataSet("exec P_RFIDReader_GetDataByCardNOForUQ_Haki " + SqlHelper.quotedStr(cardid));
+            DataSet dataSet = SqlHelper.getDataSet("exec P_RFIDReader_GetDataByCardNOForUQ_Haki " + SqlHelper.quotedStr(cardid),"ets");
 
             if (dataSet.Tables[0].Rows.Count < 1)
             {
@@ -791,7 +871,7 @@ namespace RCabinet.ViewModels
                 StyleNo = dataSet.Tables[0].Rows[0]["StyleNO"].ToString(),
                 MappingId = mappingId,
                 SO = dataSet.Tables[0].Rows[0]["SO"].ToString(),
-                Mo = dataSet.Tables[0].Rows[0]["ZDcode"].ToString(),
+                Mo = killZero(dataSet.Tables[0].Rows[0]["ZDcode"].ToString()),
                 FeatureName = dataSet.Tables[0].Rows[0]["FeatureName"].ToString(),
                 ColorNo = dataSet.Tables[0].Rows[0]["ColorNo"].ToString(),
                 ColorName = dataSet.Tables[0].Rows[0]["ColorName"].ToString(),
@@ -802,15 +882,16 @@ namespace RCabinet.ViewModels
                 Country = dataSet.Tables[0].Rows[0]["Country"].ToString(),
                 AdjustQuantity = Convert.ToInt32(dataSet.Tables[0].Rows[0]["cCount"].ToString()),
                 GangHao = dataSet.Tables[0].Rows[0]["GangHao"].ToString(),
-                CardNo = dataSet.Tables[0].Rows[0]["CardNo"].ToString(),
-                SoItem = dataSet.Tables[0].Rows[0]["SoItem"].ToString(),
-                SaleNo = dataSet.Tables[0].Rows[0]["SaleNo"].ToString()
+                CardNo = killZero(dataSet.Tables[0].Rows[0]["CardNo"].ToString()),
+                SoItem = killZero(dataSet.Tables[0].Rows[0]["SoItem"].ToString()),
+                SaleNo = dataSet.Tables[0].Rows[0]["SaleNo"].ToString(),
+                DateCreated = DateTime.Now
             };
 
-            DataSet dsEPCcolorsize = SqlHelper.getDataSet("exec P_Hanlde_RFIDReadert_GetCustColorSize @saleno= " + SqlHelper.quotedStr(Card.SaleNo) + ",@soitem=" + SqlHelper.quotedStr(Card.SoItem) + ",@color=" + SqlHelper.quotedStr(Card.ColorNo) + ",@size=" + SqlHelper.quotedStr(Card.Size));
+            DataSet dsEPCcolorsize = SqlHelper.getDataSet("exec P_Hanlde_RFIDReadert_GetCustColorSize @saleno= " + SqlHelper.quotedStr(Card.SaleNo) + ",@soitem=" + SqlHelper.quotedStr(Card.SoItem) + ",@color=" + SqlHelper.quotedStr(Card.ColorNo) + ",@size=" + SqlHelper.quotedStr(Card.Size),"sha");
             if (dsEPCcolorsize.Tables[0].Rows.Count < 1)
             {
-                InvokeMessage("ID:【" + Card.CardNo + "】 [MK280] Thông tin Mapping thẻ hàng ETS và [Size; Màu] SKU của EPC chưa được upload lên ETS", "error");
+                InvokeMessage("ID:【" + Card.CardNo + "】 Thông tin Mapping thẻ hàng ETS và [Size; Màu] SKU của EPC chưa được upload lên ETS", "error");
                 SoundHelper.PlaySoundError();
                 return;
             }

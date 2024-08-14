@@ -691,11 +691,7 @@
 
 
 
-                    <TabItem
-                        Name="tabCheckingTag"
-                        Height="39"
-                        VerticalAlignment="Top"
-                        Header="Checking Tag">
+                    <TabItem Name="tabCheckingTag" Header="Checking Tag">
                         <Grid Margin="-1,0,1,9">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="60" />
@@ -708,7 +704,7 @@
                                 <ColumnDefinition Width="40" />
                                 <ColumnDefinition Width="196" />
                                 <ColumnDefinition Width="400" />
-                                <ColumnDefinition Width="350" />
+                                <ColumnDefinition Width="0" />
                                 <ColumnDefinition Width="Auto" />
 
 
@@ -730,45 +726,35 @@
                                 Command="{Binding GoToMainMenu}"
                                 Content="Return to Main Menu"
                                 FontSize="13" />
-                            <Label
-                                Grid.Row="1"
-                                Grid.ColumnSpan="3"
-                                Width="100"
-                                Height="40"
-                                Margin="4,0,0,0"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Content="EPC Tag"
-                                FontSize="20"
-                                Style="{StaticResource LabelUIWhite}" />
 
-                            <TextBox
-                                x:Name="txtTagEPC"
-                                Grid.Row="1"
-                                Grid.Column="2"
-                                Grid.ColumnSpan="2"
-                                Width="530"
-                                Margin="45,10,0,10"
-                                HorizontalAlignment="Left"
-                                VerticalContentAlignment="Top"
-                                mahapps:TextBoxHelper.ClearTextButton="True"
-                                mahapps:TextBoxHelper.Watermark="Search items..."
-                                Background="#bdebeb69"
-                                FontSize="20"
-                                FontWeight="Bold"
-                                IsEnabled="{Binding EnableCheckingTag}"
-                                KeyDown="txtTagEPC_KeyDown"
-                                Text="{Binding CheckingEPCTag, UpdateSourceTrigger=PropertyChanged}" />
+                            <!--<TextBox
+                            x:Name="txtTagEPC"
+                            Grid.Row="1"
+                            Grid.Column="2"
+                            Grid.ColumnSpan="2"
+                            Width="530"
+                            Margin="45,10,0,10"
+                            HorizontalAlignment="Left"
+                            VerticalContentAlignment="Top"
+                            mahapps:TextBoxHelper.ClearTextButton="True"
+                            mahapps:TextBoxHelper.Watermark="Search items..."
+                            Background="#bdebeb69"
+                            FontSize="20"
+                            FontWeight="Bold"
+                            IsEnabled="{Binding EnableCheckingTag}"
+                            KeyDown="txtTagEPC_KeyDown"
+                            Text="{Binding CheckingEPCTag, UpdateSourceTrigger=PropertyChanged}" />-->
 
 
 
 
                             <DataGrid
                                 Name="ChekingItemsGrid"
-                                Grid.Row="2"
+                                Grid.Row="1"
+                                Grid.RowSpan="2"
                                 Grid.Column="0"
                                 Grid.ColumnSpan="5"
-                                Margin="10,2,10,76"
+                                Margin="10,22,12,76"
                                 AutoGenerateColumns="False"
                                 Background="#33DB80F0"
                                 BorderBrush="Gray"
@@ -788,33 +774,26 @@
                                 </DataGrid.Style>
                                 <DataGrid.Columns>
                                     <DataGridTextColumn
-                                        Width="80"
-                                        Binding="{Binding Count}"
-                                        Header="Count" />
-                                    <DataGridTextColumn
-                                        Width="180"
-                                        Binding="{Binding EncodeEPC}"
-                                        Header="EPC" />
-                                    <DataGridTextColumn
-                                        Width="100"
-                                        Binding="{Binding Size}"
-                                        Header="Size" />
-                                    <DataGridTextColumn
-                                        Width="100"
-                                        Binding="{Binding Color}"
-                                        Header="Color" />
-                                    <DataGridTextColumn
-                                        Width="100"
-                                        Binding="{Binding PO}"
-                                        Header="PO" />
-                                    <DataGridTextColumn
-                                        Width="200"
+                                        Width="150"
                                         Binding="{Binding TimeCreated}"
                                         Header="DateTime" />
                                     <DataGridTextColumn
-                                        Width="200"
+                                        Width="120"
                                         Binding="{Binding EmpCode}"
                                         Header="User" />
+                                    <DataGridTextColumn
+                                        Width="120"
+                                        Binding="{Binding Size}"
+                                        Header="Size" />
+                                    <DataGridTextColumn
+                                        Width="120"
+                                        Binding="{Binding Color}"
+                                        Header="Color" />
+                                    <DataGridTextColumn
+                                        Width="120"
+                                        Binding="{Binding PO}"
+                                        Header="PO" />
+
 
                                 </DataGrid.Columns>
                             </DataGrid>
@@ -825,8 +804,8 @@
                                 Grid.Row="1"
                                 Grid.RowSpan="2"
                                 Grid.Column="5"
-                                Width="399"
-                                Margin="21,19,0,79"
+                                Width="760"
+                                Margin="7,16,0,82"
                                 HorizontalAlignment="Left"
                                 AutoGenerateColumns="False"
                                 Background="#33DB80F0"
@@ -843,11 +822,11 @@
                                 SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
                                 SelectionMode="Single"
                                 SelectionUnit="FullRow">
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="SelectedCellsChanged">
-                                        <i:InvokeCommandAction Command="{Binding ItemSelectedCommand}" />
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
+                                <!--<i:Interaction.Triggers>
+                                <i:EventTrigger EventName="SelectedCellsChanged">
+                                <i:InvokeCommandAction Command="{Binding ItemSelectedCommand}" />
+                                </i:EventTrigger>
+                                </i:Interaction.Triggers>-->
 
                                 <DataGrid.RenderTransform>
                                     <TransformGroup>
@@ -864,13 +843,21 @@
                                         Binding="{Binding Mo}"
                                         Header="MO" />
                                     <DataGridTextColumn
+                                        Width="100"
+                                        Binding="{Binding Size}"
+                                        Header="Size" />
+                                    <DataGridTextColumn
                                         Width="120"
                                         Binding="{Binding CardNo}"
                                         Header="Card No" />
                                     <DataGridTextColumn
-                                        Width="145"
-                                        Binding="{Binding AdjustQuantity}"
-                                        Header="Adjust Quantity" />
+                                        Width="100"
+                                        Binding="{Binding BundleNo}"
+                                        Header="Bundle" />
+                                    <DataGridTextColumn
+                                        Width="300"
+                                        Binding="{Binding GangHao}"
+                                        Header="GangHao" />
 
                                 </DataGrid.Columns>
                             </DataGrid>
@@ -880,7 +867,7 @@
                                 x:Name="btReadingEPC_Copy"
                                 Grid.Row="0"
                                 Grid.Column="5"
-                                Margin="143,10,143,10"
+                                Margin="198,14,244,6"
                                 Padding="10,10,10,10"
                                 Command="{Binding StartReadingEPC}"
                                 Content="{Binding ReadingStatus}"

@@ -26,16 +26,35 @@ public class SqlHelper
             return config;
         }
 
-	public static DataSet getDataSet(string asql)
-	{
+        public static string getSHAConnection()
+        {
+            string config = ConfigurationManager.ConnectionStrings["SHAConnectionString"].ConnectionString;
+            return config;
+        }
+
+		public static DataSet getDataSet(string asql,string type)
+		{ 
 		DataSet dataSet = new DataSet();
-		using (SqlConnection sqlConnection = new SqlConnection(getSQLConnection()))
-		{
-			sqlConnection.Open();
-			SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(asql, sqlConnection);
-			sqlDataAdapter.SelectCommand.CommandTimeout = COMMAND_TIMEOUT;
-			sqlDataAdapter.Fill(dataSet);
-		}
+			if(type=="ets")
+            {
+                using (SqlConnection sqlConnection = new SqlConnection(getSQLConnection()))
+                {
+                    sqlConnection.Open();
+                    SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(asql, sqlConnection);
+                    sqlDataAdapter.SelectCommand.CommandTimeout = COMMAND_TIMEOUT;
+                    sqlDataAdapter.Fill(dataSet);
+                }
+            }
+            else
+            {
+                using (SqlConnection sqlConnection = new SqlConnection(getSHAConnection()))
+                {
+                    sqlConnection.Open();
+                    SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(asql, sqlConnection);
+                    sqlDataAdapter.SelectCommand.CommandTimeout = COMMAND_TIMEOUT;
+                    sqlDataAdapter.Fill(dataSet);
+                }
+            }
 		return dataSet;
 	}
 
