@@ -891,7 +891,7 @@ namespace RCabinet.ViewModels
             DataSet dsEPCcolorsize = SqlHelper.getDataSet("exec P_Hanlde_RFIDReadert_GetCustColorSize @saleno= " + SqlHelper.quotedStr(Card.SaleNo) + ",@soitem=" + SqlHelper.quotedStr(Card.SoItem) + ",@color=" + SqlHelper.quotedStr(Card.ColorNo) + ",@size=" + SqlHelper.quotedStr(Card.Size),"sha");
             if (dsEPCcolorsize.Tables[0].Rows.Count < 1)
             {
-                InvokeMessage("ID:【" + Card.CardNo + "】 Thông tin Mapping thẻ hàng ETS và [Size; Màu] SKU của EPC chưa được upload lên ETS", "error");
+                InvokeMessage("ID:【" + Card.CardNo + "】 Thông tin Mapping thẻ hàng ETS và [Size; Màu] SKU của EPC chưa được upload lên ORP", "error");
                 SoundHelper.PlaySoundError();
                 return;
             }
