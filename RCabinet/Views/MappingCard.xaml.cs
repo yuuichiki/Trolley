@@ -89,5 +89,34 @@ namespace RCabinet.Views
             }
 
         }
+
+
+
+        private void toppingTab_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var viewModel = DataContext as MappingCardViewModel;
+                if (viewModel != null)
+                {
+                    if (e.Source is TabControl)
+                    {
+                        if (tabMappingCard.IsSelected)
+                        {
+                            viewModel.SelectedTab = "TabMappingCard";
+                            viewModel.EnableReadingEPC = false;
+                            (DataContext as MappingUQViewModel)?.ChangingTabCommand.Execute(null);
+
+                        }
+                        else if (tabCheckingTag.IsSelected)
+                        {
+                            viewModel.SelectedTab = "TabCheckingTag";
+                            viewModel.EnableReadingEPC = true;
+                            (DataContext as MappingUQViewModel)?.ChangingTabCommand.Execute(null);
+                        }
+                    }
+                }
+            });
+        }
     }
 }

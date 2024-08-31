@@ -2,6 +2,7 @@
 using GDotnet.Reader.Api.DAL;
 using GDotnet.Reader.Api.Protocol.Gx;
 using Microsoft.EntityFrameworkCore.Internal;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RCabinet.Helpers;
 using RCabinet.Interfaces;
@@ -27,7 +28,7 @@ using static RCabinet.Models.ShaContext;
 
 namespace RCabinet.ViewModels
 {
-    internal class MappingUQViewModel : BaseViewModel, INotifyPropertyChanged
+    internal class MappingNikeViewModel : BaseViewModel, INotifyPropertyChanged
     {
         private readonly HttpClient _httpClient;
         private string _comportSelectedItem;
@@ -36,11 +37,14 @@ namespace RCabinet.ViewModels
         private List<string> _myPo = new List<string>();
         private PosModel _poSelectedItem;
         private int _totalCount = 0;
-        private ObservableCollection<TrolleyEPCMapping> _trolleyEPCChecking;
-        private ObservableCollection<TrolleyEPCMapping> _trolleyEPCMapping;
+        private ObservableCollection<TrolleyNikeEPCMapping> _trolleyEPCChecking;
+        private ObservableCollection<TrolleyNikeEPCMapping> _trolleyEPCMapping;
+
+        private ObservableCollection<TrolleyNikeEPCMapping> _validEPCs;
+
         private CardKey cardkey = (CardKey)null;
-        private ObservableCollection<CardUQModel> cardUQModels;
-        private ObservableCollection<CardUQModel> cardUQCheckingModels;
+        private ObservableCollection<TrolleyNikeCard> trolleyNikeCard;
+        private ObservableCollection<TrolleyNikeCard> cardNikeCheckingModels;
         private CancellationTokenSource _cancellationTokenSource;
         private GClient clientConn = null;
         private List<string> comport = new List<string>();
@@ -75,16 +79,18 @@ namespace RCabinet.ViewModels
         private ZebraConfig zebraConfig;
 
 
-        public MappingUQViewModel(IChangeViewModel viewModelChanger) : base(viewModelChanger)
+        public MappingNikeViewModel(IChangeViewModel viewModelChanger) : base(viewModelChanger)
         {
             ReadingStatus = "Start Reading EPC";
+            _httpClient = new HttpClient();
             saving = false;
             totalQuantity = 0;
             count = 1;
             EnableReadingEPC = false;
             EnableChekingEPC = false;
-            CardUQModels = new ObservableCollection<CardUQModel>();
-            CardUQCheckingModels = new ObservableCollection<CardUQModel>();
+            TrolleyNikeCards = new ObservableCollection<TrolleyNikeCard>();
+            CardNikeCheckingModels = new ObservableCollection<TrolleyNikeCard>();
+            ValidEPCs = new ObservableCollection<TrolleyNikeEPCMapping>();
             markError = false;
             mappingId = Guid.NewGuid();
             ComPort = new List<string>();
@@ -106,8 +112,8 @@ namespace RCabinet.ViewModels
             RFID_Reader rFID_Reader = reader;
             rFID_Reader.OnReading = (delegateEncapedTagEpcLog)Delegate.Combine(rFID_Reader.OnReading, new delegateEncapedTagEpcLog(OnEncapedTagEpcLog));
             messageNoti = new ObservableCollection<string>();
-            TrolleyEPCMappings = new ObservableCollection<TrolleyEPCMapping>();
-            TrolleyEPCCheckings = new ObservableCollection<TrolleyEPCMapping>();
+            TrolleyNikeEPCMappings = new ObservableCollection<TrolleyNikeEPCMapping>();
+            TrolleyEPCCheckings = new ObservableCollection<TrolleyNikeEPCMapping>();
             //get epc token from app.config
             epc_uri = System.Configuration.ConfigurationManager.AppSettings["API_EPC_URI"];
             epc_token = System.Configuration.ConfigurationManager.AppSettings["API_EPC_TOKEN"];
@@ -230,7 +236,7 @@ namespace RCabinet.ViewModels
                 TrolleyEPCCheckings.Clear();
                 using (var db = new ShaContext())
                 {
-                    var epcs = db.TrolleyEPCMappings.Where((TrolleyEPCMapping e) => e.UQCardId == SelectedItem.Id).ToList();
+                    var epcs = db.TrolleyNikeEPCMappings.Where((TrolleyNikeEPCMapping e) => e.NikeCardId == SelectedItem.Id).ToList();
                     foreach (var epc in epcs)
                     {
                         TrolleyEPCCheckings.Add(epc);
@@ -271,7 +277,7 @@ namespace RCabinet.ViewModels
         }
 
         private string lastEPCCheck;
-        private CardUQModel _card
+        private TrolleyNikeCard _card
         {
             get;
             set;
@@ -311,7 +317,7 @@ namespace RCabinet.ViewModels
                 NotifyPropertyChanged();
             }
         }
-        public CardUQModel Card
+        public TrolleyNikeCard Card
         {
             get => _card;
             set
@@ -334,28 +340,25 @@ namespace RCabinet.ViewModels
             }
         }
 
-        public ObservableCollection<CardUQModel> CardUQModels
+        public ObservableCollection<TrolleyNikeCard> TrolleyNikeCards
         {
-            get
-            {
-                return cardUQModels;
-            }
+            get => trolleyNikeCard;
             set
             {
-                cardUQModels = value;
+                trolleyNikeCard = value;
                 NotifyPropertyChanged();
             }
         }
 
-        public ObservableCollection<CardUQModel> CardUQCheckingModels
+        public ObservableCollection<TrolleyNikeCard> CardNikeCheckingModels
         {
             get
             {
-                return cardUQCheckingModels;
+                return cardNikeCheckingModels;
             }
             set
             {
-                cardUQCheckingModels = value;
+                cardNikeCheckingModels = value;
                 NotifyPropertyChanged();
             }
         }
@@ -434,10 +437,6 @@ namespace RCabinet.ViewModels
                 NotifyPropertyChanged();
             }
         }
-
-        
-
-
         public bool EnableSwipeCard
         {
             get
@@ -451,15 +450,6 @@ namespace RCabinet.ViewModels
             }
         }
 
-        public int MappedQuantity
-        {
-            get => _mappedQuantity;
-            set
-            {
-                _mappedQuantity = value;
-                NotifyPropertyChanged();
-            }
-        }
 
         public string MessageInfo
         {
@@ -560,7 +550,7 @@ namespace RCabinet.ViewModels
             }
         }
 
-        public ObservableCollection<TrolleyEPCMapping> TrolleyEPCCheckings
+        public ObservableCollection<TrolleyNikeEPCMapping> TrolleyEPCCheckings
         {
             get
             {
@@ -573,7 +563,7 @@ namespace RCabinet.ViewModels
             }
         }
 
-        public ObservableCollection<TrolleyEPCMapping> TrolleyEPCMappings
+        public ObservableCollection<TrolleyNikeEPCMapping> TrolleyNikeEPCMappings
         {
             get
             {
@@ -585,6 +575,19 @@ namespace RCabinet.ViewModels
                 NotifyPropertyChanged();
             }
         }
+        public ObservableCollection<TrolleyNikeEPCMapping> ValidEPCs
+        {
+            get
+            {
+                return _validEPCs;
+            }
+            set
+            {
+                _validEPCs = value;
+                NotifyPropertyChanged();
+            }
+        }
+        
 
         #endregion Properties
 
@@ -592,31 +595,24 @@ namespace RCabinet.ViewModels
         {
             using (var db = new ShaContext())
             {
-                //Application.Current.Dispatcher.Invoke(() => {
-                //    TrolleyEPCCheckings.Clear();
-                //});
-                // CardUQCheckingModels.Clear();
-
 
                 var matchingEPC = TrolleyEPCCheckings.FirstOrDefault(t => t.EPC == _epc);
                 if (matchingEPC == null)
                 {
-                    var epc = db.TrolleyEPCMappings.FirstOrDefault((TrolleyEPCMapping e) => e.EPC.Contains(_epc));
+                    var epc = db.TrolleyNikeEPCMappings.FirstOrDefault( e => e.EPC.Contains(_epc));
                     if (epc != null)
                     {
                         Application.Current.Dispatcher.Invoke(() =>
                         {
 
                             TrolleyEPCCheckings.Add(epc);
-
-
-                            var card = db.TrolleyUQCards.Where((CardUQModel e) => e.Id == epc.UQCardId).ToList().FirstOrDefault();
+                            var card = db.TrolleyNikeCards.Where(e => e.Id == epc.NikeCardId).ToList().FirstOrDefault();
                             if (card != null)
                             {
                                 // checking CardUQCheckingModels not contains card
-                                if (!CardUQCheckingModels.Any((CardUQModel e) => e.CardNo.Contains(card.CardNo)))
+                                if (! CardNikeCheckingModels.Any((TrolleyNikeCard e) => e.CardNo.Contains(card.CardNo)))
                                 {
-                                    CardUQCheckingModels.Add(card);
+                                    CardNikeCheckingModels.Add(card);
                                 }
 
                             }
@@ -644,7 +640,7 @@ namespace RCabinet.ViewModels
                     {
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            TrolleyEPCMappings.Clear();
+                            TrolleyNikeEPCMappings.Clear();
                         });
                     }
                     else
@@ -656,12 +652,12 @@ namespace RCabinet.ViewModels
                         string logepc = msg.logBaseEpcInfo.Epc;
 
  
-                        if (!TrolleyEPCMappings.Any(e => e.EPC.Contains(logepc)))
+                        if (!TrolleyNikeEPCMappings.Any(e => e.EPC.Contains(logepc)))
                         {
                             Application.Current.Dispatcher.Invoke(() =>
                             {
                                 var model =
-                                  new TrolleyEPCMapping
+                                  new TrolleyNikeEPCMapping
                                   {
                                       Count = count,
                                       Id = Guid.NewGuid(),
@@ -669,9 +665,8 @@ namespace RCabinet.ViewModels
                                       EncodeEPC = Utilities.EncodeData(msg.logBaseEpcInfo.Epc),
                                       MappingId = mappingId,
                                       TimeCreated = DateTime.Now,
-                                      SKU = "",
-                                      Size = Card.Size,
-                                      Color = Card.ColorNo,
+                                      Size = "",
+                                      Color ="",
                                       EmpCode = CurrentUser.Name
                                   };
 
@@ -679,96 +674,11 @@ namespace RCabinet.ViewModels
                                 Application.Current.Dispatcher.Invoke(() =>
                                 {
 
-                                    TrolleyEPCMappings.Add(model);
+                                    TrolleyNikeEPCMappings.Add(model);
                                     TotalCount = count;
                                     if (EnableChekingEPC == false) EnableChekingEPC = true;
                                     count++;
                                 });
-
-                                //var epcModel = updateEPCData(model).Result;
-                                //if (epcModel != null)
-                                //{
-                                //    // check epcModel.Color ==null || epc.Color =""
-                                //    if (epcModel.Color == "")
-                                //    {
-                                //        InvokeMessage("EPC:【" + epcModel.EPC + "】Không thể lấy thông tin Màu sắc từ EPC", "error");
-                                //        SoundHelper.PlaySoundError();
-                                //        return;
-                                //    }
-                                //    if (epcModel.Size == "")
-                                //    {
-                                //        InvokeMessage("EPC:【" + epcModel.EPC + "】Không thể lấy thông tin Size từ EPC", "error");
-                                //        SoundHelper.PlaySoundError();
-                                //        return;
-                                //    }
-                                //    if (epcModel.Color != EPC_Color.Trim())
-                                //    {
-                                //        InvokeMessage("EPC:【" + epcModel.EPC + "】Màu sắc thẻ EPC không khớp với thông tin màu sắc của thẻ hàng", "error");
-                                //        SoundHelper.PlaySoundError();
-                                //        return;
-                                //    }
-                                //    if (epcModel.Size != EPC_Size.Trim())
-                                //    {
-                                //        InvokeMessage("EPC:【" + epcModel.EPC + "】Size thẻ EPC không khớp với thông tin Size của thẻ hàng", "error");
-                                //        SoundHelper.PlaySoundError();
-                                //        return;
-                                //    }
-
-                                //    using (var db = new ShaContext())
-                                //    {
-                                //        var epc = db.TrolleyEPCMappings.FirstOrDefault((TrolleyEPCMapping e) => e.EPC.Contains(model.EPC));
-                                //        if (epc != null)
-                                //        {
-                                //            //check if MessageNotify contains
-                                //            string err = "EPC:【" + model.EPC + "】 đã làm liên kết";
-                                //            if (MessageNotify.Contains(err) == false)
-                                //            {
-                                //                InvokeMessage(err, "error");
-
-                                //            }
-                                //        }
-                                //        else
-                                //        {
-
-
-                                //            if (TrolleyEPCMappings.Count > TotalQuantity)
-                                //            {
-                                //                //SoundHelper.PlaySoundUnmatch();
-                                //                InvokeMessage("Đã đọc số lượng thẻ:" + this.TrolleyEPCMappings.Count.ToString() + "Chiếc,Đã vượt quá số lượng " + Convert.ToString(TrolleyEPCMappings.Count - Convert.ToInt32(TotalQuantity)) + " Chiếc, Thao tác này không hợp lệ,vui lòng liên kết lại, xin cảm ơn", "error");
-                                //            }
-
-
-                                //        }
-                                //    }
-                                //}
-
-                                //if (TrolleyEPCMappings.Count == TotalQuantity)
-                                //{
-                                //    checkCount++;
-                                //    if (checkCount > 2 && lastChecked)
-                                //    {
-                                //        //SaveCard();
-                                //        // MessageBox.Show("Save Card");
-                                //    }
-                                //}
-                                //if (!lastChecked && checkCount == 2)
-                                //{
-                                //    Application.Current.Dispatcher.Invoke(() =>
-                                //    {
-                                //        TrolleyEPCMappings.Clear();
-                                //        count = 1;
-
-                                //    });
-                                //    lastChecked = true;
-                                //}
-
-
-                                //if (TrolleyEPCMappings.Count == TotalQuantity && checkCount > 2 && lastChecked)
-                                //{
-                                //    //SaveCard();
-                                //    MessageBox.Show("Save Card");
-
-                                //}
 
 
                             });
@@ -790,13 +700,13 @@ namespace RCabinet.ViewModels
             return true;
         }
 
-        private void addCardList(CardUQModel card)
+        private void addCardList(TrolleyNikeCard card)
         {
-            var existingItem = CardUQModels.FirstOrDefault(x => x.CardNo == card.CardNo);
+            var existingItem = TrolleyNikeCards.FirstOrDefault(x => x.CardNo == card.CardNo);
             if (existingItem == null)
             {
-                CardUQModels.Add(card);
-                TotalQuantity += card.AdjustQuantity;
+                TrolleyNikeCards.Add(card);
+                TotalQuantity += card.ValidQuantity.Value;
             }
         }
 
@@ -811,8 +721,9 @@ namespace RCabinet.ViewModels
         private async Task ClearEPCMappingGrid()
         {
             Application.Current.Dispatcher.Invoke(() => {
-                CardUQCheckingModels.Clear();
-                TrolleyEPCMappings.Clear();
+                CardNikeCheckingModels.Clear();
+                TrolleyNikeEPCMappings.Clear();
+                ValidEPCs.Clear();
                 EnableChekingEPC = false;
                 count = 1;
                 TotalCount = 0;
@@ -822,9 +733,10 @@ namespace RCabinet.ViewModels
         private async Task ClearEPCGrid()
         {
             Application.Current.Dispatcher.Invoke(() => {
-                CardUQModels.Clear();
-                CardUQCheckingModels.Clear();
-                TrolleyEPCMappings.Clear();
+                TrolleyNikeCards.Clear();
+                CardNikeCheckingModels.Clear();
+                TrolleyNikeEPCMappings.Clear();
+                ValidEPCs.Clear();
                 TotalQuantity = 0;
                 EnableReadingEPC = false;
                 count = 1;
@@ -922,95 +834,97 @@ namespace RCabinet.ViewModels
                 return;
             }
 
-            // lấy thông tin chi tiết của thẻ từ database
-            string cardid = killZero(CardId.Trim());
-            DataSet dataSet = SqlHelper.getDataSet("exec P_RFIDReader_GetDataByCardNOForUQ_Haki " + SqlHelper.quotedStr(cardid),"ets");
-
-            if (dataSet.Tables[0].Rows.Count < 1)
-            {
-                InvokeMessage("ID: 【" + cardid + "】Thẻ không hợp lệ hoặc không có ID này, vui lòng kiểm tra lại", "error");
-                CardId = string.Empty;
-                return;
-            }
-            if (this.cardkey.zdcode != string.Empty && (dataSet.Tables[0].Rows[0]["ZDcode"].ToString().Trim() != this.cardkey.zdcode || this.cardkey.colorno != dataSet.Tables[0].Rows[0]["ColorNo"].ToString().Trim() || this.cardkey.size != dataSet.Tables[0].Rows[0]["sSize"].ToString().Trim() || this.cardkey.ganghao != dataSet.Tables[0].Rows[0]["GangHao"].ToString().Trim()))
-            {
-                InvokeMessage("ID:【" + cardid + "】Đơn đặt hàng, màu sắc, kích thước, số gang hao khác với số thẻ đã đọc, hoạt động này không hợp lệ", "unmatch");
-                CardId = string.Empty;
-                return;
-            }
-            if (dataSet.Tables[0].Rows[0]["SaleNo"] == "" || dataSet.Tables[0].Rows[0]["SoItem"] == "")
-            {
-                InvokeMessage("ID:【" + cardid + "】Không thể lấy số mặt hàng và số đơn hàng bán hàng tương ứng với đơn đặt hàng", "error");
-                CardId = string.Empty;
-                return;
-            }
-
             using (var db = new ShaContext())
             {
-                var cardInstance = db.TrolleyUQCards.FirstOrDefault((CardUQModel e) => e.CardNo.Contains(cardid));
+                var cardInstance = db.TrolleyNikeCards.FirstOrDefault(e => e.CardNo.Contains(CardId.Trim()));
 
                 if (cardInstance != null)
                 {
-                    InvokeMessage("Thẻ: 【" + cardid + "】Đã làm liên kết thẻ, vui lòng kiểm tra lại", "error");
-                    CardId = string.Empty;
+                    InvokeMessage("Card: 【" + CardId.Trim() + "】Đã làm liên kết thẻ, vui lòng kiểm tra lại", "error");
                     return;
                 }
             }
 
-            //Load dataSet to CardUqModel
-            Card = new CardUQModel
-            {
-                Id = Guid.NewGuid(),
-                StyleNo = dataSet.Tables[0].Rows[0]["StyleNO"].ToString(),
-                MappingId = mappingId,
-                SO = dataSet.Tables[0].Rows[0]["SO"].ToString(),
-                Mo = killZero(dataSet.Tables[0].Rows[0]["ZDcode"].ToString()),
-                FeatureName = dataSet.Tables[0].Rows[0]["FeatureName"].ToString(),
-                ColorNo = dataSet.Tables[0].Rows[0]["ColorNo"].ToString(),
-                ColorName = dataSet.Tables[0].Rows[0]["ColorName"].ToString(),
-                Size = dataSet.Tables[0].Rows[0]["sSize"].ToString(),
-                CutQuantity = Convert.ToInt32(dataSet.Tables[0].Rows[0]["CutQty"].ToString()),
-                BundleQuantity = Convert.ToInt32(dataSet.Tables[0].Rows[0]["cCount"].ToString()),
-                BundleNo = Convert.ToInt32(dataSet.Tables[0].Rows[0]["GroupNO"].ToString()),
-                Country = dataSet.Tables[0].Rows[0]["Country"].ToString(),
-                AdjustQuantity = Convert.ToInt32(dataSet.Tables[0].Rows[0]["cCount"].ToString()),
-                GangHao = dataSet.Tables[0].Rows[0]["GangHao"].ToString(),
-                CardNo = killZero(dataSet.Tables[0].Rows[0]["CardNo"].ToString()),
-                SoItem = killZero(dataSet.Tables[0].Rows[0]["SoItem"].ToString()),
-                SaleNo = dataSet.Tables[0].Rows[0]["SaleNo"].ToString(),
-                DateCreated = DateTime.Now
-            };
 
-            DataSet dsEPCcolorsize = SqlHelper.getDataSet("exec P_Hanlde_RFIDReadert_GetCustColorSize @saleno= " + SqlHelper.quotedStr(Card.SaleNo) + ",@soitem=" + SqlHelper.quotedStr(Card.SoItem) + ",@color=" + SqlHelper.quotedStr(Card.ColorNo) + ",@size=" + SqlHelper.quotedStr(Card.Size),"sha");
-            if (dsEPCcolorsize.Tables[0].Rows.Count < 1)
+            string url = "http://172.19.18.35:8103/ETSToEPC/etsCard/nike/" + killZero(CardId.Trim());
+            var response = await _httpClient.GetAsync(url);
+
+            if (response != null && response.IsSuccessStatusCode)
             {
-                InvokeMessage("ID:【" + Card.CardNo + "】 Thông tin Mapping thẻ hàng ETS và [Size; Màu] SKU của EPC chưa được upload lên ORP", "error");
-                SoundHelper.PlaySoundError();
-                return;
+                var responseData = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<ResponseModel>(responseData);
+
+                var _card = result.Card;
+
+
+
+                Card = new TrolleyNikeCard
+                {
+                    Id = Guid.NewGuid(),
+                    Mo = _card.Mo,
+                    MappingId = mappingId,
+                    CardNo = _card.CardNo,
+                    StyleNo = _card.StyleNo,
+                    CustomerColor = _card.CustomerColor,
+                    GangHao = _card.GangHao,
+                    ColorNo = _card.ColorNo,
+                    ColorName = _card.ColorName,
+                    Size = _card.Size,
+                    IsActive = _card.IsActive,
+                    ValidQuantity = _card.ValidQuantity,
+                    Quantity = _card.Quantity,
+                    WorklayerNo = _card.WorklayerNo,
+                    WorklayerName = _card.WorklayerName,
+                    Group = _card.Group,
+                    CutType = _card.CutType ?? null,
+                    CutTypeName = _card.CutTypeName,
+                    DateCreated = DateTime.Now
+
+                };
+
+                var trolleyNikeCard = Card;
+                if (Card.IsActive == false)
+                {
+                    InvokeMessage("Card: 【" + CardId.Trim() + "】Chưa được thiết lập", "error");
+                    return;
+                }
+
+                var existingGang = TrolleyNikeCards.FirstOrDefault(x => x.GangHao == trolleyNikeCard.GangHao);
+                if (existingGang != null || TrolleyNikeCards.Count == 0)
+                {
+
+                    if (TrolleyNikeCards.FirstOrDefault(x => x.CardNo == trolleyNikeCard.CardNo) == null)
+                    {
+                        TrolleyNikeCards.Add(trolleyNikeCard);
+                        TotalQuantity += trolleyNikeCard.ValidQuantity.Value;
+                    }
+
+                }
+                else
+                {
+
+                    InvokeMessage("Card: 【" + CardId.Trim() + "】Không cùng Gang Hao", "error");
+                    return;
+
+                }
+
+                var existingItem = TrolleyNikeCards.FirstOrDefault(x => x.CardNo == trolleyNikeCard.CardNo && x.GangHao == trolleyNikeCard.GangHao);
+                if (existingItem == null)
+                {
+
+                    TrolleyNikeCards.Add(trolleyNikeCard);
+                    TotalQuantity += trolleyNikeCard.ValidQuantity.Value;
+
+                }
+                CardId = string.Empty;
+
             }
             else
             {
-                EPC_Color = dsEPCcolorsize.Tables[0].Rows[0]["CustColorNo"].ToString();
-                EPC_Size = dsEPCcolorsize.Tables[0].Rows[0]["CustSize"].ToString();
+                InvokeMessage("Card: 【" + CardId.Trim() + "】Không tìm thấy thông tin", "error");
+                return;
             }
-
-            if (this.cardkey.zdcode == string.Empty)
-            {
-                this.cardkey.zdcode = dataSet.Tables[0].Rows[0]["ZDcode"].ToString();
-                this.cardkey.colorno = dataSet.Tables[0].Rows[0]["ColorNo"].ToString();
-                this.cardkey.size = dataSet.Tables[0].Rows[0]["sSize"].ToString();
-                this.cardkey.ganghao = dataSet.Tables[0].Rows[0]["GangHao"].ToString();
-            }
-
-            if (Convert.ToInt32(dataSet.Tables[0].Rows[0]["cCount"].ToString()) != 0)
-            {
-                addCardList(Card);
-               
-            }
-            if (TotalQuantity > 0)   EnableReadingEPC = true;
-
-
-            CountDown = CycleTime;
+            if(TotalQuantity>0) EnableReadingEPC = true;
             CardId = string.Empty;
         }
 
@@ -1021,11 +935,11 @@ namespace RCabinet.ViewModels
                 Application.Current.Dispatcher.Invoke(() => {
                     TrolleyEPCCheckings.Clear();
                 });
-                CardUQCheckingModels.Clear();
-                var epc = db.TrolleyEPCMappings.FirstOrDefault((TrolleyEPCMapping e) => e.EncodeEPC.Contains(_epc));
+                CardNikeCheckingModels.Clear();
+                var epc = db.TrolleyNikeEPCMappings.FirstOrDefault((TrolleyNikeEPCMapping e) => e.EncodeEPC.Contains(_epc));
                 if (epc != null)
                 {
-                    var mappings = db.TrolleyEPCMappings.Where((TrolleyEPCMapping e) => e.MappingId == (epc.MappingId)).ToList();
+                    var mappings = db.TrolleyNikeEPCMappings.Where((TrolleyNikeEPCMapping e) => e.MappingId == (epc.MappingId)).ToList();
                     {
                         Application.Current.Dispatcher.Invoke(() => {
                             foreach (var item in mappings)
@@ -1036,11 +950,11 @@ namespace RCabinet.ViewModels
                         });
                     }
 
-                    var cards = db.TrolleyUQCards.Where((CardUQModel e) => e.MappingId == epc.MappingId).ToList();
+                    var cards = db.TrolleyNikeCards.Where( e => e.MappingId == epc.MappingId).ToList();
                     Application.Current.Dispatcher.Invoke(() => {
                         foreach (var item in cards)
                         {
-                            CardUQCheckingModels.Add(item);
+                            CardNikeCheckingModels.Add(item);
                         }
                     });
 
@@ -1105,32 +1019,155 @@ namespace RCabinet.ViewModels
 
         private async Task RecheckEPCData()
         {
-            // Your logic when the countdown completes
 
+            ValidEPCs.Clear();
+            var epcList = TrolleyNikeEPCMappings.Select(t => t.EPC).ToList();
+            string jsonEpcArray = JsonConvert.SerializeObject(epcList, Formatting.Indented);
+            await MappingEPCData(jsonEpcArray);
 
-            if (TrolleyEPCMappings.Count>0 && TrolleyEPCMappings.Count == TotalQuantity)
+            if (ValidEPCs.Count>0 && ValidEPCs.Count == TotalQuantity)
             {
-              
-                SaveCard();
-                
+                await SaveCard();
             }
            
-            else if (TrolleyEPCMappings.Count > TotalQuantity)
+            else if (ValidEPCs.Count > TotalQuantity)
             {
-                //SaveCard();
-                InvokeMessage("Số lượng thẻ EPC đọc được ["+ TrolleyEPCMappings.Count + "] nhiều hơn số lượng thẻ của đơn ["+ TotalQuantity + "] !. Xin vui lòng kiểm tra lại", "error");
+                InvokeMessage("Số lượng thẻ EPC hợp lệ đọc được [" + ValidEPCs.Count + "] nhiều hơn số lượng thẻ của đơn ["+ TotalQuantity + "] !. Xin vui lòng kiểm tra lại", "error");
                 await ClearEPCMappingGrid();
-
             }
 
-            else if (TrolleyEPCMappings.Count < TotalQuantity)
+            else if (ValidEPCs.Count < TotalQuantity)
             {
-                //SaveCard();
-                InvokeMessage("Số lượng thẻ EPC đọc được [" + TrolleyEPCMappings.Count + "] ít hơn số lượng thẻ của đơn [" + TotalQuantity + "] !. Xin vui lòng kiểm tra lại", "error");
-      
+                InvokeMessage("Số lượng thẻ EPC hợp lệ đọc được [" + TrolleyNikeEPCMappings.Count + "] ít hơn số lượng thẻ của đơn [" + TotalQuantity + "] !. Xin vui lòng kiểm tra lại", "error");
+            }
+        }
+
+
+
+        private async Task MappingEPCData(string epc)
+        {
+            string url = $"http://172.19.18.35:8103/nike/epcs/";
+            try
+            {
+                var epccheckfirst = TrolleyNikeEPCMappings.Any(t => t.EPC == epc);
+                //if (epccheckfirst || trashEPC.Contains(epc))
+                //{
+                //    return;
+                //}
+
+                var client = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Post, url);
+                var jsonContent = $"{epc}";
+                var content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json");
+                request.Content = content;
+                var response = await client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+
+
+                // Correctly deserialize the JSON string into the RootObject class using Newtonsoft.Json
+                var result = JsonConvert.DeserializeObject<RootObject>(jsonResponse);
+                int count = 1;
+                if (result != null)
+                {
+                    if (result.NikeEPCData.Count > 0)
+                    {
+                        foreach (var item in result.NikeEPCData)
+                        {
+
+                            if (item.Color == "")
+                            {
+                                InvokeMessage("EPC:【" + Helpers.Utilities.EncodeData(item.EPC) + "】Không thể lấy thông tin Màu sắc từ EPC", "error");
+                                SoundHelper.PlaySoundError();
+                                return;
+                            }
+                            if (item.Size == "")
+                            {
+                                InvokeMessage("EPC:【" + Helpers.Utilities.EncodeData(item.EPC) + "】Không thể lấy thông tin Size từ EPC", "error");
+                                SoundHelper.PlaySoundError();
+                                return;
+                            }
+                            if (item.Color != Card.CustomerColor.Trim())
+                            {
+                                InvokeMessage("EPC:【" + Helpers.Utilities.EncodeData(item.EPC) + "】Màu sắc thẻ EPC không khớp với thông tin màu sắc của thẻ hàng", "error");
+                                SoundHelper.PlaySoundError();
+                                return;
+                            }
+                            if (item.Size != Card.Size.Trim())
+                            {
+                                InvokeMessage("EPC:【" + Helpers.Utilities.EncodeData(item.EPC) + "】Size thẻ EPC không khớp với thông tin Size của thẻ hàng", "error");
+                                SoundHelper.PlaySoundError();
+                                return;
+                            }
+
+                            if (item.Size == Card.Size && item.Color == Card.CustomerColor)
+                            {
+                                using (var db = new ShaContext())
+                                {
+                                    var cardInstance = db.TrolleyNikeEPCMappings.FirstOrDefault(e => e.EPC.Contains(epc));
+                                    if (cardInstance != null)
+                                    {
+                                        InvokeMessage("EPC: 【" + Helpers.Utilities.EncodeData(epc) + "】Đã làm liên kết thẻ, vui lòng kiểm tra lại", "error");
+                                        return;
+                                    }
+                                }
+                                var epcitem = ValidEPCs.FirstOrDefault(x => x.EPC == item.EPC);
+                                if (epcitem == null)
+                                {
+                                    var model = new TrolleyNikeEPCMapping
+                                    {
+                                        Id = Guid.NewGuid(),
+                                        Count = count,
+                                        EmpCode = CurrentUser.Name,
+                                        EPC = item.EPC,
+                                        EncodeEPC=Helpers.Utilities.EncodeData(item.EPC),
+                                        Size = item.Size,
+                                        Color = item.Color,
+                                        GangHao = Card.GangHao,
+                                        TimeCreated = DateTime.Now,
+                                        MappingId= mappingId,
+                                    };
+                       
+                                    Application.Current.Dispatcher.Invoke(() =>
+                                    {
+                                        ValidEPCs.Add(model);
+                                        count++;
+                                    });
+                                }
+                            }
+                            else
+                            {
+                                string err = "EPC:【" + Helpers.Utilities.EncodeData(epc) + "】 Khác Size | Color Xin vui lòng kiểm tra lại";
+                                if (MessageNotify.Contains(err) == false)
+                                {
+                                    InvokeMessage(err, "error");
+                                }
+                            }
+                        }
+                    }
+                    if (result.NoInfoEPCs.Count > 0)
+                    {
+
+                        foreach (var _epc in result.NoInfoEPCs)
+                        {
+                            InvokeMessage("EPC:【" + Helpers.Utilities.EncodeData(_epc) + "】Không thể lấy được thông tin từ hệ thống", "error");
+                            SoundHelper.PlaySoundError();
+                            return;
+                        }
+                    }
+                }
+
+                if (TotalQuantity > 0) EnableReadingEPC = true;
+                CountDown = CycleTime;
+
+            }
+            catch (Exception ex)
+            {
 
             }
         }
+
 
 
         public void StopCountdown()
@@ -1204,71 +1241,38 @@ namespace RCabinet.ViewModels
             int epcqty = 0;
             int totalqty = 0;
 
-          
-
-            if (markError == true)
+            if(ValidEPCs.Count == 0)
             {
-                Reset();
+                InvokeMessage("Không có dữ liệu thẻ EPC để lưu", "error");
+                return;
+            }
+
+            foreach (var card in TrolleyNikeCards)
+            {
+                totalqty += card.ValidQuantity.Value;
             }
 
 
-            foreach (var card in CardUQModels)
+            if (totalqty != ValidEPCs.Count)
             {
-                totalqty += card.AdjustQuantity;
-            }
-
-            if (totalqty != TrolleyEPCMappings.Count)
-            {
-                InvokeMessage("Số lượng trên thẻ và số lượng EPC đọc được không khớp nhau, xin vui lòng điều chỉnh lại", "unmatch");
+                InvokeMessage("Số lượng trên thẻ và số lượng EPC hợp lệ không khớp nhau, xin vui lòng điều chỉnh lại", "unmatch");
                 await ClearEPCGrid();
                 return;
             }
 
-            var addedModels = new HashSet<TrolleyEPCMapping>(); // Use a HashSet to store already added models
+            var addedModels = new HashSet<TrolleyNikeEPCMapping>(); // Use a HashSet to store already added models
 
             bool error = false;
-            foreach (var model in TrolleyEPCMappings)
+            foreach (var model in ValidEPCs)
             {
-                var epcModel = updateEPCData(model).Result;
-                if (epcModel != null)
-                {
-                    // check epcModel.Color ==null || epc.Color =""
-                    if (epcModel.Color == "")
-                    {
-                        InvokeMessage("EPC:【" + Utilities.EncodeData(epcModel.EPC) + "】Không thể lấy thông tin Màu sắc từ EPC", "error");
-                        SoundHelper.PlaySoundError();
-                        error = true;
-                        return;
-                    }
-                    if (epcModel.Size == "")
-                    {
-                        InvokeMessage("EPC:【" + Utilities.EncodeData(epcModel.EPC) + "】Không thể lấy thông tin Size từ EPC", "error");
-                        SoundHelper.PlaySoundError();
-                        error = true;
-                        return;
-                    }
-                    if (epcModel.Color != EPC_Color.Trim())
-                    {
-                        InvokeMessage("EPC:【" + Utilities.EncodeData(epcModel.EPC) + "】Màu sắc thẻ EPC không khớp với thông tin màu sắc của thẻ hàng", "error");
-                        error = true;
-                        SoundHelper.PlaySoundError();
-                        return;
-                    }
-                    if (epcModel.Size != EPC_Size.Trim())
-                    {
-                        InvokeMessage("EPC:【" + Utilities.EncodeData(epcModel.EPC) + "】Size thẻ EPC không khớp với thông tin Size của thẻ hàng", "error");
-                        error = true;
-                        SoundHelper.PlaySoundError();
-                        return;
-                    }
 
                     using (var db = new ShaContext())
                     {
-                        var epc = db.TrolleyEPCMappings.FirstOrDefault((TrolleyEPCMapping e) => e.EPC.Contains(model.EPC));
+                        var epc = db.TrolleyNikeEPCMappings.FirstOrDefault((TrolleyNikeEPCMapping e) => e.EPC.Contains(model.EPC));
                         if (epc != null)
                         {
                             //check if MessageNotify contains
-                            string err = "EPC:【" + Utilities.EncodeData(epcModel.EPC) + "】 đã làm liên kết";
+                            string err = "EPC:【" + Utilities.EncodeData(model.EPC) + "】 đã làm liên kết";
                             if (MessageNotify.Contains(err) == false)
                             {
                                 InvokeMessage(err, "error");
@@ -1280,17 +1284,15 @@ namespace RCabinet.ViewModels
                         {
 
 
-                            if (TrolleyEPCMappings.Count > TotalQuantity)
+                            if (ValidEPCs.Count > TotalQuantity)
                             {
-                                //SoundHelper.PlaySoundUnmatch();
-                                InvokeMessage("Đã đọc số lượng thẻ:" + this.TrolleyEPCMappings.Count.ToString() + "Chiếc,Đã vượt quá số lượng " + Convert.ToString(TrolleyEPCMappings.Count - Convert.ToInt32(TotalQuantity)) + " Chiếc, Thao tác này không hợp lệ,vui lòng liên kết lại, xin cảm ơn", "error");
-                                
+                                InvokeMessage("Đã đọc số lượng thẻ hợp lệ :" + ValidEPCs.Count.ToString() + "Chiếc,Đã vượt quá số lượng " + Convert.ToString(ValidEPCs.Count - Convert.ToInt32(TotalQuantity)) + " Chiếc, Thao tác này không hợp lệ,vui lòng liên kết lại, xin cảm ơn", "error");
+                                 error = true;
                             }
-                            error = true;
+                            
 
                         }
                     }
-                }
 
             }
 
@@ -1303,22 +1305,22 @@ namespace RCabinet.ViewModels
 
             using (var db = new ShaContext())
             {
-                foreach (var card in CardUQModels)
+                foreach (var card in TrolleyNikeCards)
                 {
                     epcqty = 0;
-                    cardqty = card.AdjustQuantity;
+                    cardqty = card.ValidQuantity.Value;
                     card.DateCreated=DateTime.Now;
-                    db.TrolleyUQCards.Add(card);
+                    db.TrolleyNikeCards.Add(card);
 
-                    foreach (var model in TrolleyEPCMappings)
+                    foreach (var model in ValidEPCs)
                     {
                         if (epcqty < cardqty && !addedModels.Contains(model))
                         {
-                            // check db.TrolleyEPCMappings contains model.epccode
+                            // check db.TrolleyNikeEPCMappings contains model.epccode
                             epcqty++;
-                            model.UQCardId = card.Id;
+                            model.NikeCardId = card.Id;
                             model.TimeCreated=DateTime.Now;
-                            db.TrolleyEPCMappings.Add(model);
+                            db.TrolleyNikeEPCMappings.Add(model);
                             addedModels.Add(model); // Mark the model as added
                         }
                     }
@@ -1349,46 +1351,5 @@ namespace RCabinet.ViewModels
             }
         }
 
-        private async Task<TrolleyEPCMapping> updateEPCData(TrolleyEPCMapping model)
-        {
-            var epc = model.EPC;
-            string token = epc_token;
-            string type = "RFID";
-            string url = epc_uri + $"?epc={epc}&token={token}&Type={type}";
-
-            using (WebClient webClient = new WebClient())
-            {
-                webClient.Headers.Add("Content-Type", "application/json");
-                byte[] bytes = Encoding.UTF8.GetBytes(url);
-                webClient.Headers.Add("ContentLength", bytes.Length.ToString());
-                ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback(RemoteCertificateValidate);
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls;
-                string json = Encoding.UTF8.GetString(webClient.UploadData(url, "POST", bytes));
-                if (JToken.Parse(json)[(object)
-                    "Status"].ToString().ToUpper().Trim() != "OK")
-                {
-                    //this.tips(" There is no any SAP result to the EPC: " + epc);
-                    return null;
-                }
-                else
-                {
-                    JObject jobject = JObject.Parse(json);
-                    model.SKU = jobject["RFID"][(object)0][(object)
-                      "SKU"
-                    ].ToString();
-                    model.Color = jobject["RFID"][(object)0][(object)
-                      "Color"
-                    ].ToString();
-                    model.Size = jobject["RFID"][(object)0][(object)
-                      "Size"
-                    ].ToString();
-                    model.PO = jobject["RFID"][(object)0][(object)
-                      "PO"
-                    ].ToString();
-                    return model;
-                }
-                return null;
-            }
-        }
     }
 }

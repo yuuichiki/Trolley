@@ -10,7 +10,6 @@
         public ShaContext() : base("name= SHAConnectionString")
         {
         }
-
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -21,6 +20,24 @@
         public virtual DbSet<HUDataEPC> HUDataEPCs { get; set; }
         public virtual DbSet<CardUQModel> TrolleyUQCards { get; set; }
         public virtual DbSet<TrolleyEPCMapping> TrolleyEPCMappings { get; set; }
+        public virtual DbSet<ZebraConfig> ZebraConfigs { get; set; }
+
+        public virtual DbSet<TrolleyNikeCard> TrolleyNikeCards { get; set; }
+        public virtual DbSet<TrolleyNikeEPCMapping> TrolleyNikeEPCMappings { get; set; }
+
+        [Table("ZebraConfig")]
+        public partial class ZebraConfig
+        {
+            [Key]
+            public Guid Id { get; set; }
+            public string DeviceId { get; set; }
+            public string AntenaIP { get; set; }
+            public int Rssi { get; set; }
+            public int CycleTime { get; set;}
+            public string DeviceType { get; set; }
+            public string Position { get; set; }
+            public DateTime? UpdateTime { get; set; }
+        }
 
 
         [Table("HUData")]
@@ -69,6 +86,100 @@
             public string EPC { get; set; }
             public string SKU { get; set; }
             public DateTime? CREATEDATE { get; set; }
+        }
+
+
+        [Table("Trolley_NikeCard", Schema = "dbo")]
+        public class TrolleyNikeCard
+        {
+            [Key]
+            public Guid Id { get; set; }
+
+            [Required]
+            public Guid MappingId { get; set; }
+
+            [MaxLength(255)]
+            public string StyleNo { get; set; }
+
+            [MaxLength(255)]
+            public string CustomerColor { get; set; }
+
+            public int? ValidQuantity { get; set; }
+
+            [MaxLength(255)]
+            public string Mo { get; set; }
+
+            [MaxLength(255)]
+            public string ColorNo { get; set; }
+
+            [MaxLength(255)]
+            public string ColorName { get; set; }
+
+            [MaxLength(50)]
+            public string Size { get; set; }
+
+            public int? Quantity { get; set; }
+
+            [MaxLength(255)]
+            public string CardNo { get; set; }
+
+            public bool? IsActive { get; set; }
+
+            [MaxLength(255)]
+            public string WorklayerNo { get; set; }
+
+            [MaxLength(255)]
+            public string WorklayerName { get; set; }
+
+            [MaxLength(255)]
+            public string Group { get; set; }
+
+            [MaxLength(255)]
+            public string GangHao { get; set; }
+
+            public int? CutType { get; set; }
+
+            [MaxLength(255)]
+            public string CutTypeName { get; set; }
+
+            [Required]
+            public DateTime DateCreated { get; set; }
+        }
+
+
+
+        [Table("Trolley_NikeEPCMapping", Schema = "dbo")]
+        public class TrolleyNikeEPCMapping
+        {
+            [Key]
+            public Guid Id { get; set; }
+
+            public int? Count { get; set; }
+
+            public Guid? NikeCardId { get; set; }
+
+            [Required]
+            public Guid MappingId { get; set; }
+
+            [MaxLength(100)]
+            public string EmpCode { get; set; }
+
+            [MaxLength(100)]
+            public string EPC { get; set; }
+
+            [MaxLength(100)]
+            public string EncodeEPC { get; set; }
+
+            [MaxLength(100)]
+            public string Size { get; set; }
+
+            [MaxLength(100)]
+            public string Color { get; set; }
+
+            [MaxLength(250)]
+            public string GangHao { get; set; }
+
+            public DateTime? TimeCreated { get; set; }
         }
 
 

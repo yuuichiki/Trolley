@@ -78,7 +78,7 @@
                     <Grid Margin="8,0,0,0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="100" />
-                            <RowDefinition Height="100" />
+                            <RowDefinition Height="70" />
                             <RowDefinition Height="Auto" />
 
                         </Grid.RowDefinitions>
@@ -118,7 +118,7 @@
                         <Label
                             Grid.Row="1"
                             Grid.Column="0"
-                            Margin="18,11,133,40"
+                            Margin="18,0,0,0"
                             Content="(RFID Reader Comport)"
                             FontSize="14"
                             FontStyle="Italic"
@@ -129,12 +129,29 @@
                             Grid.Column="1"
                             Width="168"
                             Height="30"
-                            Margin="17,20,0,0"
+                            Margin="17,12,0,0"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top"
                             FontSize="16"
                             ItemsSource="{Binding ComPort}"
                             SelectedItem="{Binding ComPortSelectedItem, Mode=TwoWay}" />
+
+
+                        <Label
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            Margin="18,0,0,0"
+                            Content="RFID CycleTime"
+                            FontSize="14"
+                            FontStyle="Italic"
+                            Style="{StaticResource LabelUIWhite}" />
+                        <TextBox
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            Height="30"
+                            Margin="17,0,5,14"
+                            FontSize="14"
+                            Text="{Binding CycleTime}" />
 
                     </Grid>
                     <Label

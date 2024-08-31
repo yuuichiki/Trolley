@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-
+using System.Text.Json.Serialization;
+using static RCabinet.Models.ShaContext;
 namespace RCabinet.Models
 {
     public class CardModel
@@ -24,6 +25,10 @@ namespace RCabinet.Models
         public string WorklayerName { get; set; }
         public string Group { get; set; }
         public string GangHao { get; set; }
+        
+        public int ? CutType { get; set; }
+        public string CutTypeName { get; set; }
+
     }
 
     [Table("Trolley_UQCard")]
@@ -347,6 +352,9 @@ namespace RCabinet.Models
     {
         public int Count { get; set; }
         public string EPC { get; set; }
+        public string Size { get; set; }
+        public string Color { get; set; }
+        public string GangHao { get; set; }
         public string TimeCreate { get; set; }
         public string User { get; set; }
     }
@@ -404,5 +412,27 @@ namespace RCabinet.Models
         public string Content { get; set; }
     }
 
+    public class NikeEPCData
+    {
+        [JsonPropertyName("style")]
+        public string Style { get; set; }
 
+        [JsonPropertyName("color")]
+        public string Color { get; set; }
+
+        [JsonPropertyName("size")]
+        public string Size { get; set; }
+
+        [JsonPropertyName("EPC")]
+        public string EPC { get; set; }
+    }
+
+    public class RootObject
+    {
+        [JsonPropertyName("nikeEPCData")]
+        public List<NikeEPCData> NikeEPCData { get; set; }
+
+        [JsonPropertyName("noInfoEPCs")]
+        public List<string> NoInfoEPCs { get; set; }
+    }
 }

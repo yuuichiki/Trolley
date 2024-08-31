@@ -21,9 +21,9 @@ namespace RCabinet.Views
     /// <summary>
     /// Interaction logic for ManageItems.xaml
     /// </summary>
-    public partial class MappingCardUQ : UserControl
+    public partial class MappingCardNike : UserControl
     {
-        public MappingCardUQ()
+        public MappingCardNike()
         {
             InitializeComponent();
 
@@ -31,11 +31,11 @@ namespace RCabinet.Views
         }
         private bool comIsOpened = false;
 
-        private void MappingCardUQ_Loaded(object sender, RoutedEventArgs e)
+        private void MappingCardNike_Loaded(object sender, RoutedEventArgs e)
         {
 
        
-           var viewModel = DataContext as MappingUQViewModel;
+           var viewModel = DataContext as MappingNikeViewModel;
             if (viewModel != null)
             {
                 Keyboard.Focus(txtCardId);
@@ -48,7 +48,7 @@ namespace RCabinet.Views
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                var viewModel = DataContext as MappingUQViewModel;
+                var viewModel = DataContext as MappingNikeViewModel;
                 if (viewModel != null)
                 {
                     if (e.Source is TabControl)
@@ -57,14 +57,14 @@ namespace RCabinet.Views
                         {
                             viewModel.SelectedTab = "TabMappingCard";
                             viewModel.EnableReadingEPC = false;
-                            (DataContext as MappingUQViewModel)?.ChangingTabCommand.Execute(null);
+                            (DataContext as MappingNikeViewModel)?.ChangingTabCommand.Execute(null);
 
                         }
                         else if (tabCheckingTag.IsSelected)
                         {
                             viewModel.SelectedTab = "TabCheckingTag";
                             viewModel.EnableReadingEPC = true;
-                            (DataContext as MappingUQViewModel)?.ChangingTabCommand.Execute(null);
+                            (DataContext as MappingNikeViewModel)?.ChangingTabCommand.Execute(null);
                         }
                     }
                 }
@@ -83,7 +83,7 @@ namespace RCabinet.Views
 
             if (e.Key == Key.Enter)
             {
-                (DataContext as MappingUQViewModel)?.LoadCardDataCommand.Execute(null);
+                (DataContext as MappingNikeViewModel)?.LoadCardDataCommand.Execute(null);
             }
 
         }
@@ -92,14 +92,11 @@ namespace RCabinet.Views
         {
             if (e.Key == Key.Enter)
             {
-                (DataContext as MappingUQViewModel)?.CheckingTagDataCommand.Execute(null);
+                (DataContext as MappingNikeViewModel)?.CheckingTagDataCommand.Execute(null);
 
             }
         }
 
-        private void CardGrid_SelectionChanged()
-        {
 
-        }
     }
 }

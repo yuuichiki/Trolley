@@ -9,7 +9,6 @@
     xmlns:mahapps="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     d:DesignHeight="800"
-    d:DesignWidth="800"
     mc:Ignorable="d">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -213,7 +212,7 @@
 
                         <helper:IconButton
                             Grid.Row="0"
-                            Grid.Column="0"
+                            Grid.Column="2"
                             Margin="0,0,0,5"
                             Background="{StaticResource whitesmoke}"
                             BorderBrush="{StaticResource whitesmoke}"
@@ -225,8 +224,8 @@
                             Visibility="{Binding CurrentUser.Permissions.CanManageUsers, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
                         <helper:IconButton
-                            Grid.Row="1"
-                            Grid.Column="1"
+                            Grid.Row="0"
+                            Grid.Column="3"
                             Margin="0,0,0,5"
                             Background="{StaticResource whitesmoke}"
                             BorderBrush="{StaticResource whitesmoke}"
@@ -245,7 +244,7 @@
                             Background="{StaticResource whitesmoke}"
                             BorderBrush="{StaticResource whitesmoke}"
                             Command="{Binding MoveToMappingCardScreen}"
-                            Content="Mapping Card"
+                            Content="Mapping Nike"
                             FontSize="16"
                             PathData="{StaticResource Exchange_Icon}"
                             Style="{StaticResource HomeIconButtonStyle}"
@@ -253,7 +252,7 @@
 
                         <helper:IconButton
                             Grid.Row="0"
-                            Grid.Column="2"
+                            Grid.Column="0"
                             Margin="0,0,0,5"
                             Background="{StaticResource whitesmoke}"
                             BorderBrush="{StaticResource whitesmoke}"

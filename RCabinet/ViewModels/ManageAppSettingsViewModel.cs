@@ -9,7 +9,9 @@ using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
+using static RCabinet.Models.ShaContext;
 
 namespace RCabinet.ViewModels
 {
@@ -17,7 +19,10 @@ namespace RCabinet.ViewModels
     {
         private uint _autoLogoutLengthMinutes;
         private List<string> _comPort { get; set; }
+        private int _cycleTime;
+        private ZebraConfig zebraConfig;
         private string _comportSelectedItem;
+        private string deviceId;
         public ManageAppSettingsViewModel(IChangeViewModel viewModelChanger) : base(viewModelChanger)
         {
             _autoLogoutLengthMinutes = Properties.Settings.Default.AutoLogoutLength;
@@ -30,6 +35,37 @@ namespace RCabinet.ViewModels
             }
             ComPort.Sort();
             ComPortSelectedItem = System.Configuration.ConfigurationManager.AppSettings["COMPORT"];
+            deviceId = System.Configuration.ConfigurationManager.AppSettings["DEVICE_ID"];
+
+            CycleTime = (System.Configuration.ConfigurationManager.AppSettings["CYCLE_TIME"])!= null ? Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["CYCLE_TIME"]) : 0;
+
+
+            using (var db = new ShaContext())
+            {
+                zebraConfig = db.ZebraConfigs.Where(x => x.DeviceId == deviceId && x.DeviceType == "Trolley").FirstOrDefault();
+                if (zebraConfig != null)
+                {
+                    if (zebraConfig.CycleTime != CycleTime)
+                    {
+                        CycleTime = zebraConfig.CycleTime;
+                        SaveSetting(key: "CYCLE_TIME", value: CycleTime.ToString());
+                    }
+
+
+                }
+                else
+                {
+                    MessageBox.Show("Device not found in database");
+                }
+            }
+
+
+
+           
+
+
+
+
         }
 
         #region Properties
@@ -54,6 +90,18 @@ namespace RCabinet.ViewModels
                 NotifyPropertyChanged();
             }
         }
+
+        public int CycleTime
+        {
+            get { return _cycleTime; }
+            set
+            {
+                _cycleTime = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+
 
         #endregion
 
@@ -80,7 +128,7 @@ namespace RCabinet.ViewModels
             Properties.Settings.Default.AutoLogoutLength = AutoLogoutLengthMinutes;
             Properties.Settings.Default.Save();
             SaveSetting(key: "COMPORT", value: ComPortSelectedItem);
-            
+            SaveSetting(key: "CYCLE_TIME", value: CycleTime.ToString());
 
             // pop
             PopToMainMenu();

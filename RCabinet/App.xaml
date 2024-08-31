@@ -33,17 +33,15 @@
             <DataTemplate DataType="{x:Type viewModels:GenerateBarcodesViewModel}">
                 <views:GenerateBarcodes />
             </DataTemplate>
+            <DataTemplate DataType="{x:Type viewModels:MappingNikeViewModel}">
+                <views:MappingCardNike />
+            </DataTemplate>
             <DataTemplate DataType="{x:Type viewModels:AdjustQuantityViewModel}">
                 <views:AdjustQuantity />
             </DataTemplate>
-            <DataTemplate DataType="{x:Type viewModels:MappingCardViewModel}">
-                <views:MappingCard />
-            </DataTemplate>
-
             <DataTemplate DataType="{x:Type viewModels:MappingUQViewModel}">
                 <views:MappingCardUQ />
             </DataTemplate>
-
             <DataTemplate DataType="{x:Type viewModels:ViewReportsViewModel}">
                 <views:ViewReports />
             </DataTemplate>

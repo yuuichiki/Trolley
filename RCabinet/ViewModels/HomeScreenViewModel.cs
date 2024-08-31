@@ -61,7 +61,7 @@ namespace RCabinet.ViewModels
 
         private void LoadMappingCardScreen()
         {
-            PushViewModel(new MappingCardViewModel(ViewModelChanger) { CurrentUser = CurrentUser });
+            PushViewModel(new MappingNikeViewModel(ViewModelChanger) { CurrentUser = CurrentUser });
         }
         private void LoadMappingUQScreen()
         {

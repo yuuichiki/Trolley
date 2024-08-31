@@ -90,7 +90,7 @@ namespace RCabinet.Helpers
                     clientConn.SendSynMsg(msgBaseStop);
                     if (0 != msgBaseStop.RtCode)
                     {
-                        //MessageBox.Show("An exception occurred when stopping tag reading. Please try again later or restart the program");
+                        MessageBox.Show("An exception occurred when stopping tag reading. Please try again later or restart the program");
                     }
                 }
             }
