@@ -1,4 +1,5 @@
-﻿using RCabinet.Models;
+﻿using RCabinet.Helpers;
+using RCabinet.Models;
 using RCabinet.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,7 @@ namespace RCabinet.Views
         public MappingCardUQ()
         {
             InitializeComponent();
+            
 
 
         }

@@ -781,6 +781,8 @@ namespace RCabinet.ViewModels
                     WorklayerNo = _card.WorklayerNo,
                     WorklayerName = _card.WorklayerName,
                     Group = _card.Group,
+                    Department=_card.Department,
+                    LineNo = _card.LineNo,
                     CutType = _card.CutType ?? null,
                     CutTypeName = _card.CutTypeName,
                     DateCreated = DateTime.Now

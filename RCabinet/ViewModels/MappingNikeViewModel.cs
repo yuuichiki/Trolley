@@ -81,6 +81,8 @@ namespace RCabinet.ViewModels
 
         public MappingNikeViewModel(IChangeViewModel viewModelChanger) : base(viewModelChanger)
         {
+            CountDown = 5;
+
             ReadingStatus = "Start Reading EPC";
             _httpClient = new HttpClient();
             saving = false;
@@ -829,14 +831,16 @@ namespace RCabinet.ViewModels
                 MessageNotify = new ObservableCollection<string>();
             });
 
+
             if (string.IsNullOrWhiteSpace(CardId))
             {
                 return;
             }
+            string cardid = killZero(CardId.Trim());
 
             using (var db = new ShaContext())
             {
-                var cardInstance = db.TrolleyNikeCards.FirstOrDefault(e => e.CardNo.Contains(CardId.Trim()));
+                var cardInstance = db.TrolleyNikeCards.FirstOrDefault(e => e.CardNo.Contains(cardid));
 
                 if (cardInstance != null)
                 {
@@ -846,7 +850,7 @@ namespace RCabinet.ViewModels
             }
 
 
-            string url = "http://172.19.18.35:8103/ETSToEPC/etsCard/nike/" + killZero(CardId.Trim());
+            string url = "http://172.19.18.35:8103/ETSToEPC/etsCard/nike/" + cardid;
             var response = await _httpClient.GetAsync(url);
 
             if (response != null && response.IsSuccessStatusCode)
@@ -1038,7 +1042,7 @@ namespace RCabinet.ViewModels
 
             else if (ValidEPCs.Count < TotalQuantity)
             {
-                InvokeMessage("Số lượng thẻ EPC hợp lệ đọc được [" + TrolleyNikeEPCMappings.Count + "] ít hơn số lượng thẻ của đơn [" + TotalQuantity + "] !. Xin vui lòng kiểm tra lại", "error");
+                InvokeMessage("Số lượng thẻ EPC hợp lệ đọc được [" + ValidEPCs.Count + "] ít hơn số lượng thẻ của đơn [" + TotalQuantity + "] !. Xin vui lòng kiểm tra lại", "error");
             }
         }
 

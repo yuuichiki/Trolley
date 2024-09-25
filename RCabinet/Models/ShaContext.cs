@@ -144,6 +144,10 @@
 
             [Required]
             public DateTime DateCreated { get; set; }
+
+            public string Department { get; set; }
+            public string LineNo { get; set; }
+
         }
 
 

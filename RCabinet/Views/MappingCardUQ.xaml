@@ -77,7 +77,7 @@
                                 <ColumnDefinition Width="50" />
                                 <ColumnDefinition Width="50" />
                                 <ColumnDefinition Width="400" />
-                                <ColumnDefinition Width="500" />
+                                <ColumnDefinition Width="350" />
                                 <ColumnDefinition Width="Auto" />
 
                             </Grid.ColumnDefinitions>
@@ -139,8 +139,8 @@
                                 Grid.Row="1"
                                 Grid.Column="0"
                                 Grid.ColumnSpan="4"
-                                Width="600"
-                                Margin="84,10,0,10"
+                                Width="559"
+                                Margin="125,10,0,10"
                                 HorizontalAlignment="Left"
                                 VerticalContentAlignment="Top"
                                 mahapps:TextBoxHelper.ClearTextButton="True"
@@ -156,7 +156,7 @@
                                 Grid.Row="3"
                                 Grid.Column="0"
                                 Grid.ColumnSpan="5"
-                                Margin="10,2,10,10"
+                                Margin="10,2,28,10"
                                 AutoGenerateColumns="False"
                                 Background="#FFFFFF"
                                 BorderBrush="Gray"
@@ -180,7 +180,7 @@
                                         Binding="{Binding Count}"
                                         Header="Count" />
                                     <DataGridTextColumn
-                                        Width="400"
+                                        Width="342"
                                         Binding="{Binding EncodeEPC}"
                                         Header="EPC" />
                                     <DataGridTextColumn
@@ -191,10 +191,6 @@
                                         Width="120"
                                         Binding="{Binding Color}"
                                         Header="Color" />
-                                    <DataGridTextColumn
-                                        Width="120"
-                                        Binding="{Binding PO}"
-                                        Header="PO" />
                                     <DataGridTextColumn
                                         Width="200"
                                         Binding="{Binding TimeCreated}"
@@ -251,9 +247,8 @@
                                     IsEnabled="{Binding EnableReadingEPC}" />
                                 <DataGrid
                                     x:Name="CardGrid"
-                                    Width="600"
+                                    Width="820"
                                     Height="228"
-                                    Margin="0,20"
                                     AutoGenerateColumns="False"
                                     Background="#FFFFFF"
                                     BorderBrush="Gray"
@@ -270,17 +265,29 @@
 
                                     <DataGrid.Columns>
                                         <DataGridTextColumn
-                                            Width="200"
+                                            Width="110"
+                                            Binding="{Binding Department}"
+                                            Header="Department" />
+                                        <DataGridTextColumn
+                                            Width="80"
+                                            Binding="{Binding LineNo}"
+                                            Header="Line No" />
+                                        <DataGridTextColumn
+                                            Width="100"
                                             Binding="{Binding Mo}"
                                             Header="MO" />
                                         <DataGridTextColumn
-                                            Width="200"
+                                            Width="100"
                                             Binding="{Binding CardNo}"
                                             Header="Card No" />
                                         <DataGridTextColumn
-                                            Width="145"
+                                            Width="100"
                                             Binding="{Binding AdjustQuantity}"
-                                            Header="Adjust Quantity" />
+                                            Header="Quantity" />
+                                        <DataGridTextColumn
+                                            Width="320"
+                                            Binding="{Binding GangHao}"
+                                            Header="GangHao" />
 
                                     </DataGrid.Columns>
                                 </DataGrid>
@@ -298,14 +305,13 @@
                                 Style="{StaticResource LabelUI}" />
                             <Label
                                 Grid.Row="2"
-                                Grid.Column="2"
-                                Grid.ColumnSpan="2"
+                                Grid.Column="3"
                                 Width="32"
                                 Height="28"
-                                Margin="0,12,0,0"
+                                Margin="70,9,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
-                                Content="SO:"
+                                Content="SO"
                                 Style="{StaticResource LabelUI}" />
                             <Label
                                 Grid.Row="2"
@@ -321,10 +327,10 @@
                             <Label
                                 Grid.Row="2"
                                 Grid.Column="0"
-                                Grid.ColumnSpan="2"
-                                Width="170"
+                                Grid.ColumnSpan="4"
+                                Width="270"
                                 Height="30"
-                                Margin="64,12,0,0"
+                                Margin="124,6,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Background="#efe6ce"
@@ -334,19 +340,19 @@
                             <Label
                                 Grid.Row="2"
                                 Grid.Column="4"
-                                Width="39"
+                                Width="40"
                                 Height="28"
-                                Margin="0,12,0,0"
+                                Margin="4,11,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
-                                Content="MO:"
+                                Content="MO"
                                 Style="{StaticResource LabelUI}" />
                             <Label
                                 Grid.Row="2"
                                 Grid.Column="3"
-                                Width="282"
+                                Width="214"
                                 Height="30"
-                                Margin="18,10,0,0"
+                                Margin="164,6,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Background="#efe6ce"
@@ -357,9 +363,9 @@
                             <Label
                                 Grid.Row="2"
                                 Grid.Column="4"
-                                Width="370"
+                                Width="210"
                                 Height="30"
-                                Margin="62,12,0,0"
+                                Margin="118,9,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Background="#efe6ce"
@@ -372,25 +378,25 @@
                                 Margin="10,55,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
-                                Content="Feature Name :"
+                                Content="Feature Name"
                                 Style="{StaticResource LabelUI}" />
                             <Label
                                 Grid.Row="2"
                                 Grid.Column="3"
                                 Width="104"
                                 Height="28"
-                                Margin="96,57,0,0"
+                                Margin="72,53,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
-                                Content="Color Name:"
+                                Content="Color Name"
                                 Style="{StaticResource LabelUI}" />
                             <Label
                                 Grid.Row="2"
                                 Grid.Column="3"
                                 Grid.ColumnSpan="2"
-                                Width="604"
+                                Width="564"
                                 Height="30"
-                                Margin="226,55,0,0"
+                                Margin="164,52,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Background="#efe6ce"
@@ -399,7 +405,7 @@
                             <Label
                                 Grid.Row="2"
                                 Grid.ColumnSpan="4"
-                                Width="273"
+                                Width="270"
                                 Height="30"
                                 Margin="124,52,0,0"
                                 HorizontalAlignment="Left"
@@ -414,14 +420,14 @@
                                 Margin="10,102,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
-                                Content="Size:"
+                                Content="Size"
                                 Style="{StaticResource LabelUI}" />
                             <Label
                                 Grid.Row="2"
                                 Grid.Column="3"
                                 Width="86"
                                 Height="30"
-                                Margin="40,103,0,0"
+                                Margin="72,98,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Content="Bundle No"
@@ -429,10 +435,9 @@
                             <Label
                                 Grid.Row="2"
                                 Grid.Column="3"
-                                Grid.ColumnSpan="2"
-                                Width="311"
+                                Width="214"
                                 Height="32"
-                                Margin="132,101,0,0"
+                                Margin="164,101,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Background="#efe6ce"
@@ -443,7 +448,7 @@
                                 Grid.ColumnSpan="4"
                                 Width="268"
                                 Height="32"
-                                Margin="78,101,0,0"
+                                Margin="125,100,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Background="#efe6ce"
@@ -460,21 +465,22 @@
                                 Style="{StaticResource LabelUI}" />
                             <Label
                                 Grid.Row="2"
-                                Grid.Column="2"
+                                Grid.Column="1"
                                 Grid.ColumnSpan="2"
                                 Width="98"
                                 Height="28"
-                                Margin="0,149,0,0"
+                                Margin="0,151,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Content="Adjust Qty"
                                 Style="{StaticResource LabelUI}" />
                             <Label
                                 Grid.Row="2"
-                                Grid.Column="3"
-                                Width="91"
+                                Grid.Column="2"
+                                Grid.ColumnSpan="2"
+                                Width="78"
                                 Height="30"
-                                Margin="46,148,0,0"
+                                Margin="32,150,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Background="#efe6ce"
@@ -484,9 +490,9 @@
                                 Foreground="Black" />
                             <Label
                                 Grid.Row="2"
-                                Width="123"
+                                Width="88"
                                 Height="30"
-                                Margin="106,148,0,0"
+                                Margin="125,149,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Background="#efe6ce"
@@ -497,17 +503,17 @@
                                 Grid.Column="4"
                                 Width="100"
                                 Height="30"
-                                Margin="70,102,0,0"
+                                Margin="4,106,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
-                                Content="Cut Quantity:"
+                                Content="Cut Quantity"
                                 Style="{StaticResource LabelUI}" />
                             <Label
                                 Grid.Row="2"
                                 Grid.Column="4"
-                                Width="256"
-                                Height="30"
-                                Margin="176,102,0,0"
+                                Width="210"
+                                Height="33"
+                                Margin="118,101,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Background="#efe6ce"
@@ -518,17 +524,17 @@
                                 Grid.Column="4"
                                 Width="70"
                                 Height="28"
-                                Margin="-150,150,0,0"
-                                HorizontalAlignment="Center"
+                                Margin="4,158,0,0"
+                                HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
-                                Content="Country:"
+                                Content="Country"
                                 Style="{StaticResource LabelUI}" />
                             <Label
                                 Grid.Row="2"
                                 Grid.Column="4"
-                                Width="214"
+                                Width="210"
                                 Height="30"
-                                Margin="216,150,0,0"
+                                Margin="118,151,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Background="#efe6ce"
@@ -538,11 +544,11 @@
                                 Name="cbComPort"
                                 Grid.Row="1"
                                 Grid.Column="4"
-                                Width="168"
-                                Height="30"
-                                Margin="262,0,0,0"
+                                Width="211"
+                                Height="38"
+                                Margin="116,14,0,0"
                                 HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
+                                VerticalAlignment="Top"
                                 Background="#efe6ce"
                                 FontSize="16"
                                 Foreground="Black"
@@ -553,17 +559,17 @@
                                 Grid.Column="4"
                                 Width="84"
                                 Height="28"
-                                Margin="182,0,0,0"
+                                Margin="2,20,0,0"
                                 HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Content="Comport:"
+                                VerticalAlignment="Top"
+                                Content="Comport"
                                 Style="{StaticResource LabelUI}" />
                             <Label
                                 Grid.Row="2"
                                 Grid.Column="5"
-                                Width="112"
+                                Width="116"
                                 Height="30"
-                                Margin="14,184,0,0"
+                                Margin="6,183,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 BorderBrush="Black"
@@ -576,7 +582,7 @@
                                 Grid.Row="2"
                                 Grid.Column="5"
                                 Width="92"
-                                Margin="130,184,0,4"
+                                Margin="122,183,0,5"
                                 HorizontalAlignment="Left"
                                 Background="White"
                                 BorderBrush="Black"
@@ -588,9 +594,9 @@
                             <Label
                                 Grid.Row="2"
                                 Grid.Column="3"
-                                Width="79"
+                                Width="78"
                                 Height="28"
-                                Margin="152,152,0,0"
+                                Margin="72,148,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Content="Gang Hao"
@@ -598,10 +604,9 @@
                             <Label
                                 Grid.Row="2"
                                 Grid.Column="3"
-                                Grid.ColumnSpan="2"
-                                Width="274"
+                                Width="214"
                                 Height="30"
-                                Margin="234,149,0,0"
+                                Margin="164,150,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Background="#efe6ce"
@@ -652,9 +657,8 @@
                                 Opacity="0.90">
 
                                 <ListBox
-                                    Width="600"
                                     Height="661"
-                                    Margin="2,10,0,0"
+                                    Margin="14,10,4,0"
                                     VerticalAlignment="Top"
                                     HorizontalContentAlignment="Stretch"
                                     FontFamily="Tahoma"
@@ -688,10 +692,11 @@
 
                             <Label
                                 Grid.Row="2"
+                                Grid.RowSpan="2"
                                 Grid.Column="4"
                                 Width="94"
                                 Height="30"
-                                Margin="288,185,0,0"
+                                Margin="122,189,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 BorderBrush="Black"
@@ -699,13 +704,15 @@
                                 Content="Total EPCs"
                                 FontSize="16"
                                 FontWeight="DemiBold"
+                                RenderTransformOrigin="0.447,0.517"
                                 Style="{StaticResource LabelUI}" />
                             <Label
                                 Grid.Row="2"
+                                Grid.RowSpan="2"
                                 Grid.Column="4"
-                                Width="102"
+                                Width="100"
                                 Height="30"
-                                Margin="384,185,0,0"
+                                Margin="222,189,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Background="White"
@@ -714,6 +721,7 @@
                                 Content="{Binding TotalCount}"
                                 FontSize="20"
                                 FontWeight="DemiBold"
+                                RenderTransformOrigin="0.436,0.3"
                                 Style="{StaticResource LabelUI}" />
                         </Grid>
 
@@ -732,8 +740,8 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="50" />
                                 <ColumnDefinition Width="50" />
-                                <ColumnDefinition Width="350" />
-                                <ColumnDefinition Width="550" />
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="280" />
                                 <ColumnDefinition Width="0" />
                                 <ColumnDefinition Width="Auto" />
 
@@ -804,7 +812,7 @@
                                 </DataGrid.Style>
                                 <DataGrid.Columns>
                                     <DataGridTextColumn
-                                        Width="200"
+                                        Width="150"
                                         Binding="{Binding TimeCreated}"
                                         Header="DateTime" />
                                     <DataGridTextColumn
@@ -812,17 +820,17 @@
                                         Binding="{Binding EmpCode}"
                                         Header="User" />
                                     <DataGridTextColumn
-                                        Width="150"
+                                        Width="100"
                                         Binding="{Binding Size}"
                                         Header="Size" />
                                     <DataGridTextColumn
-                                        Width="150"
+                                        Width="100"
                                         Binding="{Binding Color}"
                                         Header="Color" />
-                                    <DataGridTextColumn
+                                    <!--<DataGridTextColumn
                                         Width="200"
                                         Binding="{Binding PO}"
-                                        Header="PO" />
+                                        Header="PO" />-->
 
 
                                 </DataGrid.Columns>
@@ -834,8 +842,8 @@
                                 Grid.Row="1"
                                 Grid.RowSpan="2"
                                 Grid.Column="5"
-                                Width="760"
-                                Margin="7,16,0,82"
+                                Width="1280"
+                                Margin="7,21,0,77"
                                 HorizontalAlignment="Left"
                                 AutoGenerateColumns="False"
                                 Background="white"
@@ -843,7 +851,6 @@
                                 BorderThickness="1"
                                 CanUserAddRows="False"
                                 CanUserDeleteRows="False"
-                                FontSize="14"
                                 GridLinesVisibility="All"
                                 IsReadOnly="True"
                                 ItemsSource="{Binding CardUQCheckingModels}"
@@ -858,34 +865,41 @@
                                 </i:EventTrigger>
                                 </i:Interaction.Triggers>-->
 
-                                <DataGrid.RenderTransform>
-                                    <TransformGroup>
-                                        <ScaleTransform />
-                                        <SkewTransform AngleY="-0.645" />
-                                        <RotateTransform />
-                                        <TranslateTransform Y="-2.488" />
-                                    </TransformGroup>
-                                </DataGrid.RenderTransform>
-
                                 <DataGrid.Columns>
                                     <DataGridTextColumn
-                                        Width="150"
+                                        Width="120"
+                                        Binding="{Binding CustName}"
+                                        Header="Customer" />
+                                    <DataGridTextColumn
+                                        Width="200"
+                                        Binding="{Binding SAPStyle}"
+                                        Header="Style" />
+                                    <DataGridTextColumn
+                                        Width="100"
+                                        Binding="{Binding Department}"
+                                        Header="Department" />
+                                    <DataGridTextColumn
+                                        Width="100"
+                                        Binding="{Binding LineNo}"
+                                        Header="Line No" />
+                                    <DataGridTextColumn
+                                        Width="100"
                                         Binding="{Binding Mo}"
                                         Header="MO" />
                                     <DataGridTextColumn
-                                        Width="150"
+                                        Width="50"
                                         Binding="{Binding Size}"
                                         Header="Size" />
                                     <DataGridTextColumn
-                                        Width="150"
+                                        Width="120"
                                         Binding="{Binding CardNo}"
                                         Header="Card No" />
                                     <DataGridTextColumn
-                                        Width="150"
+                                        Width="100"
                                         Binding="{Binding BundleNo}"
                                         Header="Bundle" />
                                     <DataGridTextColumn
-                                        Width="400"
+                                        Width="380"
                                         Binding="{Binding GangHao}"
                                         Header="GangHao" />
 

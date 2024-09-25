@@ -23,6 +23,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
 using static RCabinet.Models.ShaContext;
 
 namespace RCabinet.ViewModels
@@ -51,6 +52,8 @@ namespace RCabinet.ViewModels
         private bool enableSwipeCard = true;
         private string EPC_Color = "";
         private string EPC_Size = "";
+        private string SAPStyle = "";
+        private string CustName = "";
         private string epc_token;
         private string epc_uri;
         private bool isReading = false;
@@ -73,6 +76,10 @@ namespace RCabinet.ViewModels
         private int totalQuantity;
         private bool enableChekingEPC;
         private ZebraConfig zebraConfig;
+        private string _department;
+        private string _lineno;
+        private string _sapstyle;
+        private string _custname;
 
 
         public MappingUQViewModel(IChangeViewModel viewModelChanger) : base(viewModelChanger)
@@ -90,6 +97,8 @@ namespace RCabinet.ViewModels
             ComPort = new List<string>();
             EPC_Color = String.Empty;
             EPC_Size = String.Empty;
+            SAPStyle = String.Empty;
+            CustName = String.Empty;
             string[] ports = SerialPort.GetPortNames();
             ComPort.Add("Select Comport");
             foreach (string port in ports)
@@ -163,6 +172,7 @@ namespace RCabinet.ViewModels
         }
 
 
+
         public ICommand ClearEPC
         {
             get
@@ -216,6 +226,11 @@ namespace RCabinet.ViewModels
                 if (selectedTab == "TabMappingCard")
                 {
                     Reset();
+                }
+                if (selectedTab == "TabCheckingTag")
+                {
+                    CardUQCheckingModels.Clear();
+                    TrolleyEPCCheckings.Clear();
                 }
 
             });
@@ -333,6 +348,32 @@ namespace RCabinet.ViewModels
                 NotifyPropertyChanged();
             }
         }
+        public string Department
+        {
+            get
+            {
+                return _department;
+            }
+            set
+            {
+                _department = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public string LineNo
+        {
+            get
+            {
+                return _lineno;
+            }
+            set
+            {
+                _lineno = value;
+                NotifyPropertyChanged();
+            }
+        }
+
 
         public ObservableCollection<CardUQModel> CardUQModels
         {
@@ -833,6 +874,10 @@ namespace RCabinet.ViewModels
                 saving = false;
                 EPC_Color = string.Empty;
                 EPC_Size = string.Empty;
+                SAPStyle = string.Empty;
+                CustName = string.Empty;
+                LineNo = string.Empty;
+                Department = string.Empty;
                 Card = null;
                 clearCardKey();
                 reader.stopReading();
@@ -961,7 +1006,7 @@ namespace RCabinet.ViewModels
             Card = new CardUQModel
             {
                 Id = Guid.NewGuid(),
-                StyleNo = dataSet.Tables[0].Rows[0]["StyleNO"].ToString(),
+                StyleNo = dataSet.Tables[0].Rows[0]["StyleNO"].ToString().Split('_')[0],
                 MappingId = mappingId,
                 SO = dataSet.Tables[0].Rows[0]["SO"].ToString(),
                 Mo = killZero(dataSet.Tables[0].Rows[0]["ZDcode"].ToString()),
@@ -978,10 +1023,13 @@ namespace RCabinet.ViewModels
                 CardNo = killZero(dataSet.Tables[0].Rows[0]["CardNo"].ToString()),
                 SoItem = killZero(dataSet.Tables[0].Rows[0]["SoItem"].ToString()),
                 SaleNo = dataSet.Tables[0].Rows[0]["SaleNo"].ToString(),
+                Department = dataSet.Tables[0].Rows[0]["Department"].ToString(),
+                LineNo = dataSet.Tables[0].Rows[0]["LineNo"].ToString(),
+                
                 DateCreated = DateTime.Now
             };
 
-            DataSet dsEPCcolorsize = SqlHelper.getDataSet("exec P_Hanlde_RFIDReadert_GetCustColorSize @saleno= " + SqlHelper.quotedStr(Card.SaleNo) + ",@soitem=" + SqlHelper.quotedStr(Card.SoItem) + ",@color=" + SqlHelper.quotedStr(Card.ColorNo) + ",@size=" + SqlHelper.quotedStr(Card.Size),"sha");
+            DataSet dsEPCcolorsize = SqlHelper.getDataSet("exec P_Hanlde_RFIDReadert_GetCustColorSize @sapstyle= " + SqlHelper.quotedStr(Card.StyleNo)+ ",@color= "+ SqlHelper.quotedStr(Card.ColorNo) +" ,@size= "+ SqlHelper.quotedStr(Card.Size) , "sha");
             if (dsEPCcolorsize.Tables[0].Rows.Count < 1)
             {
                 InvokeMessage("ID:【" + Card.CardNo + "】 Thông tin Mapping thẻ hàng ETS và [Size; Màu] SKU của EPC chưa được upload lên ORP", "error");
@@ -992,6 +1040,10 @@ namespace RCabinet.ViewModels
             {
                 EPC_Color = dsEPCcolorsize.Tables[0].Rows[0]["CustColorNo"].ToString();
                 EPC_Size = dsEPCcolorsize.Tables[0].Rows[0]["CustSize"].ToString();
+                SAPStyle = dsEPCcolorsize.Tables[0].Rows[0]["SAPStyle"].ToString();
+                CustName = dsEPCcolorsize.Tables[0].Rows[0]["CustName"].ToString();
+                Card.CustName = CustName;
+                Card.SAPStyle = SAPStyle;
             }
 
             if (this.cardkey.zdcode == string.Empty)
@@ -1144,6 +1196,7 @@ namespace RCabinet.ViewModels
 
         private async Task ReadingEPC()
         {
+
             isReading = true;
 
             if (readingStatus == "Start Reading EPC")
@@ -1262,6 +1315,7 @@ namespace RCabinet.ViewModels
                         return;
                     }
 
+
                     using (var db = new ShaContext())
                     {
                         var epc = db.TrolleyEPCMappings.FirstOrDefault((TrolleyEPCMapping e) => e.EPC.Contains(model.EPC));
@@ -1284,9 +1338,9 @@ namespace RCabinet.ViewModels
                             {
                                 //SoundHelper.PlaySoundUnmatch();
                                 InvokeMessage("Đã đọc số lượng thẻ:" + this.TrolleyEPCMappings.Count.ToString() + "Chiếc,Đã vượt quá số lượng " + Convert.ToString(TrolleyEPCMappings.Count - Convert.ToInt32(TotalQuantity)) + " Chiếc, Thao tác này không hợp lệ,vui lòng liên kết lại, xin cảm ơn", "error");
-                                
+                                error = true;
                             }
-                            error = true;
+                            
 
                         }
                     }

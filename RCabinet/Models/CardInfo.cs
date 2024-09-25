@@ -25,7 +25,12 @@ namespace RCabinet.Models
         public string WorklayerName { get; set; }
         public string Group { get; set; }
         public string GangHao { get; set; }
-        
+
+        public string Department { get; set; }
+        public string LineNo { get; set; }
+        public string SAPStyle { get; set; }
+        public string CustName { get; set; }
+
         public int ? CutType { get; set; }
         public string CutTypeName { get; set; }
 
@@ -54,6 +59,13 @@ namespace RCabinet.Models
         public string SoItem { get; set; }
         public string CardNo { get; set; }
         public string GangHao { get; set; }
+        public string Department { get; set; }
+        public string LineNo { get; set; }
+        public string SAPStyle { get; set; }
+        public string CustName { get; set; }
+
+
+
     }
 
     public class PosModel
@@ -248,6 +260,7 @@ namespace RCabinet.Models
                 }
             }
         }
+
 
         public bool IsActive
         {
