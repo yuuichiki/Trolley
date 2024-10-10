@@ -1264,7 +1264,6 @@ namespace RCabinet.ViewModels
                 Reset();
             }
 
-
             foreach (var card in CardUQModels)
             {
                 totalqty += card.AdjustQuantity;
@@ -1361,6 +1360,7 @@ namespace RCabinet.ViewModels
                 {
                     epcqty = 0;
                     cardqty = card.AdjustQuantity;
+                    card.EPCQuantity = TrolleyEPCMappings.Count;
                     card.DateCreated=DateTime.Now;
                     db.TrolleyUQCards.Add(card);
 

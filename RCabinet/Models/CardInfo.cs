@@ -64,7 +64,7 @@ namespace RCabinet.Models
         public string SAPStyle { get; set; }
         public string CustName { get; set; }
 
-
+        public int?  EPCQuantity { get; set; }
 
     }
 
