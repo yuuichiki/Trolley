@@ -63,7 +63,7 @@ namespace RCabinet.Models
         public string LineNo { get; set; }
         public string SAPStyle { get; set; }
         public string CustName { get; set; }
-
+        public string DeviceName { get; set; }
         public int?  EPCQuantity { get; set; }
 
     }
@@ -394,6 +394,8 @@ namespace RCabinet.Models
         public string size { get; set; }
 
         public string ganghao { get; set; }
+
+        public string countrycode { get; set; }
     }
 
 
@@ -414,6 +416,7 @@ namespace RCabinet.Models
         public string Size { get; set; }
         public string Color { get; set; }
         public string SKU { get; set; }
+        public string CountryCode { get; set; }
         public DateTime TimeCreated { get; set; }
         
 

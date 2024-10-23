@@ -21,10 +21,10 @@
         public virtual DbSet<CardUQModel> TrolleyUQCards { get; set; }
         public virtual DbSet<TrolleyEPCMapping> TrolleyEPCMappings { get; set; }
         public virtual DbSet<ZebraConfig> ZebraConfigs { get; set; }
-
         public virtual DbSet<TrolleyNikeCard> TrolleyNikeCards { get; set; }
         public virtual DbSet<TrolleyNikeEPCMapping> TrolleyNikeEPCMappings { get; set; }
-
+        public virtual DbSet<CountryCodeMapping> CountryCodeMappings { get; set; }
+        
         [Table("ZebraConfig")]
         public partial class ZebraConfig
         {
@@ -87,6 +87,18 @@
             public string SKU { get; set; }
             public DateTime? CREATEDATE { get; set; }
         }
+
+        [Table("CountryCodeMapping")]
+        public partial class CountryCodeMapping
+        {
+            [Key]
+            public Guid Id { get; set; }
+            public string Code { get; set; }
+            public string CountryName { get; set; }
+            public string CountryCode { get; set; }
+        }
+
+
 
 
         [Table("Trolley_NikeCard", Schema = "dbo")]

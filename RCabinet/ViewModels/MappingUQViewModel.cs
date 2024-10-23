@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Data;
+using System.Data.Entity;
 using System.IO.Ports;
 using System.Linq;
 using System.Net;
@@ -52,6 +53,7 @@ namespace RCabinet.ViewModels
         private bool enableSwipeCard = true;
         private string EPC_Color = "";
         private string EPC_Size = "";
+        private string Country = "";
         private string SAPStyle = "";
         private string CustName = "";
         private string epc_token;
@@ -711,6 +713,7 @@ namespace RCabinet.ViewModels
                                       MappingId = mappingId,
                                       TimeCreated = DateTime.Now,
                                       SKU = "",
+                                      CountryCode="",
                                       Size = Card.Size,
                                       Color = Card.ColorNo,
                                       EmpCode = CurrentUser.Name
@@ -847,6 +850,7 @@ namespace RCabinet.ViewModels
             this.cardkey.colorno = string.Empty;
             this.cardkey.size = string.Empty;
             this.cardkey.ganghao = string.Empty;
+            this.cardkey.countrycode = string.Empty;
         }
 
         private async Task ClearEPCMappingGrid()
@@ -969,7 +973,7 @@ namespace RCabinet.ViewModels
 
             // lấy thông tin chi tiết của thẻ từ database
             string cardid = killZero(CardId.Trim());
-            DataSet dataSet = SqlHelper.getDataSet("exec P_RFIDReader_GetDataByCardNOForUQ_Haki " + SqlHelper.quotedStr(cardid),"ets");
+            DataSet dataSet = SqlHelper.getDataSet("exec [P_RFIDReader_GetDataByCardNO_UQ] " + SqlHelper.quotedStr(cardid),"ets");
 
             if (dataSet.Tables[0].Rows.Count < 1)
             {
@@ -977,9 +981,9 @@ namespace RCabinet.ViewModels
                 CardId = string.Empty;
                 return;
             }
-            if (this.cardkey.zdcode != string.Empty && (dataSet.Tables[0].Rows[0]["ZDcode"].ToString().Trim() != this.cardkey.zdcode || this.cardkey.colorno != dataSet.Tables[0].Rows[0]["ColorNo"].ToString().Trim() || this.cardkey.size != dataSet.Tables[0].Rows[0]["sSize"].ToString().Trim() || this.cardkey.ganghao != dataSet.Tables[0].Rows[0]["GangHao"].ToString().Trim()))
+            if (this.cardkey.zdcode != string.Empty && (dataSet.Tables[0].Rows[0]["ZDcode"].ToString().Trim() != this.cardkey.zdcode || this.cardkey.colorno != dataSet.Tables[0].Rows[0]["ColorNo"].ToString().Trim() || this.cardkey.size != dataSet.Tables[0].Rows[0]["sSize"].ToString().Trim() || this.cardkey.ganghao != dataSet.Tables[0].Rows[0]["GangHao"].ToString().Trim() || this.cardkey.countrycode != dataSet.Tables[0].Rows[0]["Country"].ToString().Trim()))
             {
-                InvokeMessage("ID:【" + cardid + "】Đơn đặt hàng, màu sắc, kích thước, số gang hao khác với số thẻ đã đọc, hoạt động này không hợp lệ", "unmatch");
+                InvokeMessage("ID:【" + cardid + "】Đơn đặt hàng, màu sắc, kích thước, số gang hao, Mã quốc gia đến có thể khác với số thẻ đã đọc, hoạt động này không hợp lệ", "unmatch");
                 CardId = string.Empty;
                 return;
             }
@@ -1052,6 +1056,7 @@ namespace RCabinet.ViewModels
                 this.cardkey.colorno = dataSet.Tables[0].Rows[0]["ColorNo"].ToString();
                 this.cardkey.size = dataSet.Tables[0].Rows[0]["sSize"].ToString();
                 this.cardkey.ganghao = dataSet.Tables[0].Rows[0]["GangHao"].ToString();
+                this.cardkey.countrycode = dataSet.Tables[0].Rows[0]["Country"].ToString();
             }
 
             if (Convert.ToInt32(dataSet.Tables[0].Rows[0]["cCount"].ToString()) != 0)
@@ -1162,7 +1167,6 @@ namespace RCabinet.ViewModels
 
             if (TrolleyEPCMappings.Count>0 && TrolleyEPCMappings.Count == TotalQuantity)
             {
-              
                 SaveCard();
                 
             }
@@ -1313,6 +1317,14 @@ namespace RCabinet.ViewModels
                         SoundHelper.PlaySoundError();
                         return;
                     }
+                    var cardCountry = CardUQModels.FirstOrDefault().Country.Trim();
+                    if (epcModel.CountryCode.Trim() != cardCountry)
+                    {
+                        InvokeMessage("EPC:【" + Utilities.EncodeData(epcModel.EPC) + "】Mã Country thẻ EPC ["+ epcModel.CountryCode.Trim() + "] không khớp với mã Country ["+ cardCountry + "] của thẻ hàng", "error");
+                        error = true;
+                        SoundHelper.PlaySoundError();
+                        return;
+                    }
 
 
                     using (var db = new ShaContext())
@@ -1325,7 +1337,7 @@ namespace RCabinet.ViewModels
                             if (MessageNotify.Contains(err) == false)
                             {
                                 InvokeMessage(err, "error");
-                               
+
                             }
                             error = true;
                         }
@@ -1361,6 +1373,7 @@ namespace RCabinet.ViewModels
                     epcqty = 0;
                     cardqty = card.AdjustQuantity;
                     card.EPCQuantity = TrolleyEPCMappings.Count;
+                    card.DeviceName=deviceId;
                     card.DateCreated=DateTime.Now;
                     db.TrolleyUQCards.Add(card);
 
@@ -1376,16 +1389,19 @@ namespace RCabinet.ViewModels
                             addedModels.Add(model); // Mark the model as added
                         }
                     }
-                    int changes = await db.SaveChangesAsync();
+                    int changes =1;
+                    // int changes = await db.SaveChangesAsync();
                     if (changes > 0)
                     {
-                        Application.Current.Dispatcher.Invoke(() => {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
                             InvokeMessage("Thẻ:【" + card.CardNo + "】Đã lưu thành công", "ok");
                         });
                     }
                     else
                     {
-                        Application.Current.Dispatcher.Invoke(() => {
+                        Application.Current.Dispatcher.Invoke(() =>
+                        {
                             InvokeMessage("Thẻ:【" + card.CardNo + "】Không thể lưu, vui lòng thử lại", "error");
                         });
                     }
@@ -1439,6 +1455,23 @@ namespace RCabinet.ViewModels
                     model.PO = jobject["RFID"][(object)0][(object)
                       "PO"
                     ].ToString();
+                    string samplecode= jobject["RFID"][(object)0][(object)
+                     "SampleCode"
+                   ].ToString();
+
+                    if (samplecode.Length > 0) {
+                        using (var db = new ShaContext())
+                        {
+                            var cl = db.CountryCodeMappings.ToList();
+                            var countryEntity = db.CountryCodeMappings.Where(x => x.Code.Trim()== samplecode.Substring(0,2)).FirstOrDefault();
+                            if (countryEntity!=null)
+                            {
+                                model.CountryCode = countryEntity.CountryCode;
+
+                            }    
+                        }
+                    }
+
                     return model;
                 }
                 return null;

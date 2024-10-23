@@ -718,6 +718,7 @@ namespace RCabinet.ViewModels
             this.cardkey.colorno = string.Empty;
             this.cardkey.size = string.Empty;
             this.cardkey.ganghao = string.Empty;
+            this.cardkey.countrycode = string.Empty;
         }
 
         private async Task ClearEPCMappingGrid()
