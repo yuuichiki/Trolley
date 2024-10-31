@@ -97,6 +97,16 @@ namespace RCabinet.ViewModels
 
         private string deviceId;
 
+        public string DeviceId
+        {
+            get { return deviceId; }
+            set
+            {
+                deviceId = value;
+                NotifyPropertyChanged();
+            }
+        }
+
 
         public string CardId
         {

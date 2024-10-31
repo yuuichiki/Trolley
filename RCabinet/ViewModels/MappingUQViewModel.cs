@@ -996,7 +996,7 @@ namespace RCabinet.ViewModels
 
             using (var db = new ShaContext())
             {
-                var cardInstance = db.TrolleyUQCards.FirstOrDefault((CardUQModel e) => e.CardNo.Contains(cardid));
+                var cardInstance = db.TrolleyUQCards.FirstOrDefault((CardUQModel e) => e.CardNo.Equals(cardid));
 
                 if (cardInstance != null)
                 {

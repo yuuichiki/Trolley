@@ -14,9 +14,33 @@ namespace RCabinet.ViewModels
 {
     class HomeScreenViewModel : BaseViewModel
     {
+        private string deviceId;
+        private string deviceType;
+        public string DeviceId
+        {
+            get { return deviceId; }
+            set
+            {
+                deviceId = value;
+                NotifyPropertyChanged();
+            }
+        }
+        public string DeviceType
+        {
+            get { return deviceType; }
+            set
+            {
+                deviceType = value;
+                NotifyPropertyChanged();
+            }
+        }
 
         public HomeScreenViewModel(IChangeViewModel viewModelChanger) : base(viewModelChanger)
         {
+
+            deviceId = System.Configuration.ConfigurationManager.AppSettings["DEVICE_ID"];
+            deviceType = System.Configuration.ConfigurationManager.AppSettings["DEVICE_TYPE"];
+            
         }
 
         public ICommand MoveToManageItemsScreen

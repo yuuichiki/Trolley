@@ -51,9 +51,12 @@
                     Grid.Row="0"
                     Margin="0,5,0,10"
                     HorizontalAlignment="Center"
-                    Content="MAPPING CARD "
-                    FontSize="40"
-                    FontWeight="Bold"
+                    Content="{Binding DeviceType}"
+                    FontFamily="Arial"
+                    FontWeight="Heavy"     
+                    Opacity="0.7"
+                    FontSize="80"
+
                     Style="{StaticResource LabelUIWhite}" />
                 <Button
                     Grid.Row="0"
@@ -114,9 +117,24 @@
                             <ColumnDefinition Width="350" />
                             <ColumnDefinition Width="350" />
                             <ColumnDefinition Width="350" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <!--<helper:IconButton
+                        <Label Content="{Binding DeviceId}"
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Grid.RowSpan="3"
+                            Grid.ColumnSpan="10"
+                            FontFamily="Arial"
+                            FontWeight="Heavy"
+                            FontSize="300"       
+                            Opacity="0.6"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Foreground="Gray"
+                            IsHitTestVisible="False" />
+
+                            <!--<helper:IconButton
                         Grid.Row="0"
                         Grid.Column="0"
                         Background="{StaticResource whitesmoke}"
@@ -209,7 +227,9 @@
                         PathData="{StaticResource Backup_Icon}"
                         Style="{StaticResource HomeIconButtonStyle}"
                         Visibility="{Binding CurrentUser.Permissions.CanEditAppSettings, Converter={StaticResource BooleanToVisibilityConverter}}" />-->
-
+                        
+                        
+                        
                         <helper:IconButton
                             Grid.Row="0"
                             Grid.Column="2"
