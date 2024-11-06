@@ -82,6 +82,29 @@ namespace RCabinet.ViewModels
         private string _lineno;
         private string _sapstyle;
         private string _custname;
+        public class RFID
+        {
+            public string EPC { get; set; }
+            public string SKU { get; set; }
+            public string PO { get; set; }
+            public string DO { get; set; }
+            public string Color { get; set; }
+            public string Size { get; set; }
+            public string SampleCode { get; set; }
+            public string Country { get; set; }
+        }
+
+        public class RFIDOutput
+        {
+            public string EPC { get; set; }
+            public string SKU { get; set; }
+            public string PO { get; set; }
+            public string DO { get; set; }
+            public string Color { get; set; }
+            public string Size { get; set; }
+            public string Country { get; set; }
+        }
+
 
 
         public MappingUQViewModel(IChangeViewModel viewModelChanger) : base(viewModelChanger)
@@ -1283,10 +1306,12 @@ namespace RCabinet.ViewModels
             var addedModels = new HashSet<TrolleyEPCMapping>(); // Use a HashSet to store already added models
 
             bool error = false;
-            foreach (var model in TrolleyEPCMappings)
-            {
-                var epcModel = updateEPCData(model).Result;
-                if (epcModel != null)
+            // foreach (var model in TrolleyEPCMappings)
+            // {
+            var cardCountry = CardUQModels.FirstOrDefault().Country.Trim();
+            var epcModels = updateEPCData(TrolleyEPCMappings).Result;
+                if (epcModels != null)
+                foreach(var epcModel in epcModels)
                 {
                     // check epcModel.Color ==null || epc.Color =""
                     if (epcModel.Color == "")
@@ -1317,10 +1342,10 @@ namespace RCabinet.ViewModels
                         SoundHelper.PlaySoundError();
                         return;
                     }
-                    var cardCountry = CardUQModels.FirstOrDefault().Country.Trim();
-                    if (epcModel.CountryCode.Trim() != cardCountry)
+     
+                    if (epcModel.Country.Trim() != cardCountry)
                     {
-                        InvokeMessage("EPC:【" + Utilities.EncodeData(epcModel.EPC) + "】Mã Country thẻ EPC ["+ epcModel.CountryCode.Trim() + "] không khớp với mã Country ["+ cardCountry + "] của thẻ hàng", "error");
+                        InvokeMessage("EPC:【" + Utilities.EncodeData(epcModel.EPC) + "】Mã Country thẻ EPC ["+ epcModel.Country.Trim() + "] không khớp với mã Country ["+ cardCountry + "] của thẻ hàng", "error");
                         error = true;
                         SoundHelper.PlaySoundError();
                         return;
@@ -1329,35 +1354,35 @@ namespace RCabinet.ViewModels
 
                     using (var db = new ShaContext())
                     {
-                        var epc = db.TrolleyEPCMappings.FirstOrDefault((TrolleyEPCMapping e) => e.EPC.Contains(model.EPC));
-                        if (epc != null)
-                        {
-                            //check if MessageNotify contains
-                            string err = "EPC:【" + Utilities.EncodeData(epcModel.EPC) + "】 đã làm liên kết";
-                            if (MessageNotify.Contains(err) == false)
-                            {
-                                InvokeMessage(err, "error");
+                       // var epc = db.TrolleyEPCMappings.FirstOrDefault((TrolleyEPCMapping e) => e.EPC.Contains(model.EPC));
+                        //if (epc != null)
+                        //{
+                        //    //check if MessageNotify contains
+                        //    string err = "EPC:【" + Utilities.EncodeData(epcModel.EPC) + "】 đã làm liên kết";
+                        //    if (MessageNotify.Contains(err) == false)
+                        //    {
+                        //        InvokeMessage(err, "error");
 
-                            }
-                            error = true;
-                        }
-                        else
-                        {
+                        //    }
+                        //    error = true;
+                        //}
+                        //else
+                        //{
 
 
-                            if (TrolleyEPCMappings.Count > TotalQuantity)
-                            {
-                                //SoundHelper.PlaySoundUnmatch();
-                                InvokeMessage("Đã đọc số lượng thẻ:" + this.TrolleyEPCMappings.Count.ToString() + "Chiếc,Đã vượt quá số lượng " + Convert.ToString(TrolleyEPCMappings.Count - Convert.ToInt32(TotalQuantity)) + " Chiếc, Thao tác này không hợp lệ,vui lòng liên kết lại, xin cảm ơn", "error");
-                                error = true;
-                            }
+                        //    if (TrolleyEPCMappings.Count > TotalQuantity)
+                        //    {
+                        //        //SoundHelper.PlaySoundUnmatch();
+                        //        InvokeMessage("Đã đọc số lượng thẻ:" + this.TrolleyEPCMappings.Count.ToString() + "Chiếc,Đã vượt quá số lượng " + Convert.ToString(TrolleyEPCMappings.Count - Convert.ToInt32(TotalQuantity)) + " Chiếc, Thao tác này không hợp lệ,vui lòng liên kết lại, xin cảm ơn", "error");
+                        //        error = true;
+                        //    }
                             
 
-                        }
+                        //}
                     }
                 }
 
-            }
+           //}
 
             if (error == true)
             {
@@ -1389,8 +1414,7 @@ namespace RCabinet.ViewModels
                             addedModels.Add(model); // Mark the model as added
                         }
                     }
-                    int changes =1;
-                    // int changes = await db.SaveChangesAsync();
+                    int changes = await db.SaveChangesAsync();
                     if (changes > 0)
                     {
                         Application.Current.Dispatcher.Invoke(() =>
@@ -1419,12 +1443,14 @@ namespace RCabinet.ViewModels
             }
         }
 
-        private async Task<TrolleyEPCMapping> updateEPCData(TrolleyEPCMapping model)
+        private async Task<List<RFIDOutput>> updateEPCData(ObservableCollection<TrolleyEPCMapping> models)
         {
-            var epc = model.EPC;
+              
+            string epcs = string.Join(", ", models.Select(m => m.EPC));
+
             string token = epc_token;
             string type = "RFID";
-            string url = epc_uri + $"?epc={epc}&token={token}&Type={type}";
+            string url = epc_uri + $"?epcs={epcs}&token={token}&Type={type}";
 
             using (WebClient webClient = new WebClient())
             {
@@ -1442,37 +1468,79 @@ namespace RCabinet.ViewModels
                 }
                 else
                 {
-                    JObject jobject = JObject.Parse(json);
-                    model.SKU = jobject["RFID"][(object)0][(object)
-                      "SKU"
-                    ].ToString();
-                    model.Color = jobject["RFID"][(object)0][(object)
-                      "Color"
-                    ].ToString();
-                    model.Size = jobject["RFID"][(object)0][(object)
-                      "Size"
-                    ].ToString();
-                    model.PO = jobject["RFID"][(object)0][(object)
-                      "PO"
-                    ].ToString();
-                    string samplecode= jobject["RFID"][(object)0][(object)
-                     "SampleCode"
-                   ].ToString();
+                    using (var db = new ShaContext())
+                    {
+                        var countrys = db.CountryCodeMappings.ToList();
 
-                    if (samplecode.Length > 0) {
-                        using (var db = new ShaContext())
+
+                        JObject jobject = JObject.Parse(json);
+                        var rfid = jobject["RFID"].ToList();
+                        var rfidList = rfid.Select(rfidToken => new RFID
                         {
-                            var cl = db.CountryCodeMappings.ToList();
-                            var countryEntity = db.CountryCodeMappings.Where(x => x.Code.Trim()== samplecode.Substring(0,2)).FirstOrDefault();
-                            if (countryEntity!=null)
-                            {
-                                model.CountryCode = countryEntity.CountryCode;
+                            EPC = rfidToken["EPC"].ToString(),
+                            SKU = rfidToken["SKU"].ToString(),
+                            PO = rfidToken["PO"].ToString(),
+                            DO = rfidToken["DO"].ToString(),
+                            Color = rfidToken["Color"].ToString(),
+                            Size = rfidToken["Size"].ToString(),
+                            SampleCode = rfidToken["SampleCode"].ToString(),
+                            Country = countrys.Where(x => x.Code.Trim() == rfidToken["SampleCode"].ToString().Substring(0, 2)).FirstOrDefault().CountryCode
+                        }).ToList();
 
-                            }    
-                        }
+                        var groupedRfids = rfidList
+                           .GroupBy(r => new { r.EPC, r.SKU, r.DO, r.Color, r.Size, r.Country })
+                           .Where(g => g.Select(r => r.PO).Distinct().Count() > 1)
+                           .Select(g => new RFIDOutput
+                           {
+                               //GroupKey = g.Key,
+                               //FirstPO = g.First().PO,
+                               //Rfids = g.ToList()
+
+                               EPC = g.Key.EPC,
+                               SKU = g.Key.SKU,
+                               PO=g.First().PO,
+                               DO = g.Key.DO,
+                               Color = g.Key.Color,
+                               Size = g.Key.Size,
+                               Country = g.Key.Country
+                           })
+                           .ToList();
+
                     }
 
-                    return model;
+
+
+
+                    // model.SKU = jobject["RFID"][(object)0][(object)
+                    //   "SKU"
+                    // ].ToString();
+                    // model.Color = jobject["RFID"][(object)0][(object)
+                    //   "Color"
+                    // ].ToString();
+                    // model.Size = jobject["RFID"][(object)0][(object)
+                    //   "Size"
+                    // ].ToString();
+                    // model.PO = jobject["RFID"][(object)0][(object)
+                    //   "PO"
+                    // ].ToString();
+                    // string samplecode= jobject["RFID"][(object)0][(object)
+                    //  "SampleCode"
+                    //].ToString();
+
+                    // if (samplecode.Length > 0) {
+                    //     using (var db = new ShaContext())
+                    //     {
+                    //         var cl = db.CountryCodeMappings.ToList();
+                    //         var countryEntity = db.CountryCodeMappings.Where(x => x.Code.Trim()== samplecode.Substring(0,2)).FirstOrDefault();
+                    //         if (countryEntity!=null)
+                    //         {
+                    //             model.CountryCode = countryEntity.CountryCode;
+
+                    //         }    
+                    //     }
+                    // }
+
+                    // return model;
                 }
                 return null;
             }
