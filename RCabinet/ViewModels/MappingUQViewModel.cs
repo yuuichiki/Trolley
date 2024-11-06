@@ -983,7 +983,8 @@ namespace RCabinet.ViewModels
 
         private async Task LoadCardDataDetail()
         {
-            Application.Current.Dispatcher.Invoke(() => {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
                 MessageInfo = string.Empty;
                 MessageNotify.Clear();
                 MessageNotify = new ObservableCollection<string>();
@@ -994,101 +995,100 @@ namespace RCabinet.ViewModels
                 return;
             }
 
-            // lấy thông tin chi tiết của thẻ từ database
             string cardid = killZero(CardId.Trim());
-            DataSet dataSet = SqlHelper.getDataSet("exec [P_RFIDReader_GetDataByCardNO_UQ] " + SqlHelper.quotedStr(cardid),"ets");
+            DataSet dataSet = SqlHelper.getDataSet("exec [P_RFIDReader_GetDataByCardNO_UQ] " + SqlHelper.quotedStr(cardid), "ets");
 
             if (dataSet.Tables[0].Rows.Count < 1)
             {
-                InvokeMessage("ID: 【" + cardid + "】Thẻ không hợp lệ hoặc không có ID này, vui lòng kiểm tra lại", "error");
+                InvokeMessage($"ID: 【{cardid}】Thẻ không hợp lệ hoặc không có ID này, vui lòng kiểm tra lại", "error");
                 CardId = string.Empty;
                 return;
             }
-            if (this.cardkey.zdcode != string.Empty && (dataSet.Tables[0].Rows[0]["ZDcode"].ToString().Trim() != this.cardkey.zdcode || this.cardkey.colorno != dataSet.Tables[0].Rows[0]["ColorNo"].ToString().Trim() || this.cardkey.size != dataSet.Tables[0].Rows[0]["sSize"].ToString().Trim() || this.cardkey.ganghao != dataSet.Tables[0].Rows[0]["GangHao"].ToString().Trim() || this.cardkey.countrycode != dataSet.Tables[0].Rows[0]["Country"].ToString().Trim()))
+
+            var row = dataSet.Tables[0].Rows[0];
+            if (this.cardkey.zdcode != string.Empty && (row["ZDcode"].ToString().Trim() != this.cardkey.zdcode || this.cardkey.colorno != row["ColorNo"].ToString().Trim() || this.cardkey.size != row["sSize"].ToString().Trim() || this.cardkey.ganghao != row["GangHao"].ToString().Trim() || this.cardkey.countrycode != row["Country"].ToString().Trim()))
             {
-                InvokeMessage("ID:【" + cardid + "】Đơn đặt hàng, màu sắc, kích thước, số gang hao, Mã quốc gia đến có thể khác với số thẻ đã đọc, hoạt động này không hợp lệ", "unmatch");
+                InvokeMessage($"ID:【{cardid}】Đơn đặt hàng, màu sắc, kích thước, số gang hao, Mã quốc gia đến có thể khác với số thẻ đã đọc, hoạt động này không hợp lệ", "unmatch");
                 CardId = string.Empty;
                 return;
             }
-            if (dataSet.Tables[0].Rows[0]["SaleNo"] == "" || dataSet.Tables[0].Rows[0]["SoItem"] == "")
+
+            if (string.IsNullOrEmpty(row["SaleNo"].ToString()) || string.IsNullOrEmpty(row["SoItem"].ToString()))
             {
-                InvokeMessage("ID:【" + cardid + "】Không thể lấy số mặt hàng và số đơn hàng bán hàng tương ứng với đơn đặt hàng", "error");
+                InvokeMessage($"ID:【{cardid}】Không thể lấy số mặt hàng và số đơn hàng bán hàng tương ứng với đơn đặt hàng", "error");
                 CardId = string.Empty;
                 return;
             }
 
             using (var db = new ShaContext())
             {
-                var cardInstance = db.TrolleyUQCards.FirstOrDefault((CardUQModel e) => e.CardNo.Equals(cardid));
-
+                var cardInstance = db.TrolleyUQCards.FirstOrDefault(e => e.CardNo.Equals(cardid));
                 if (cardInstance != null)
                 {
-                    InvokeMessage("Thẻ: 【" + cardid + "】Đã làm liên kết thẻ, vui lòng kiểm tra lại", "error");
+                    InvokeMessage($"Thẻ: 【{cardid}】Đã làm liên kết thẻ, vui lòng kiểm tra lại", "error");
                     CardId = string.Empty;
                     return;
                 }
             }
 
-            //Load dataSet to CardUqModel
             Card = new CardUQModel
             {
                 Id = Guid.NewGuid(),
-                StyleNo = dataSet.Tables[0].Rows[0]["StyleNO"].ToString().Split('_')[0],
+                StyleNo = row["StyleNO"].ToString().Split('_')[0],
                 MappingId = mappingId,
-                SO = dataSet.Tables[0].Rows[0]["SO"].ToString(),
-                Mo = killZero(dataSet.Tables[0].Rows[0]["ZDcode"].ToString()),
-                FeatureName = dataSet.Tables[0].Rows[0]["FeatureName"].ToString(),
-                ColorNo = dataSet.Tables[0].Rows[0]["ColorNo"].ToString(),
-                ColorName = dataSet.Tables[0].Rows[0]["ColorName"].ToString(),
-                Size = dataSet.Tables[0].Rows[0]["sSize"].ToString(),
-                CutQuantity = Convert.ToInt32(dataSet.Tables[0].Rows[0]["CutQty"].ToString()),
-                BundleQuantity = Convert.ToInt32(dataSet.Tables[0].Rows[0]["cCount"].ToString()),
-                BundleNo = Convert.ToInt32(dataSet.Tables[0].Rows[0]["GroupNO"].ToString()),
-                Country = dataSet.Tables[0].Rows[0]["Country"].ToString(),
-                AdjustQuantity = Convert.ToInt32(dataSet.Tables[0].Rows[0]["cCount"].ToString()),
-                GangHao = dataSet.Tables[0].Rows[0]["GangHao"].ToString(),
-                CardNo = killZero(dataSet.Tables[0].Rows[0]["CardNo"].ToString()),
-                SoItem = killZero(dataSet.Tables[0].Rows[0]["SoItem"].ToString()),
-                SaleNo = dataSet.Tables[0].Rows[0]["SaleNo"].ToString(),
-                Department = dataSet.Tables[0].Rows[0]["Department"].ToString(),
-                LineNo = dataSet.Tables[0].Rows[0]["LineNo"].ToString(),
-                
+                SO = row["SO"].ToString(),
+                Mo = killZero(row["ZDcode"].ToString()),
+                FeatureName = row["FeatureName"].ToString(),
+                ColorNo = row["ColorNo"].ToString(),
+                ColorName = row["ColorName"].ToString(),
+                Size = row["sSize"].ToString(),
+                CutQuantity = Convert.ToInt32(row["CutQty"]),
+                BundleQuantity = Convert.ToInt32(row["cCount"]),
+                BundleNo = Convert.ToInt32(row["GroupNO"]),
+                Country = row["Country"].ToString(),
+                AdjustQuantity = Convert.ToInt32(row["cCount"]),
+                GangHao = row["GangHao"].ToString(),
+                CardNo = killZero(row["CardNo"].ToString()),
+                SoItem = killZero(row["SoItem"].ToString()),
+                SaleNo = row["SaleNo"].ToString(),
+                Department = row["Department"].ToString(),
+                LineNo = row["LineNo"].ToString(),
                 DateCreated = DateTime.Now
             };
 
-            DataSet dsEPCcolorsize = SqlHelper.getDataSet("exec P_Hanlde_RFIDReadert_GetCustColorSize @sapstyle= " + SqlHelper.quotedStr(Card.StyleNo)+ ",@color= "+ SqlHelper.quotedStr(Card.ColorNo) +" ,@size= "+ SqlHelper.quotedStr(Card.Size) , "sha");
+            DataSet dsEPCcolorsize = SqlHelper.getDataSet("exec P_Hanlde_RFIDReadert_GetCustColorSize @sapstyle= " + SqlHelper.quotedStr(Card.StyleNo) + ",@color= " + SqlHelper.quotedStr(Card.ColorNo) + " ,@size= " + SqlHelper.quotedStr(Card.Size), "sha");
             if (dsEPCcolorsize.Tables[0].Rows.Count < 1)
             {
-                InvokeMessage("ID:【" + Card.CardNo + "】 Thông tin Mapping thẻ hàng ETS và [Size; Màu] SKU của EPC chưa được upload lên ORP", "error");
+                InvokeMessage($"ID:【{Card.CardNo}】 Thông tin Mapping thẻ hàng ETS và [Size; Màu] SKU của EPC chưa được upload lên ORP", "error");
                 SoundHelper.PlaySoundError();
                 return;
             }
             else
             {
-                EPC_Color = dsEPCcolorsize.Tables[0].Rows[0]["CustColorNo"].ToString();
-                EPC_Size = dsEPCcolorsize.Tables[0].Rows[0]["CustSize"].ToString();
-                SAPStyle = dsEPCcolorsize.Tables[0].Rows[0]["SAPStyle"].ToString();
-                CustName = dsEPCcolorsize.Tables[0].Rows[0]["CustName"].ToString();
+                var epcRow = dsEPCcolorsize.Tables[0].Rows[0];
+                EPC_Color = epcRow["CustColorNo"].ToString();
+                EPC_Size = epcRow["CustSize"].ToString();
+                SAPStyle = epcRow["SAPStyle"].ToString();
+                CustName = epcRow["CustName"].ToString();
                 Card.CustName = CustName;
                 Card.SAPStyle = SAPStyle;
             }
 
             if (this.cardkey.zdcode == string.Empty)
             {
-                this.cardkey.zdcode = dataSet.Tables[0].Rows[0]["ZDcode"].ToString();
-                this.cardkey.colorno = dataSet.Tables[0].Rows[0]["ColorNo"].ToString();
-                this.cardkey.size = dataSet.Tables[0].Rows[0]["sSize"].ToString();
-                this.cardkey.ganghao = dataSet.Tables[0].Rows[0]["GangHao"].ToString();
-                this.cardkey.countrycode = dataSet.Tables[0].Rows[0]["Country"].ToString();
+                this.cardkey.zdcode = row["ZDcode"].ToString();
+                this.cardkey.colorno = row["ColorNo"].ToString();
+                this.cardkey.size = row["sSize"].ToString();
+                this.cardkey.ganghao = row["GangHao"].ToString();
+                this.cardkey.countrycode = row["Country"].ToString();
             }
 
-            if (Convert.ToInt32(dataSet.Tables[0].Rows[0]["cCount"].ToString()) != 0)
+            if (Convert.ToInt32(row["cCount"]) != 0)
             {
                 addCardList(Card);
-               
             }
-            if (TotalQuantity > 0)   EnableReadingEPC = true;
 
+            if (TotalQuantity > 0) EnableReadingEPC = true;
 
             CountDown = CycleTime;
             CardId = string.Empty;
@@ -1185,9 +1185,6 @@ namespace RCabinet.ViewModels
 
         private async Task RecheckEPCData()
         {
-            // Your logic when the countdown completes
-
-
             if (TrolleyEPCMappings.Count>0 && TrolleyEPCMappings.Count == TotalQuantity)
             {
                 SaveCard();
@@ -1196,7 +1193,6 @@ namespace RCabinet.ViewModels
            
             else if (TrolleyEPCMappings.Count > TotalQuantity)
             {
-                //SaveCard();
                 InvokeMessage("Số lượng thẻ EPC đọc được ["+ TrolleyEPCMappings.Count + "] nhiều hơn số lượng thẻ của đơn ["+ TotalQuantity + "] !. Xin vui lòng kiểm tra lại", "error");
                 await ClearEPCMappingGrid();
 
@@ -1204,10 +1200,7 @@ namespace RCabinet.ViewModels
 
             else if (TrolleyEPCMappings.Count < TotalQuantity)
             {
-                //SaveCard();
                 InvokeMessage("Số lượng thẻ EPC đọc được [" + TrolleyEPCMappings.Count + "] ít hơn số lượng thẻ của đơn [" + TotalQuantity + "] !. Xin vui lòng kiểm tra lại", "error");
-      
-
             }
         }
 
@@ -1284,11 +1277,9 @@ namespace RCabinet.ViewModels
             int epcqty = 0;
             int totalqty = 0;
 
-          
-
             if (markError == true)
             {
-                Reset();
+                await Reset();
             }
 
             foreach (var card in CardUQModels)
@@ -1306,90 +1297,53 @@ namespace RCabinet.ViewModels
             var addedModels = new HashSet<TrolleyEPCMapping>(); // Use a HashSet to store already added models
 
             bool error = false;
-            // foreach (var model in TrolleyEPCMappings)
-            // {
             var cardCountry = CardUQModels.FirstOrDefault().Country.Trim();
-            var epcModels = updateEPCData(TrolleyEPCMappings).Result;
-                if (epcModels != null)
-                foreach(var epcModel in epcModels)
+            var epcModels = await updateEPCData(TrolleyEPCMappings);
+            if (epcModels != null)
+            {
+                foreach (var epcModel in epcModels)
                 {
-                    // check epcModel.Color ==null || epc.Color =""
-                    if (epcModel.Color == "")
+                    // check epcModel.Color ==null || epc.Color ==""
+                    if (string.IsNullOrEmpty(epcModel.Color))
                     {
                         InvokeMessage("EPC:【" + Utilities.EncodeData(epcModel.EPC) + "】Không thể lấy thông tin Màu sắc từ EPC", "error");
                         SoundHelper.PlaySoundError();
                         error = true;
-                        return;
                     }
-                    if (epcModel.Size == "")
+                    if (string.IsNullOrEmpty(epcModel.Size))
                     {
                         InvokeMessage("EPC:【" + Utilities.EncodeData(epcModel.EPC) + "】Không thể lấy thông tin Size từ EPC", "error");
                         SoundHelper.PlaySoundError();
                         error = true;
-                        return;
                     }
                     if (epcModel.Color != EPC_Color.Trim())
                     {
                         InvokeMessage("EPC:【" + Utilities.EncodeData(epcModel.EPC) + "】Màu sắc thẻ EPC không khớp với thông tin màu sắc của thẻ hàng", "error");
                         error = true;
                         SoundHelper.PlaySoundError();
-                        return;
                     }
                     if (epcModel.Size != EPC_Size.Trim())
                     {
                         InvokeMessage("EPC:【" + Utilities.EncodeData(epcModel.EPC) + "】Size thẻ EPC không khớp với thông tin Size của thẻ hàng", "error");
                         error = true;
                         SoundHelper.PlaySoundError();
-                        return;
                     }
-     
-                    if (epcModel.Country.Trim() != cardCountry)
+
+                    //if (epcModel.Country.Trim() != cardCountry)
+                    if (!epcModel.Country.Split(',').Select(c => c.Trim()).Contains(cardCountry))
                     {
-                        InvokeMessage("EPC:【" + Utilities.EncodeData(epcModel.EPC) + "】Mã Country thẻ EPC ["+ epcModel.Country.Trim() + "] không khớp với mã Country ["+ cardCountry + "] của thẻ hàng", "error");
+                        InvokeMessage("EPC:【" + Utilities.EncodeData(epcModel.EPC) + "】Mã Country thẻ EPC [" + epcModel.Country.Trim() + "] không khớp với mã Country [" + cardCountry + "] của thẻ hàng", "error");
                         error = true;
                         SoundHelper.PlaySoundError();
-                        return;
-                    }
-
-
-                    using (var db = new ShaContext())
-                    {
-                       // var epc = db.TrolleyEPCMappings.FirstOrDefault((TrolleyEPCMapping e) => e.EPC.Contains(model.EPC));
-                        //if (epc != null)
-                        //{
-                        //    //check if MessageNotify contains
-                        //    string err = "EPC:【" + Utilities.EncodeData(epcModel.EPC) + "】 đã làm liên kết";
-                        //    if (MessageNotify.Contains(err) == false)
-                        //    {
-                        //        InvokeMessage(err, "error");
-
-                        //    }
-                        //    error = true;
-                        //}
-                        //else
-                        //{
-
-
-                        //    if (TrolleyEPCMappings.Count > TotalQuantity)
-                        //    {
-                        //        //SoundHelper.PlaySoundUnmatch();
-                        //        InvokeMessage("Đã đọc số lượng thẻ:" + this.TrolleyEPCMappings.Count.ToString() + "Chiếc,Đã vượt quá số lượng " + Convert.ToString(TrolleyEPCMappings.Count - Convert.ToInt32(TotalQuantity)) + " Chiếc, Thao tác này không hợp lệ,vui lòng liên kết lại, xin cảm ơn", "error");
-                        //        error = true;
-                        //    }
-                            
-
-                        //}
                     }
                 }
+            }
 
-           //}
-
-            if (error == true)
+            if (error)
             {
                 await ClearEPCMappingGrid();
                 return;
             }
-
 
             using (var db = new ShaContext())
             {
@@ -1398,43 +1352,50 @@ namespace RCabinet.ViewModels
                     epcqty = 0;
                     cardqty = card.AdjustQuantity;
                     card.EPCQuantity = TrolleyEPCMappings.Count;
-                    card.DeviceName=deviceId;
-                    card.DateCreated=DateTime.Now;
+                    card.DeviceName = deviceId;
+                    card.DateCreated = DateTime.Now;
                     db.TrolleyUQCards.Add(card);
 
                     foreach (var model in TrolleyEPCMappings)
                     {
-                        if (epcqty < cardqty && !addedModels.Contains(model))
+                        if (epcqty < cardqty && addedModels.Add(model))
                         {
                             // check db.TrolleyEPCMappings contains model.epccode
                             epcqty++;
                             model.UQCardId = card.Id;
-                            model.TimeCreated=DateTime.Now;
+                            model.TimeCreated = DateTime.Now;
                             db.TrolleyEPCMappings.Add(model);
-                            addedModels.Add(model); // Mark the model as added
                         }
                     }
-                    int changes = await db.SaveChangesAsync();
-                    if (changes > 0)
+                }
+
+                int changes = await db.SaveChangesAsync();
+                if (changes > 0)
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
                     {
-                        Application.Current.Dispatcher.Invoke(() =>
+                        foreach (var card in CardUQModels)
                         {
                             InvokeMessage("Thẻ:【" + card.CardNo + "】Đã lưu thành công", "ok");
-                        });
-                    }
-                    else
+                        }
+                    });
+                }
+                else
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
                     {
-                        Application.Current.Dispatcher.Invoke(() =>
+                        foreach (var card in CardUQModels)
                         {
                             InvokeMessage("Thẻ:【" + card.CardNo + "】Không thể lưu, vui lòng thử lại", "error");
-                        });
-                    }
+                        }
+                    });
                 }
 
                 await ClearEPCGrid();
 
                 isReading = false;
-                Application.Current.Dispatcher.Invoke(() => {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
                     ReadingStatus = "Start Reading EPC";
                 });
 
@@ -1445,104 +1406,55 @@ namespace RCabinet.ViewModels
 
         private async Task<List<RFIDOutput>> updateEPCData(ObservableCollection<TrolleyEPCMapping> models)
         {
-              
             string epcs = string.Join(", ", models.Select(m => m.EPC));
-
             string token = epc_token;
             string type = "RFID";
-            string url = epc_uri + $"?epcs={epcs}&token={token}&Type={type}";
+            string url = $"{epc_uri}?epcs={epcs}&token={token}&Type={type}";
 
             using (WebClient webClient = new WebClient())
             {
                 webClient.Headers.Add("Content-Type", "application/json");
-                byte[] bytes = Encoding.UTF8.GetBytes(url);
-                webClient.Headers.Add("ContentLength", bytes.Length.ToString());
                 ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback(RemoteCertificateValidate);
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls;
-                string json = Encoding.UTF8.GetString(webClient.UploadData(url, "POST", bytes));
-                if (JToken.Parse(json)[(object)
-                    "Status"].ToString().ToUpper().Trim() != "OK")
+
+                string json = await webClient.UploadStringTaskAsync(url, "POST", string.Empty);
+                JObject jobject = JObject.Parse(json);
+
+                if (jobject["Status"].ToString().ToUpper().Trim() != "OK")
                 {
-                    //this.tips(" There is no any SAP result to the EPC: " + epc);
                     return null;
                 }
-                else
+
+                using (var db = new ShaContext())
                 {
-                    using (var db = new ShaContext())
+                    var countrys = db.CountryCodeMappings.ToList();
+                    var rfidList = jobject["RFID"].Select(rfidToken => new RFID
                     {
-                        var countrys = db.CountryCodeMappings.ToList();
+                        EPC = rfidToken["EPC"].ToString(),
+                        SKU = rfidToken["SKU"].ToString(),
+                        PO = rfidToken["PO"].ToString(),
+                        DO = rfidToken["DO"].ToString(),
+                        Color = rfidToken["Color"].ToString(),
+                        Size = rfidToken["Size"].ToString(),
+                        SampleCode = rfidToken["SampleCode"].ToString(),
+                        Country = countrys.FirstOrDefault(x => x.Code.Trim() == rfidToken["SampleCode"].ToString().Substring(0, 2))?.CountryCode
+                    }).ToList();
 
-
-                        JObject jobject = JObject.Parse(json);
-                        var rfid = jobject["RFID"].ToList();
-                        var rfidList = rfid.Select(rfidToken => new RFID
+                    return rfidList
+                        .GroupBy(r => new { r.EPC, r.SKU, r.DO, r.Color, r.Size, r.Country })
+                        .Where(g => g.Select(r => r.PO).Distinct().Count() > 1)
+                        .Select(g => new RFIDOutput
                         {
-                            EPC = rfidToken["EPC"].ToString(),
-                            SKU = rfidToken["SKU"].ToString(),
-                            PO = rfidToken["PO"].ToString(),
-                            DO = rfidToken["DO"].ToString(),
-                            Color = rfidToken["Color"].ToString(),
-                            Size = rfidToken["Size"].ToString(),
-                            SampleCode = rfidToken["SampleCode"].ToString(),
-                            Country = countrys.Where(x => x.Code.Trim() == rfidToken["SampleCode"].ToString().Substring(0, 2)).FirstOrDefault().CountryCode
-                        }).ToList();
-
-                        var groupedRfids = rfidList
-                           .GroupBy(r => new { r.EPC, r.SKU, r.DO, r.Color, r.Size, r.Country })
-                           .Where(g => g.Select(r => r.PO).Distinct().Count() > 1)
-                           .Select(g => new RFIDOutput
-                           {
-                               //GroupKey = g.Key,
-                               //FirstPO = g.First().PO,
-                               //Rfids = g.ToList()
-
-                               EPC = g.Key.EPC,
-                               SKU = g.Key.SKU,
-                               PO=g.First().PO,
-                               DO = g.Key.DO,
-                               Color = g.Key.Color,
-                               Size = g.Key.Size,
-                               Country = g.Key.Country
-                           })
-                           .ToList();
-
-                    }
-
-
-
-
-                    // model.SKU = jobject["RFID"][(object)0][(object)
-                    //   "SKU"
-                    // ].ToString();
-                    // model.Color = jobject["RFID"][(object)0][(object)
-                    //   "Color"
-                    // ].ToString();
-                    // model.Size = jobject["RFID"][(object)0][(object)
-                    //   "Size"
-                    // ].ToString();
-                    // model.PO = jobject["RFID"][(object)0][(object)
-                    //   "PO"
-                    // ].ToString();
-                    // string samplecode= jobject["RFID"][(object)0][(object)
-                    //  "SampleCode"
-                    //].ToString();
-
-                    // if (samplecode.Length > 0) {
-                    //     using (var db = new ShaContext())
-                    //     {
-                    //         var cl = db.CountryCodeMappings.ToList();
-                    //         var countryEntity = db.CountryCodeMappings.Where(x => x.Code.Trim()== samplecode.Substring(0,2)).FirstOrDefault();
-                    //         if (countryEntity!=null)
-                    //         {
-                    //             model.CountryCode = countryEntity.CountryCode;
-
-                    //         }    
-                    //     }
-                    // }
-
-                    // return model;
+                            EPC = g.Key.EPC,
+                            SKU = g.Key.SKU,
+                            PO = g.First().PO,
+                            DO = g.Key.DO,
+                            Color = g.Key.Color,
+                            Size = g.Key.Size,
+                            Country = g.Key.Country
+                        })
+                        .ToList();
                 }
-                return null;
             }
         }
     }
