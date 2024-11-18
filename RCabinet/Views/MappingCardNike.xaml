@@ -268,6 +268,14 @@
                                             Header="Id"
                                             Visibility="Hidden" />
                                         <DataGridTextColumn
+                                             Width="110"
+                                             Binding="{Binding Department}"
+                                             Header="Department" />
+                                        <DataGridTextColumn
+                                             Width="80"
+                                             Binding="{Binding LineNo}"
+                                             Header="Line No" />
+                                        <DataGridTextColumn
                                             Width="100"
                                             Binding="{Binding CardNo}"
                                             Header="Card No">
@@ -323,7 +331,7 @@
 
                                         <DataGridTextColumn
                                             Width="200"
-                                            Binding="{Binding GangHao}"
+                                            Binding="{Binding PPGangHao}"
                                             Header="Gang Hao">
                                             <DataGridTextColumn.ElementStyle>
                                                 <Style TargetType="TextBlock">
@@ -392,7 +400,7 @@
                                 Grid.Column="4"
                                 Width="126"
                                 Height="28"
-                                Margin="84,62,0,0"
+                                Margin="84,16,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Content="Customer Color"
@@ -414,7 +422,7 @@
                                 Grid.Column="4"
                                 Width="230"
                                 Height="30"
-                                Margin="222,58,0,0"
+                                Margin="222,12,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Background="#efe6ce"
@@ -550,7 +558,7 @@
                                 Grid.Column="4"
                                 Width="100"
                                 Height="30"
-                                Margin="86,103,0,0"
+                                Margin="86,57,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Content="Quantity"
@@ -560,7 +568,7 @@
                                 Grid.Column="4"
                                 Width="230"
                                 Height="30"
-                                Margin="222,101,0,0"
+                                Margin="222,55,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Background="#efe6ce"
@@ -571,7 +579,7 @@
                                 Grid.Column="4"
                                 Width="120"
                                 Height="28"
-                                Margin="88,150,0,0"
+                                Margin="88,101,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Content="Valid quantity"
@@ -581,7 +589,7 @@
                                 Grid.Column="4"
                                 Width="230"
                                 Height="30"
-                                Margin="222,150,0,0"
+                                Margin="222,100,0,0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Top"
                                 Background="#efe6ce"
@@ -786,6 +794,29 @@
                                 Background="#efe6ce"
                                 Content="{Binding Card.IsActive}"
                                 Style="{StaticResource LabelUI}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="4"
+                                Width="118"
+                                Height="28"
+                                Margin="86,151,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Content="PP Gang Hao"
+                                Style="{StaticResource LabelUI}" />
+                            <Label
+                                Grid.Row="2"
+                                Grid.Column="4"
+                                Width="230"
+                                Height="30"
+                                Margin="222,152,0,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Top"
+                                Background="#efe6ce"
+                                Content="{Binding Card.PPGangHao}"
+                                FontSize="16"
+                                FontWeight="Bold"
+                                Foreground="Black" />
                         </Grid>
                     </TabItem>
 

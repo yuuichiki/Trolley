@@ -30,11 +30,43 @@ namespace RCabinet.Models
         public string LineNo { get; set; }
         public string SAPStyle { get; set; }
         public string CustName { get; set; }
-
         public int ? CutType { get; set; }
         public string CutTypeName { get; set; }
 
     }
+
+    public class CardNikeModel
+    {
+        public string CustomerColor { get; set; }
+        public int ValidQuantity { get; set; }
+        public object EpCs { get; set; }
+        public int Id { get; set; }
+        public string StyleNo { get; set; }
+        public string Mo { get; set; }
+        public string ColorNo { get; set; }
+        public string ColorName { get; set; }
+        public string Size { get; set; }
+        public int Quantity { get; set; }
+        public string CardNo { get; set; }
+        public bool IsActive { get; set; }
+        public string WorklayerNo { get; set; }
+        public string WorklayerName { get; set; }
+        public string Group { get; set; }
+        public string GangHao { get; set; }
+
+        public string SAPStyle { get; set; }
+        public string CustName { get; set; }
+        public string postProcessCardID { get; set; }
+        public string postProcessCardNo { get; set; }
+        public string postProcessGangHao { get; set; }
+        public string postProcessDepartment { get; set; }
+        public string postProcessWorkline { get; set; }
+
+        public int? CutType { get; set; }
+        public string CutTypeName { get; set; }
+
+    }
+
 
     [Table("Trolley_UQCard")]
     public class CardUQModel
@@ -79,6 +111,14 @@ namespace RCabinet.Models
         public CardModel Card { get; set; }
         public List<PosModel> Pos { get; set; }
     }
+
+
+    public class ResponseNikeModel
+    {
+        public CardNikeModel Card { get; set; }
+        public List<PosModel> Pos { get; set; }
+    }
+
 
     public class POEpcModel
     {

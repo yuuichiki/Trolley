@@ -2,6 +2,7 @@
 using GDotnet.Reader.Api.DAL;
 using GDotnet.Reader.Api.Protocol.Gx;
 using Microsoft.EntityFrameworkCore.Internal;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RCabinet.Helpers;
 using RCabinet.Interfaces;
@@ -102,10 +103,42 @@ namespace RCabinet.ViewModels
             public string DO { get; set; }
             public string Color { get; set; }
             public string Size { get; set; }
+            public string SampleCode { get; set; }
             public string Country { get; set; }
         }
 
-
+       // public string[] epclist = new string[] {
+       //"00B07A1510277E6F88007639",
+       // "00B07A1510277E6F880067C5",
+       // "00B07A1510277E6F8800739D",
+       // "00B07A1510277E6F880073CA",
+       // "00B07A1510277E6F8800700A",
+       // "00B07A1510277E6F8800565E",
+       // "00B07A1510277E6F88007014",
+       // "00B07A1510277E6F880073BB",
+       // "00B07A1510277E6F880073F0",
+       // "00B07A1510277E6F880073C0",
+       // "00B07A1510277E6F880067C0",
+       // "00B07A1510277E6F8800763E",
+       // "00B07A1510277E6F880073B1",
+       // "00B07A1510277E6F880073AC",
+       // "00B07A1510277E6F880073C5",
+       // "00B07A1510277E6F88007634",
+       // "00B07A1510277E6F880073A2",
+       // "00B07A1510277E6F88007398",
+       // "00B07A1510277E6F88005654",
+       // "00B07A1510277E6F880073B6",
+       // "00B07A1510277E6F88007506",
+       // "00B07A1510277E6F880073A7",
+       // "00B07A1510277E6F8800700F",
+       // "00B07A1510277E6F88007501",
+       // "00B07A1510277E6F88007032",
+       // "00B07A1510277E6F880073CF",
+       // "00B07A1510277E6F88005659",
+       // "00B07A1510277E6F880073EB",
+       // "00B07A1510277E6F880073D9",
+       // "00B07A1510277E6F880073D4"
+       // };
 
         public MappingUQViewModel(IChangeViewModel viewModelChanger) : base(viewModelChanger)
         {
@@ -751,93 +784,6 @@ namespace RCabinet.ViewModels
                                     if (EnableChekingEPC == false) EnableChekingEPC = true;
                                     count++;
                                 });
-
-                                //var epcModel = updateEPCData(model).Result;
-                                //if (epcModel != null)
-                                //{
-                                //    // check epcModel.Color ==null || epc.Color =""
-                                //    if (epcModel.Color == "")
-                                //    {
-                                //        InvokeMessage("EPC:【" + epcModel.EPC + "】Không thể lấy thông tin Màu sắc từ EPC", "error");
-                                //        SoundHelper.PlaySoundError();
-                                //        return;
-                                //    }
-                                //    if (epcModel.Size == "")
-                                //    {
-                                //        InvokeMessage("EPC:【" + epcModel.EPC + "】Không thể lấy thông tin Size từ EPC", "error");
-                                //        SoundHelper.PlaySoundError();
-                                //        return;
-                                //    }
-                                //    if (epcModel.Color != EPC_Color.Trim())
-                                //    {
-                                //        InvokeMessage("EPC:【" + epcModel.EPC + "】Màu sắc thẻ EPC không khớp với thông tin màu sắc của thẻ hàng", "error");
-                                //        SoundHelper.PlaySoundError();
-                                //        return;
-                                //    }
-                                //    if (epcModel.Size != EPC_Size.Trim())
-                                //    {
-                                //        InvokeMessage("EPC:【" + epcModel.EPC + "】Size thẻ EPC không khớp với thông tin Size của thẻ hàng", "error");
-                                //        SoundHelper.PlaySoundError();
-                                //        return;
-                                //    }
-
-                                //    using (var db = new ShaContext())
-                                //    {
-                                //        var epc = db.TrolleyEPCMappings.FirstOrDefault((TrolleyEPCMapping e) => e.EPC.Contains(model.EPC));
-                                //        if (epc != null)
-                                //        {
-                                //            //check if MessageNotify contains
-                                //            string err = "EPC:【" + model.EPC + "】 đã làm liên kết";
-                                //            if (MessageNotify.Contains(err) == false)
-                                //            {
-                                //                InvokeMessage(err, "error");
-
-                                //            }
-                                //        }
-                                //        else
-                                //        {
-
-
-                                //            if (TrolleyEPCMappings.Count > TotalQuantity)
-                                //            {
-                                //                //SoundHelper.PlaySoundUnmatch();
-                                //                InvokeMessage("Đã đọc số lượng thẻ:" + this.TrolleyEPCMappings.Count.ToString() + "Chiếc,Đã vượt quá số lượng " + Convert.ToString(TrolleyEPCMappings.Count - Convert.ToInt32(TotalQuantity)) + " Chiếc, Thao tác này không hợp lệ,vui lòng liên kết lại, xin cảm ơn", "error");
-                                //            }
-
-
-                                //        }
-                                //    }
-                                //}
-
-                                //if (TrolleyEPCMappings.Count == TotalQuantity)
-                                //{
-                                //    checkCount++;
-                                //    if (checkCount > 2 && lastChecked)
-                                //    {
-                                //        //SaveCard();
-                                //        // MessageBox.Show("Save Card");
-                                //    }
-                                //}
-                                //if (!lastChecked && checkCount == 2)
-                                //{
-                                //    Application.Current.Dispatcher.Invoke(() =>
-                                //    {
-                                //        TrolleyEPCMappings.Clear();
-                                //        count = 1;
-
-                                //    });
-                                //    lastChecked = true;
-                                //}
-
-
-                                //if (TrolleyEPCMappings.Count == TotalQuantity && checkCount > 2 && lastChecked)
-                                //{
-                                //    //SaveCard();
-                                //    MessageBox.Show("Save Card");
-
-                                //}
-
-
                             });
                         }
 
@@ -1020,16 +966,16 @@ namespace RCabinet.ViewModels
                 return;
             }
 
-            using (var db = new ShaContext())
-            {
-                var cardInstance = db.TrolleyUQCards.FirstOrDefault(e => e.CardNo.Equals(cardid));
-                if (cardInstance != null)
-                {
-                    InvokeMessage($"Thẻ: 【{cardid}】Đã làm liên kết thẻ, vui lòng kiểm tra lại", "error");
-                    CardId = string.Empty;
-                    return;
-                }
-            }
+            //using (var db = new ShaContext())
+            //{
+            //    var cardInstance = db.TrolleyUQCards.FirstOrDefault(e => e.CardNo.Equals(cardid));
+            //    if (cardInstance != null)
+            //    {
+            //        InvokeMessage($"Thẻ: 【{cardid}】Đã làm liên kết thẻ, vui lòng kiểm tra lại", "error");
+            //        CardId = string.Empty;
+            //        return;
+            //    }
+            //}
 
             Card = new CardUQModel
             {
@@ -1074,14 +1020,14 @@ namespace RCabinet.ViewModels
                 Card.SAPStyle = SAPStyle;
             }
 
-            if (this.cardkey.zdcode == string.Empty)
-            {
-                this.cardkey.zdcode = row["ZDcode"].ToString();
-                this.cardkey.colorno = row["ColorNo"].ToString();
-                this.cardkey.size = row["sSize"].ToString();
-                this.cardkey.ganghao = row["GangHao"].ToString();
-                this.cardkey.countrycode = row["Country"].ToString();
-            }
+            //if (this.cardkey.zdcode == string.Empty)
+            //{
+            //    this.cardkey.zdcode = row["ZDcode"].ToString();
+            //    this.cardkey.colorno = row["ColorNo"].ToString();
+            //    this.cardkey.size = row["sSize"].ToString();
+            //    this.cardkey.ganghao = row["GangHao"].ToString();
+            //    this.cardkey.countrycode = row["Country"].ToString();
+            //}
 
             if (Convert.ToInt32(row["cCount"]) != 0)
             {
@@ -1092,6 +1038,44 @@ namespace RCabinet.ViewModels
 
             CountDown = CycleTime;
             CardId = string.Empty;
+
+            //--------------For emulator and nedd comment when run-------------------------------------
+
+            //Application.Current.Dispatcher.Invoke(() =>
+            //{
+            //    foreach (var epc in epclist)
+            //    {
+            //        var model =
+            //          new TrolleyEPCMapping
+            //          {
+            //              Count = count,
+            //              Id = Guid.NewGuid(),
+            //              EPC = epc,
+            //              EncodeEPC = Utilities.EncodeData(epc),
+            //              MappingId = mappingId,
+            //              TimeCreated = DateTime.Now,
+            //              SKU = "",
+            //              CountryCode = "",
+            //              Size = Card.Size,
+            //              Color = Card.ColorNo,
+            //              EmpCode = CurrentUser.Name
+            //          };
+
+
+            //        Application.Current.Dispatcher.Invoke(() =>
+            //        {
+
+            //            TrolleyEPCMappings.Add(model);
+            //            TotalCount = count;
+            //            if (EnableChekingEPC == false) EnableChekingEPC = true;
+            //            count++;
+            //        });
+            //    }
+            //});
+
+
+
+            //---------------------------------------------------
         }
 
         private async Task LoadEPCData(string _epc)
@@ -1329,6 +1313,14 @@ namespace RCabinet.ViewModels
                         SoundHelper.PlaySoundError();
                     }
 
+                    if (epcModel.SampleCode != CustName.Trim())
+                    {
+                        InvokeMessage("EPC:【" + Utilities.EncodeData(epcModel.EPC) + "】Khoản hàng khác nhau, không thể liên kết thẻ", "error");
+                        error = true;
+                        SoundHelper.PlaySoundError();
+                    }
+
+
                     //if (epcModel.Country.Trim() != cardCountry)
                     if (!epcModel.Country.Split(',').Select(c => c.Trim()).Contains(cardCountry))
                     {
@@ -1337,6 +1329,14 @@ namespace RCabinet.ViewModels
                         SoundHelper.PlaySoundError();
                     }
                 }
+            }
+            else
+            {
+
+                InvokeMessage("Không thể lấy thông tin từ EPC, vui lòng thử lại", "error");
+                SoundHelper.PlaySoundError();
+                error = true;
+                return;
             }
 
             if (error)
@@ -1407,9 +1407,10 @@ namespace RCabinet.ViewModels
         private async Task<List<RFIDOutput>> updateEPCData(ObservableCollection<TrolleyEPCMapping> models)
         {
             string epcs = string.Join(", ", models.Select(m => m.EPC));
+            string[] epcsArray = epcs.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
             string token = epc_token;
             string type = "RFID";
-            string url = $"{epc_uri}?epcs={epcs}&token={token}&Type={type}";
+            string url = $"{epc_uri}?token={token}&Type={type}";
 
             using (WebClient webClient = new WebClient())
             {
@@ -1417,7 +1418,12 @@ namespace RCabinet.ViewModels
                 ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback(RemoteCertificateValidate);
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls;
 
-                string json = await webClient.UploadStringTaskAsync(url, "POST", string.Empty);
+
+                var content = new StringContent(JsonConvert.SerializeObject(epcsArray), Encoding.UTF8, "application/json");
+                string jsonContent = JsonConvert.SerializeObject(epcsArray);
+                string json = await webClient.UploadStringTaskAsync(url, "POST", jsonContent);
+
+       
                 JObject jobject = JObject.Parse(json);
 
                 if (jobject["Status"].ToString().ToUpper().Trim() != "OK")
@@ -1441,7 +1447,7 @@ namespace RCabinet.ViewModels
                     }).ToList();
 
                     return rfidList
-                        .GroupBy(r => new { r.EPC, r.SKU, r.DO, r.Color, r.Size, r.Country })
+                        .GroupBy(r => new { r.EPC, r.SKU, r.DO, r.Color, r.Size, r.SampleCode,r.Country })
                         .Where(g => g.Select(r => r.PO).Distinct().Count() > 1)
                         .Select(g => new RFIDOutput
                         {
@@ -1451,6 +1457,7 @@ namespace RCabinet.ViewModels
                             DO = g.Key.DO,
                             Color = g.Key.Color,
                             Size = g.Key.Size,
+                            SampleCode = g.Key.SampleCode,
                             Country = g.Key.Country
                         })
                         .ToList();

@@ -148,6 +148,9 @@
 
             [MaxLength(255)]
             public string GangHao { get; set; }
+            public string PPCardID { get; set; }
+            public string PPCardNo { get; set; }
+            public string PPGangHao { get; set; }
 
             public int? CutType { get; set; }
 

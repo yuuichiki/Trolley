@@ -27,16 +27,11 @@ namespace RCabinet.Views
         public MappingCardUQ()
         {
             InitializeComponent();
-            
-
-
         }
         private bool comIsOpened = false;
 
         private void MappingCardUQ_Loaded(object sender, RoutedEventArgs e)
         {
-
-       
            var viewModel = DataContext as MappingUQViewModel;
             if (viewModel != null)
             {

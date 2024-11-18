@@ -839,16 +839,16 @@ namespace RCabinet.ViewModels
             }
             string cardid = killZero(CardId.Trim());
 
-            using (var db = new ShaContext())
-            {
-                var cardInstance = db.TrolleyNikeCards.FirstOrDefault(e => e.CardNo.Contains(cardid));
+            //using (var db = new ShaContext())
+            //{
+            //    var cardInstance = db.TrolleyNikeCards.FirstOrDefault(e => e.CardNo.Contains(cardid));
 
-                if (cardInstance != null)
-                {
-                    InvokeMessage("Card: 【" + CardId.Trim() + "】Đã làm liên kết thẻ, vui lòng kiểm tra lại", "error");
-                    return;
-                }
-            }
+            //    if (cardInstance != null)
+            //    {
+            //        InvokeMessage("Card: 【" + CardId.Trim() + "】Đã làm liên kết thẻ, vui lòng kiểm tra lại", "error");
+            //        return;
+            //    }
+            //}
 
 
             string url = "http://172.19.18.35:8103/ETSToEPC/etsCard/nike/" + cardid;
@@ -857,11 +857,9 @@ namespace RCabinet.ViewModels
             if (response != null && response.IsSuccessStatusCode)
             {
                 var responseData = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<ResponseModel>(responseData);
+                var result = JsonConvert.DeserializeObject<ResponseNikeModel>(responseData);
 
                 var _card = result.Card;
-
-
 
                 Card = new TrolleyNikeCard
                 {
@@ -872,6 +870,11 @@ namespace RCabinet.ViewModels
                     StyleNo = _card.StyleNo,
                     CustomerColor = _card.CustomerColor,
                     GangHao = _card.GangHao,
+                    PPCardID= _card.postProcessCardID,
+                    PPCardNo = _card.postProcessCardNo,
+                    PPGangHao=_card.postProcessGangHao,
+                    Department = _card.postProcessDepartment,
+                    LineNo = _card.postProcessWorkline,
                     ColorNo = _card.ColorNo,
                     ColorName = _card.ColorName,
                     Size = _card.Size,
