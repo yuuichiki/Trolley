@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.VariantTypes;
 using GDotnet.Reader.Api.DAL;
 using GDotnet.Reader.Api.Protocol.Gx;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -24,6 +25,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
 using static RCabinet.Models.ShaContext;
 
 namespace RCabinet.ViewModels
@@ -758,6 +760,7 @@ namespace RCabinet.ViewModels
                 TotalCount = 0;
                 messageNoti = new ObservableCollection<string>();
                 markError = false;
+                //-----------
                 EnableChekingEPC = false;
             });
         }
@@ -1018,11 +1021,71 @@ namespace RCabinet.ViewModels
 
         private async Task RecheckEPCData()
         {
+            //----------------------------------------------
+            //string[] epclist = new string[]
+            //{
+            //    "30340C139008A5400EED9404",
+            //    "30340C139008A57D0D9B6004",
+            //    "30340C139008A54EA2A99404",
+            //    "30340C139008A56C095E1804",
+            //    "30340C139008A55A3D509404",
+            //    "30340C139008A569288C3C04",
+            //    "30340C139008A5482AB6AC04",
+            //    "30340C139008A542A7319804",
+            //    "30340C139008A54311DBBC04",
+            //    "30340C139008A55AA93BA804",
+            //    "30340C139008A563F22AE404",
+            //    "30340C139008A5698D688404",
+            //    "30340C139008A549DF3E2804",
+            //    "30340C139008A56EDF94E404",
+            //    "30340C139008A5717F85F404",
+            //    "30340C139008A54645DE9804",
+            //    "30340C139008A557E5012004",
+            //    "30340C139008A54392D08404",
+            //    "30340C139008A5589829CC04",
+            //    "30340C139008A575EDBE4404"
+            //};
+            //foreach (var logepc in epclist)
+            //{
+            //    if (!TrolleyNikeEPCMappings.Any(e => e.EPC.Contains(logepc)))
+            //    {
+            //        Application.Current.Dispatcher.Invoke(() =>
+            //        {
+            //            var model =
+            //              new TrolleyNikeEPCMapping
+            //              {
+            //                  Count = count,
+            //                  Id = Guid.NewGuid(),
+            //                  EPC = logepc,
+            //                  EncodeEPC = Utilities.EncodeData(logepc),
+            //                  MappingId = mappingId,
+            //                  TimeCreated = DateTime.Now,
+            //                  Size = "",
+            //                  Color = "",
+            //                  EmpCode = CurrentUser.Name
+            //              };
+
+
+            //            Application.Current.Dispatcher.Invoke(() =>
+            //            {
+
+            //                TrolleyNikeEPCMappings.Add(model);
+            //                TotalCount = count;
+            //                if (EnableChekingEPC == false) EnableChekingEPC = true;
+            //                count++;
+            //            });
+
+
+            //        });
+            //    }
+            //}
+
+            //----------------------------------------------
 
             ValidEPCs.Clear();
             var epcList = TrolleyNikeEPCMappings.Select(t => t.EPC).ToList();
-            string jsonEpcArray = JsonConvert.SerializeObject(epcList, Formatting.Indented);
-            await MappingEPCData(jsonEpcArray);
+            
+            await MappingEPCData(epcList);
 
             if (ValidEPCs.Count>0 && ValidEPCs.Count == TotalQuantity)
             {
@@ -1171,23 +1234,35 @@ namespace RCabinet.ViewModels
 
 
 
-        private async Task MappingEPCData(string epc)
+        private async Task MappingEPCData(List<string> epclist)
         {
             string url = $"http://172.19.18.35:8103/nike/epcs/";
             try
             {
-                if (TrolleyNikeEPCMappings.Any(t => t.EPC == epc))
-                {
-                    return;
-                }
+                //if (TrolleyNikeEPCMappings.Any(t => t.EPC == epclist))
+                //{
+                //    return;
+                //}
+
+                //var client1 = new HttpClient();
+                //var request1 = new HttpRequestMessage(HttpMethod.Post, "http://172.19.18.35:8103/nike/epcs");
+
+                //var content1 = new StringContent("[\r\n  \"30340C139008A5400EED9404\",\r\n  \"30340C139008A57D0D9B6004\",\r\n  \"30340C139008A54EA2A99404\",\r\n  \"30340C139008A56C095E1804\",\r\n  \"30340C139008A55A3D509404\",\r\n  \"30340C139008A569288C3C04\",\r\n  \"30340C139008A5482AB6AC04\",\r\n  \"30340C139008A542A7319804\",\r\n  \"30340C139008A54311DBBC04\",\r\n  \"30340C139008A55AA93BA804\",\r\n  \"30340C139008A563F22AE404\",\r\n  \"30340C139008A5698D688404\",\r\n  \"30340C139008A549DF3E2804\",\r\n  \"30340C139008A56EDF94E404\",\r\n  \"30340C139008A5717F85F404\",\r\n  \"30340C139008A54645DE9804\",\r\n  \"30340C139008A557E5012004\",\r\n  \"30340C139008A54392D08404\",\r\n  \"30340C139008A5589829CC04\",\r\n  \"30340C139008A575EDBE4404\"\r\n]", null, "application/json");
+                //request1.Content = content1;
+                //var response1 = await client1.SendAsync(request1);
+                //response1.EnsureSuccessStatusCode();
+                //Console.WriteLine(await response1.Content.ReadAsStringAsync());
+
+
+
+
 
                 using (var client = new HttpClient())
                 {
-                    var request = new HttpRequestMessage(HttpMethod.Post, url)
-                    {
-                        Content = new StringContent(JsonConvert.SerializeObject(new { epc }), Encoding.UTF8, "application/json")
-                    };
+                    var request = new HttpRequestMessage(HttpMethod.Post, "http://172.19.18.35:8103/nike/epcs");
+                    var content = new StringContent(JsonConvert.SerializeObject(epclist), Encoding.UTF8, "application/json");
 
+                    request.Content = content;
                     var response = await client.SendAsync(request);
                     response.EnsureSuccessStatusCode();
 
@@ -1198,10 +1273,17 @@ namespace RCabinet.ViewModels
                     {
                         if (result.NikeEPCData.Count > 0)
                         {
-                            await ProcessNikeEPCData(result.NikeEPCData, epc);
+                            await ProcessNikeEPCData(result.NikeEPCData, epclist);
                         }
+                        else
+                        {
+                            InvokeMessage($"EPC:【{Helpers.Utilities.EncodeData(string.Join(",", epclist))}】Không thể lấy được thông tin", "error");
+                            SoundHelper.PlaySoundError();
+                           
+                        }
+                    
 
-                        if (result.NoInfoEPCs.Count > 0)
+                       if (result.NoInfoEPCs.Count > 0)
                         {
                             foreach (var _epc in result.NoInfoEPCs)
                             {
@@ -1217,82 +1299,99 @@ namespace RCabinet.ViewModels
             }
             catch (Exception ex)
             {
-                // Handle exception (log it, show message, etc.)
+                InvokeMessage($"Lỗi services lấy dữ liệu, không thể lấy dữ liệu: \r\n【{ex}】", "error");
+                SoundHelper.PlaySoundError();
+                return;
             }
         }
 
-        private async Task ProcessNikeEPCData(List<NikeEPCData> nikeEPCData, string epc)
+        private async Task ProcessNikeEPCData(List<NikeEPCData> nikeEPCData, List<string> epclist)
         {
             int count = 1;
+            bool error = false;
             foreach (var item in nikeEPCData)
             {
                 if (string.IsNullOrEmpty(item.Color))
                 {
                     InvokeMessage($"EPC:【{Helpers.Utilities.EncodeData(item.EPC)}】Không thể lấy thông tin Màu sắc từ EPC", "error");
                     SoundHelper.PlaySoundError();
-                    return;
+                    error = true;
                 }
                 if (string.IsNullOrEmpty(item.Size))
                 {
                     InvokeMessage($"EPC:【{Helpers.Utilities.EncodeData(item.EPC)}】Không thể lấy thông tin Size từ EPC", "error");
                     SoundHelper.PlaySoundError();
-                    return;
+                    error = true;
                 }
                 if (item.Color != Card.CustomerColor.Trim())
                 {
                     InvokeMessage($"EPC:【{Helpers.Utilities.EncodeData(item.EPC)}】Màu sắc thẻ EPC không khớp với thông tin màu sắc của thẻ hàng", "error");
                     SoundHelper.PlaySoundError();
-                    return;
+                    error = true;
                 }
                 if (item.Size != Card.Size.Trim())
                 {
                     InvokeMessage($"EPC:【{Helpers.Utilities.EncodeData(item.EPC)}】Size thẻ EPC không khớp với thông tin Size của thẻ hàng", "error");
                     SoundHelper.PlaySoundError();
-                    return;
+                    error = true;
                 }
 
                 if (item.Size == Card.Size && item.Color == Card.CustomerColor)
                 {
                     using (var db = new ShaContext())
                     {
-                        if (db.TrolleyNikeEPCMappings.Any(e => e.EPC.Contains(epc)))
+
+
+                        foreach (var epc in epclist)
                         {
-                            InvokeMessage($"EPC: 【{Helpers.Utilities.EncodeData(epc)}】Đã làm liên kết thẻ, vui lòng kiểm tra lại", "error");
-                            return;
+                            if (db.TrolleyNikeEPCMappings.Any(e => e.EPC.Contains(epc)))
+                            {
+                                InvokeMessage($"EPC: 【{Helpers.Utilities.EncodeData(epc)}】Đã làm liên kết thẻ, vui lòng kiểm tra lại", "error");
+                                SoundHelper.PlaySoundError();
+                                error = true;
+                                break;
+                            }
                         }
-                    }
 
-                    if (!ValidEPCs.Any(x => x.EPC == item.EPC))
-                    {
-                        var model = new TrolleyNikeEPCMapping
-                        {
-                            Id = Guid.NewGuid(),
-                            Count = count,
-                            EmpCode = CurrentUser.Name,
-                            EPC = item.EPC,
-                            EncodeEPC = Helpers.Utilities.EncodeData(item.EPC),
-                            Size = item.Size,
-                            Color = item.Color,
-                            GangHao = Card.GangHao,
-                            TimeCreated = DateTime.Now,
-                            MappingId = mappingId,
-                        };
 
-                        Application.Current.Dispatcher.Invoke(() =>
+
+                        if (!ValidEPCs.Any(x => x.EPC == item.EPC) && error==false)
                         {
-                            ValidEPCs.Add(model);
-                            count++;
-                        });
+                            var model = new TrolleyNikeEPCMapping
+                            {
+                                Id = Guid.NewGuid(),
+                                Count = count,
+                                EmpCode = CurrentUser.Name,
+                                EPC = item.EPC,
+                                EncodeEPC = Helpers.Utilities.EncodeData(item.EPC),
+                                Size = item.Size,
+                                Color = item.Color,
+                                GangHao = Card.GangHao,
+                                TimeCreated = DateTime.Now,
+                                MappingId = mappingId,
+                            };
+
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                ValidEPCs.Add(model);
+                                count++;
+                            });
+                        }
                     }
                 }
                 else
                 {
-                    string err = $"EPC:【{Helpers.Utilities.EncodeData(epc)}】 Khác Size | Color Xin vui lòng kiểm tra lại";
+                    string err = $"EPC:【{string.Join(", ", epclist.Select(e => Helpers.Utilities.EncodeData(e)))}】 Khác Size | Color Xin vui lòng kiểm tra lại";
                     if (!MessageNotify.Contains(err))
                     {
                         InvokeMessage(err, "error");
+                        error = true;
                     }
                 }
+
+
+
+
             }
         }
 
@@ -1433,7 +1532,7 @@ namespace RCabinet.ViewModels
                         }
                     }
 
-                    int changes = await db.SaveChangesAsync();
+                    int changes =await db.SaveChangesAsync();
                     if (changes > 0)
                     {
                         Application.Current.Dispatcher.Invoke(() =>
