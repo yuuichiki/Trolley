@@ -67,6 +67,18 @@ namespace RCabinet.Models
 
     }
 
+    public class ZdcodeEmployee
+    {
+        public string zdcode;
+        public string cardid;
+        public string empid;
+        public string empname;
+        public string gx_no;
+        public string workline;
+        public DateTime billdate;
+
+
+    }
 
     [Table("Trolley_UQCard")]
     public class CardUQModel
@@ -85,6 +97,7 @@ namespace RCabinet.Models
         public int BundleQuantity { get; set; }
         public int AdjustQuantity { get; set; }
         public int BundleNo { get; set; }
+        public string BundleId { get; set; }
         public string SO { get; set; }
         public DateTime DateCreated { get; set; }
         public string SaleNo { get; set; }

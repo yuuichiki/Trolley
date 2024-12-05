@@ -12,7 +12,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
+using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
 using System.IO.Ports;
 using System.Linq;
 using System.Net;
@@ -79,7 +82,7 @@ namespace RCabinet.ViewModels
         private int totalQuantity;
         private bool enableChekingEPC;
         private ZebraConfig zebraConfig;
-
+        private string etsconnection;
 
         public MappingNikeViewModel(IChangeViewModel viewModelChanger) : base(viewModelChanger)
         {
@@ -136,8 +139,7 @@ namespace RCabinet.ViewModels
             TotalCount = 0;
             CheckingEPCTag = "";
             lastEPCCheck = "";
-
-
+            etsconnection = System.Configuration.ConfigurationManager.ConnectionStrings["connectionString"].ConnectionString;
 
             using (var db = new ShaContext())
             {
@@ -890,6 +892,16 @@ namespace RCabinet.ViewModels
                     CutTypeName = _card.CutTypeName,
                     DateCreated = DateTime.Now
                 };
+                var pp = await GetCardEmployee(_card.postProcessCardNo, _card.Mo);
+
+                // Convert the dynamic object to JObject
+               
+
+                // Access properties using the JObject
+                //string propertyName = ppObject["empid"].ToString(); // Replace 'PropertyName' with the actual property name
+
+                //get data from dynamic pp
+
 
                 var trolleyNikeCard = Card;
                 if (Card.IsActive == false)
@@ -929,6 +941,30 @@ namespace RCabinet.ViewModels
             if (TotalQuantity > 0) EnableReadingEPC = true;
             CardId = string.Empty;
         }
+
+        private async Task<List<ZdcodeEmployee>> GetCardEmployee(string ppCard, string zdCode)
+        {
+            using (var db = new ETSContext(etsconnection))
+            {
+                string sql =  $"EXEC [dbo].[sp_tom_get_emp_by_cardno_zdcode] @cardno = N'{ppCard}',@zdcode= N'{zdCode}'";
+
+
+                var result= await Task.Run(() => db.Database.SqlQuery<ZdcodeEmployee>(sql).ToList());
+                var processedResult = result.Select(e => new ZdcodeEmployee
+                {
+                    zdcode = e.zdcode ?? string.Empty,
+                    cardid = e.cardid ?? string.Empty,
+                    empid = e.empid ?? string.Empty,
+                    empname = e.empname ?? string.Empty,
+                    gx_no = e.gx_no ?? string.Empty,
+                    workline = e.workline ?? string.Empty,
+                    billdate = e.billdate 
+                }).ToList();
+
+                return processedResult;
+            }
+        }
+
 
         private async Task LoadEPCData(string _epc)
         {

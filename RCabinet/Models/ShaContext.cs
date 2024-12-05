@@ -134,7 +134,6 @@
 
             [MaxLength(255)]
             public string CardNo { get; set; }
-
             public bool? IsActive { get; set; }
 
             [MaxLength(255)]

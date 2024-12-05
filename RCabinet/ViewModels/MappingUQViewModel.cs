@@ -962,7 +962,8 @@ namespace RCabinet.ViewModels
 
             using (var db = new ShaContext())
             {
-                var cardInstance = db.TrolleyUQCards.FirstOrDefault(e => e.CardNo.Equals(cardid));
+                string bundleId = row["ID"].ToString();
+                var cardInstance = db.TrolleyUQCards.FirstOrDefault(e => e.BundleId.Equals(bundleId));
                 if (cardInstance != null)
                 {
                     InvokeMessage($"Thẻ: 【{cardid}】Đã làm liên kết thẻ, vui lòng kiểm tra lại", "error");
@@ -984,6 +985,7 @@ namespace RCabinet.ViewModels
                 Size = row["sSize"].ToString(),
                 CutQuantity = Convert.ToInt32(row["CutQty"]),
                 BundleQuantity = Convert.ToInt32(row["cCount"]),
+                BundleId = row["ID"].ToString(),
                 BundleNo = Convert.ToInt32(row["GroupNO"]),
                 Country = row["Country"].ToString(),
                 AdjustQuantity = Convert.ToInt32(row["cCount"]),

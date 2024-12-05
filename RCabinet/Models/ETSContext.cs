@@ -7,8 +7,12 @@
 
     public partial class ETSContext : DbContext
     {
-        public ETSContext() : base("name= SHAConnectionString")
+        public ETSContext() : base("name= connectionString")
         {
+        }
+        public ETSContext(string conStr)
+        {
+            this.Database.Connection.ConnectionString = conStr;
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
