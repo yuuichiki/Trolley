@@ -224,8 +224,10 @@
                                 Content="Start"
                                 FontSize="16"
                                 IsEnabled="{Binding EnableChekingEPC}"
+                                
                                 PathData="{StaticResource Check_Icon}"
                                 Style="{StaticResource IconButtonStyle}" />
+                           
 
                             <StackPanel
                                 Grid.Row="0"

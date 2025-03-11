@@ -57,7 +57,7 @@ namespace RCabinet.ViewModels
 
         private string readingStatus;
         private int _countDown;
-       
+        private Boolean _displayEPCEnable;
         private bool _isCountingDown;
         private Dictionary<string, string> epcOfPO;
         private string mesageInfo;
@@ -409,7 +409,6 @@ namespace RCabinet.ViewModels
             ComPortSelectedItem = System.Configuration.ConfigurationManager.AppSettings["COMPORT"];
             CycleTime = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["CYCLE_TIME"]);
             deviceId = System.Configuration.ConfigurationManager.AppSettings["DEVICE_ID"];
-
             mappingId = Guid.NewGuid();
             using (var db = new ShaContext())
             {
