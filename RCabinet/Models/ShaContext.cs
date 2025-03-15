@@ -1,5 +1,6 @@
 ﻿namespace RCabinet.Models
 {
+    using RCabinet.Helpers;
     using System;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
@@ -7,9 +8,22 @@
 
     public partial class ShaContext : DbContext
     {
-        public ShaContext() : base("name= SHAConnectionString")
+        //public ShaContext() : base(DecodeConnectionString("name=SHAConnectionString"))
+        //{
+        //}
+        public ShaContext()
         {
+            var conStr = System.Configuration.ConfigurationManager.ConnectionStrings["SHAConnectionString"].ConnectionString;
+            this.Database.Connection.ConnectionString = DecodeConnectionString(conStr);
         }
+        private static string DecodeConnectionString(string connectionString)
+        {
+            var builder = new System.Data.SqlClient.SqlConnectionStringBuilder(connectionString);
+            builder.UserID = Utilities.DecodeData(builder.UserID);
+            builder.Password = Utilities.DecodeData(builder.Password);
+            return builder.ToString();
+        }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -24,7 +38,7 @@
         public virtual DbSet<TrolleyNikeCard> TrolleyNikeCards { get; set; }
         public virtual DbSet<TrolleyNikeEPCMapping> TrolleyNikeEPCMappings { get; set; }
         public virtual DbSet<CountryCodeMapping> CountryCodeMappings { get; set; }
-        
+
         [Table("ZebraConfig")]
         public partial class ZebraConfig
         {
@@ -33,12 +47,11 @@
             public string DeviceId { get; set; }
             public string AntenaIP { get; set; }
             public int Rssi { get; set; }
-            public int CycleTime { get; set;}
+            public int CycleTime { get; set; }
             public string DeviceType { get; set; }
             public string Position { get; set; }
             public DateTime? UpdateTime { get; set; }
         }
-
 
         [Table("HUData")]
         public partial class HUData
@@ -56,9 +69,7 @@
             public string USERNAME { get; set; }
             public string PCNAME { get; set; }
             public DateTime CREATEDATE { get; set; }
-
         }
-
 
         [Table("HUDataDetail")]
         public partial class HUDataDetail
@@ -72,7 +83,6 @@
             public int? ACT_QTY { get; set; }
             public DateTime? CREATEDATE { get; set; }
         }
-
 
         [Table("HUDataEPC")]
         public partial class HUDataEPC
@@ -97,9 +107,6 @@
             public string CountryName { get; set; }
             public string CountryCode { get; set; }
         }
-
-
-
 
         [Table("Trolley_NikeCard", Schema = "dbo")]
         public class TrolleyNikeCard
@@ -161,10 +168,7 @@
 
             public string Department { get; set; }
             public string LineNo { get; set; }
-
         }
-
-
 
         [Table("Trolley_NikeEPCMapping", Schema = "dbo")]
         public class TrolleyNikeEPCMapping
@@ -199,8 +203,6 @@
 
             public DateTime? TimeCreated { get; set; }
         }
-
-
     }
 
 

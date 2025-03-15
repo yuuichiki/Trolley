@@ -138,7 +138,12 @@ namespace RCabinet.ViewModels
             TotalCount = 0;
             CheckingEPCTag = "";
             lastEPCCheck = "";
-            etsconnection = System.Configuration.ConfigurationManager.ConnectionStrings["connectionString"].ConnectionString;
+            var str = System.Configuration.ConfigurationManager.ConnectionStrings["connectionString"].ConnectionString;
+
+            var connectionStringBuilder = new SqlConnectionStringBuilder(str);
+            connectionStringBuilder.UserID = Utilities.DecodeData(connectionStringBuilder.UserID);
+            connectionStringBuilder.Password = Utilities.DecodeData(connectionStringBuilder.Password);
+            etsconnection = connectionStringBuilder.ToString();
 
             using (var db = new ShaContext())
             {

@@ -17,19 +17,25 @@ public class SqlHelper
         }
         public static string getSQLConnection()
 		{
-            //read connectionString from AppConfig
+          
 			string config = ConfigurationManager.ConnectionStrings["connectionString"].ConnectionString;
+            var builder = new SqlConnectionStringBuilder(config);
+            builder.UserID = Utilities.DecodeData(builder.UserID);
+            builder.Password = Utilities.DecodeData(builder.Password);
+            return builder.ToString();
 
-            // ETS_CONFIG eTSConfig = funcs.getETSConfig();
-            //SqlConnectionStringBuilder sqlConnectionStringBuilder = new SqlConnectionStringBuilder("Server=" + eTSConfig.serverName + ";DataBase=" + eTSConfig.DataBase + ";uid=" + eTSConfig.userName + ";pwd=" + Des.DecryStrHex(eTSConfig.passWord, "I_LoVe_YJG") + ";");
-            //return sqlConnectionStringBuilder.ToString();
-            return config;
+
         }
 
         public static string getSHAConnection()
         {
             string config = ConfigurationManager.ConnectionStrings["SHAConnectionString"].ConnectionString;
-            return config;
+
+            // Decode User ID and Password
+            var builder = new SqlConnectionStringBuilder(config);
+            builder.UserID = Utilities.DecodeData(builder.UserID);
+            builder.Password = Utilities.DecodeData(builder.Password);
+            return builder.ToString();
         }
 
 		public static DataSet getDataSet(string asql,string type)

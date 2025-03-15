@@ -9,53 +9,6 @@
     d:DesignWidth="1280"
     mc:Ignorable="d">
 
-    <!--<Grid>
-    <StackPanel
-    Margin="0,0,0,0"
-    HorizontalAlignment="Center"
-    VerticalAlignment="Center"
-    Orientation="Vertical">
-    <Label
-    Margin="0,0,0,20"
-    HorizontalAlignment="Center"
-    Content="Sample Cabinet"
-    FontSize="40"
-    FontWeight="Bold" />
-    <TextBox
-    Name="UsernameInput"
-    Width="400"
-    Height="40"
-    Margin="10"
-    mahapps:TextBoxHelper.Watermark="Username"
-    FontSize="20"
-    KeyDown="UsernameTextbox_KeyDown"
-    Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" />
-    <PasswordBox
-    Name="PasswordInput"
-    Width="400"
-    Height="40"
-    Margin="10"
-    mahapps:TextBoxHelper.Watermark="Password"
-    FontSize="20"
-    KeyDown="PasswordInput_KeyDown"
-    PasswordChanged="PasswordInput_PasswordChanged" />
-    <Button
-    Width="200"
-    Height="40"
-    Margin="0,20,0,0"
-    Command="{Binding AttemptLogin}"
-    Content="Login"
-    FontSize="20" />
-    <Label
-    HorizontalAlignment="Center"
-    Content="{Binding Error}"
-    FontSize="16"
-    FontStyle="Italic"
-    FontWeight="Bold"
-    Foreground="IndianRed" />
-    </StackPanel>
-    </Grid>-->
-
     <Border BorderThickness="2" CornerRadius="15">
         <Border.Background>
             <ImageBrush ImageSource="/Images/17545.jpg" />
@@ -84,6 +37,7 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="50" />
+                    
                 </Grid.RowDefinitions>
                 <Grid>
 
@@ -186,14 +140,15 @@
                         FontSize="30"
                         FontWeight="Medium"
                         Foreground="White"
-                        Text="TRolley RFID" />
+                        Text="{Binding AppName}" />
+              
                     <TextBlock
                         HorizontalAlignment="Center"
                         FontFamily="Montserrat"
                         FontSize="12"
                         Foreground="White"
                         Opacity="0.8"
-                        Text="Login to Trolley RFid Advance system" />
+                        Text="{Binding AppDescription}" />
 
                     <TextBlock
                         Margin="0,45,0,0"
