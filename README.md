@@ -1,8 +1,8 @@
-# RCabinet
+# Trolley
 
-RCabinet is a small Windows 7+ WPF software application to manage small inventories/stores where items are purchased on a regular basis. It runs on the .NET 4.8 framework and uses a SQLite database for data storage. RCabinet was built for a small school in Mondulkiri, Cambodia for use in the school store. Because of the school's location, Riel is the default currency, and A4 is the default paper size.
+Trolley is a small Windows 7+ WPF software application to manage small inventories/stores where items are purchased on a regular basis. It runs on the .NET 4.8 framework and uses a SQLite database for data storage. Trolley was built for a small school in Mondulkiri, Cambodia for use in the school store. Because of the school's location, Riel is the default currency, and A4 is the default paper size.
 
-RCabinet can be edited in Visual Studio 2017+.
+Trolley can be edited in Visual Studio 2017+.
 
 Feature set:
 

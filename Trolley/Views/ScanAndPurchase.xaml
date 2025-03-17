@@ -1,0 +1,228 @@
+﻿<UserControl
+    x:Class="Trolley.Views.ScanAndPurchase"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:enums="clr-namespace:Trolley.Enums"
+    xmlns:local="clr-namespace:Trolley.Views"
+    xmlns:mahapps="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:Trolley.Models"
+    xmlns:viewModels="clr-namespace:Trolley.ViewModels"
+    x:Name="ScanAndPurchaseItemsControl"
+    d:DataContext="{d:DesignInstance Type={x:Type viewModels:ScanAndPurchaseViewModel},
+    IsDesignTimeCreatable=True}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    Background="Orange"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Button
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            Height="40"
+            Margin="15,5,5,5"
+            Padding="10"
+            HorizontalAlignment="Left"
+            Command="{Binding GoToMainMenu}"
+            Content="Return to Main Menu" />
+        <Label
+            Grid.Row="0"
+            Grid.Column="0"
+            Grid.ColumnSpan="2"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Content="Scan and Purchase Items"
+            FontSize="16"
+            FontWeight="Bold" />
+        <Grid Grid.Row="1" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Label
+                Grid.Row="0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Content="Use the barcode scanner or enter in the barcode number manually and click 'Add Item'"
+                FontSize="16"
+                FontWeight="Bold" />
+            <StackPanel
+                Grid.Row="1"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Orientation="Horizontal">
+                <TextBox
+                    Name="BarcodeTextBox"
+                    Width="300"
+                    VerticalAlignment="Center"
+                    mahapps:TextBoxHelper.Watermark="Item barcode number (e.g. 11100)"
+                    mahapps:TextBoxHelper.WatermarkAlignment="Center"
+                    FontSize="14"
+                    KeyDown="BarcodeScanTextBox_KeyDown"
+                    Text="{Binding BarcodeNumber, UpdateSourceTrigger=PropertyChanged}" />
+                <Button
+                    Grid.ColumnSpan="2"
+                    Width="150"
+                    Margin="15,5,5,5"
+                    Padding="10"
+                    HorizontalAlignment="Center"
+                    Command="{Binding MarkItemPurchased}"
+                    Content="Add Item (1)" />
+            </StackPanel>
+            <Label
+                Grid.Row="2"
+                Margin="0,0,0,7"
+                HorizontalAlignment="Center"
+                Content="{Binding ItemPurchaseStatusMessage}"
+                FontSize="16"
+                FontStyle="Italic"
+                Foreground="{Binding ItemPurchaseStatusBrush}" />
+        </Grid>
+        <Rectangle
+            Grid.Row="2"
+            Height="10"
+            Fill="Gainsboro" />
+        <Grid Grid.Row="3" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Label
+                Grid.Row="0"
+                Margin="0,5,0,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Content="Purchase Details"
+                FontSize="16"
+                FontWeight="Bold" />
+            <DataGrid
+                Name="ItemsGrid"
+                Grid.Row="1"
+                Grid.Column="0"
+                d:DataContext="{d:DesignInstance Type={x:Type models:ItemSoldInfo}}"
+                AutoGenerateColumns="False"
+                Background="LightGray"
+                BorderBrush="Gray"
+                BorderThickness="1"
+                CanUserAddRows="False"
+                CanUserDeleteRows="False"
+                CanUserSortColumns="False"
+                GridLinesVisibility="All"
+                IsReadOnly="True"
+                ItemsSource="{Binding PurchasedItems}"
+                RowHeaderWidth="0"
+                SelectionMode="Single"
+                SelectionUnit="FullRow">
+                <DataGrid.Style>
+                    <Style BasedOn="{StaticResource MahApps.Styles.DataGrid}" TargetType="{x:Type DataGrid}">
+                        <Setter Property="AlternatingRowBackground" Value="{DynamicResource GrayBrush10}" />
+                    </Style>
+                </DataGrid.Style>
+                <DataGrid.Columns>
+                    <DataGridTextColumn
+                        Width="Auto"
+                        MinWidth="150"
+                        Binding="{Binding ItemName}"
+                        Header="Item" />
+                    <DataGridTemplateColumn Header="Number Purchased">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <mahapps:NumericUpDown
+                                    VerticalContentAlignment="Center"
+                                    FontSize="14"
+                                    Maximum="{Binding MaxQuantity}"
+                                    Minimum="0"
+                                    NumericInputMode="Numbers"
+                                    Value="{Binding QuantitySold, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn
+                        Width="Auto"
+                        MinWidth="100"
+                        Binding="{Binding TotalCostWithCurrency}"
+                        Header="Cost" />
+                    <DataGridTemplateColumn
+                        Width="*"
+                        CanUserResize="False"
+                        CanUserSort="False"
+                        Header="">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button
+                                    Width="100"
+                                    Margin="5,0,0,0"
+                                    HorizontalAlignment="Left"
+                                    Command="{Binding ElementName=ScanAndPurchaseItemsControl, Path=DataContext.ConfirmDeleteItemSoldInfo}"
+                                    CommandParameter="{Binding}"
+                                    Content="Remove Item" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+            <TextBlock
+                Grid.Row="2"
+                Margin="0,5,0,5"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                FontSize="16"
+                FontWeight="Bold"
+                TextWrapping="Wrap">
+                Total Items:<Run Text="{Binding TotalItemCount, Mode=OneWay}" />
+                | Total Purchase Cost:<Run Text="{Binding TotalPurchaseCostWithCurrency, Mode=OneWay}" />
+            </TextBlock>
+            <TextBlock
+                Grid.Row="3"
+                Margin="0,4,0,4"
+                HorizontalAlignment="Center"
+                FontSize="16"
+                FontStyle="Italic"
+                Foreground="Red"
+                Text="{Binding PurchaseErrorMessage}"
+                Visibility="{Binding PurchaseErrorMessageIsVisible, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <StackPanel
+                Grid.Row="5"
+                Grid.Column="0"
+                HorizontalAlignment="Center"
+                Orientation="Horizontal">
+                <Button
+                    Width="150"
+                    Height="40"
+                    Padding="0"
+                    mahapps:ControlsHelper.ContentCharacterCasing="Normal"
+                    mahapps:ControlsHelper.CornerRadius="2"
+                    Command="{Binding FinalizePurchase}"
+                    Content="Finalize Purchase"
+                    FontSize="14"
+                    IsEnabled="{Binding CanFinalize}"
+                    Style="{StaticResource MahApps.Styles.Button.Square.Accent}" />
+                <Button
+                    Width="150"
+                    Height="40"
+                    Margin="15,5,5,5"
+                    Padding="10"
+                    HorizontalAlignment="Center"
+                    Click="CancelPurchase_Click"
+                    Content="Cancel Purchase"
+                    IsEnabled="{Binding CanCancel}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>
